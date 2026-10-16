@@ -1,15 +1,26 @@
+import { useState } from 'react';
 import { Routes, Route, Link, useParams, useSearchParams } from 'react-router-dom';
 import { CAMPAIGNS } from '../data/campaigns';
+import { Container } from '../components/ui/Container';
+import { SectionHeading } from '../components/ui/SectionHeading';
+import { Button } from '../components/ui/Button';
+import { Badge } from '../components/ui/Badge';
+import { Input } from '../components/ui/Input';
+import { CampaignCard } from '../components/campaign/CampaignCard';
 
-function RoutePlaceholder({ title, description, pathInfo, routeKind }) {
+function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' }) {
   const params = useParams();
   const [searchParams] = useSearchParams();
   const paramSlug = params.slug;
   const queryQ = searchParams.get('q');
+  const [testInput, setTestInput] = useState('');
 
   // Validasi parameter slug terhadap dataset program terpusat
   const matchedCampaign = paramSlug ? CAMPAIGNS.find((c) => c.slug === paramSlug) : null;
   const isSlugNotFound = paramSlug && !matchedCampaign;
+
+  // Program contoh untuk menguji CampaignCard
+  const sampleCampaign = matchedCampaign || CAMPAIGNS[0];
 
   // Validasi query pencarian terhadap dataset
   const searchResultsCount = queryQ
@@ -17,289 +28,166 @@ function RoutePlaceholder({ title, description, pathInfo, routeKind }) {
     : 0;
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center max-w-desktop mx-auto">
-      <div className="w-16 h-16 bg-primary-soft text-primary rounded-full flex items-center justify-center mb-4">
-        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      </div>
-      <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">{title}</h1>
-      <p className="text-text-secondary max-w-md mb-4">{description}</p>
-      
-      {/* Parameter Slug Display & Validation */}
-      {paramSlug && (
-        <div className="bg-background-soft border border-border rounded-button p-4 text-sm text-text-secondary mb-4 max-w-md w-full text-left">
+    <Container className="py-8 md:py-12">
+      {/* Judul Seksi Standar */}
+      <SectionHeading
+        title={title}
+        subtitle={description}
+        action={
+          <div className="flex items-center gap-2">
+            <Badge variant="primary" size="md">
+              Fondasi Tahap 4
+            </Badge>
+            {routeKind !== 'general' && (
+              <Badge variant="neutral" size="sm" className="uppercase font-mono">
+                {routeKind}
+              </Badge>
+            )}
+          </div>
+        }
+      />
+
+      {/* Informasi Parameter Rute / Query */}
+      {(paramSlug || queryQ) && (
+        <div className="bg-background-soft border border-border rounded-card p-4 text-sm text-text-secondary mb-8">
           <div className="font-mono text-xs text-text-secondary mb-1">
-            Param Slug: <strong className="text-text-primary">{paramSlug}</strong>
+            Path Info: <strong className="text-text-primary">{pathInfo}</strong>
           </div>
-          {matchedCampaign ? (
-            <div className="mt-2 text-xs text-success bg-green-50 border border-green-200 rounded p-2">
-              ✓ Program Terverifikasi di Mock: <strong>{matchedCampaign.title}</strong>
-              <div className="text-[11px] text-text-secondary mt-1">
-                Tipe Layanan: <span className="font-semibold uppercase">{matchedCampaign.serviceType}</span> | 
-                Target: {matchedCampaign.targetAmount} | Sisa: {matchedCampaign.daysLeft} hari
-              </div>
-              {routeKind === 'zakat' && matchedCampaign.serviceType !== 'zakat' && (
-                <div className="text-warning text-[11px] mt-1">
-                  ⚠️ Catatan: Program ini bertipe "{matchedCampaign.serviceType}" namun dibuka pada rute zakat.
-                </div>
-              )}
+          {paramSlug && (
+            <div className="mt-2 text-xs">
+              Param Slug: <strong className="text-text-primary font-mono">{paramSlug}</strong>
+              {matchedCampaign ? (
+                <span className="ml-2 text-success font-medium">✓ Program terverifikasi di mock data</span>
+              ) : isSlugNotFound ? (
+                <span className="ml-2 text-error font-medium">✕ 404: Slug tidak terdaftar</span>
+              ) : null}
             </div>
-          ) : isSlugNotFound ? (
-            <div className="mt-2 text-xs text-error bg-red-50 border border-red-200 rounded p-2">
-              ✕ 404 Slug: Program dengan slug "{paramSlug}" tidak ditemukan di dataset mock.
+          )}
+          {queryQ && (
+            <div className="mt-2 text-xs">
+              Query Pencarian: <strong className="text-text-primary">"{queryQ}"</strong> ({searchResultsCount} program cocok)
             </div>
-          ) : null}
+          )}
         </div>
       )}
 
-      {/* Query Search Display & Validation */}
-      {queryQ && (
-        <div className="bg-background-soft border border-border rounded-button p-3 text-sm text-text-secondary mb-4 max-w-md w-full">
-          Kata Kunci Pencarian: <strong className="text-text-primary">"{queryQ}"</strong>
-          <div className="text-xs text-primary mt-1">
-            Ditemukan <strong>{searchResultsCount}</strong> program yang cocok di dataset mock.
+      {/* Showcase Pengujian Komponen Reusable Tahap 4 */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 my-8 pt-4 border-t border-border/80">
+        {/* Kolom Kiri: Verifikasi CampaignCard Props-Driven */}
+        <div className="lg:col-span-5 flex flex-col items-start">
+          <div className="flex items-center justify-between w-full mb-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+              Verifikasi CampaignCard (16:9)
+            </span>
+            <Badge variant="neutral" size="sm">
+              Prop-Driven
+            </Badge>
+          </div>
+          <div className="w-full max-w-sm mx-auto lg:mx-0">
+            <CampaignCard campaign={sampleCampaign} />
+          </div>
+          <p className="text-[11px] text-text-secondary mt-2">
+            *Rasio gambar 16:9 stabil, nominal dan progres selalu terlihat tanpa hover.
+          </p>
+        </div>
+
+        {/* Kolom Kanan: Verifikasi Komponen UI Dasar (Button, Badge, Input) */}
+        <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+          {/* Uji Variasi Button */}
+          <div>
+            <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
+              Verifikasi Variasi Button
+            </span>
+            <div className="flex flex-wrap gap-2.5 items-center">
+              <Button variant="primary" size="sm">Primary Sm</Button>
+              <Button variant="primary" size="md">Primary Md</Button>
+              <Button variant="secondary" size="md">Secondary</Button>
+              <Button variant="outline" size="md">Outline</Button>
+              <Button variant="primary" size="md" disabled>Disabled</Button>
+            </div>
+          </div>
+
+          {/* Uji Variasi Badge */}
+          <div>
+            <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
+              Verifikasi Variasi Badge Semantik
+            </span>
+            <div className="flex flex-wrap gap-2 items-center">
+              <Badge variant="primary">Primary</Badge>
+              <Badge variant="success">Berhasil</Badge>
+              <Badge variant="warning">Menunggu</Badge>
+              <Badge variant="error">Dibatalkan</Badge>
+              <Badge variant="neutral">Kategori</Badge>
+            </div>
+          </div>
+
+          {/* Uji Komponen Input Aksesibel */}
+          <div>
+            <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
+              Verifikasi Komponen Input
+            </span>
+            <div className="max-w-md">
+              <Input
+                label="Uji Input Interaktif"
+                placeholder="Ketik untuk menguji state fokus dan binding..."
+                value={testInput}
+                onChange={(e) => setTestInput(e.target.value)}
+                helperText="Input aksesibel dengan border #E5E7EB dan ring fokus brand #2E7DFA"
+              />
+            </div>
           </div>
         </div>
-      )}
-
-      <div className="text-xs text-text-secondary bg-primary-soft/50 border border-primary/20 px-3 py-1.5 rounded-full mb-6">
-        Status: Fondasi Routing Tahap 3 Aktif ({pathInfo})
       </div>
 
-      {/* Tautan Uji Coba Navigasi Antar-Rute */}
-      <div className="flex flex-wrap gap-2 justify-center max-w-xl text-xs text-primary">
-        <Link to="/" className="hover:underline px-2 py-1 bg-white border border-border rounded">Beranda</Link>
-        <Link to="/program" className="hover:underline px-2 py-1 bg-white border border-border rounded">Daftar Program</Link>
-        <Link to="/program/tanggap-darurat-korban-bencana" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Detail Program</Link>
-        <Link to="/zakat" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Zakat</Link>
-        <Link to="/zakat/zakat-penghasilan-bantu-mustahik" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Detail Zakat</Link>
-        <Link to="/infaq" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Infaq</Link>
-        <Link to="/sedekah" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Sedekah</Link>
-        <Link to="/wakaf" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Wakaf</Link>
-        <Link to="/donasi/bantu-sarana-belajar-pesantren" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Form Donasi</Link>
-        <Link to="/hasil-donasi" className="hover:underline px-2 py-1 bg-white border border-border rounded">Hasil Simulasi</Link>
-        <Link to="/tentang" className="hover:underline px-2 py-1 bg-white border border-border rounded">Tentang Kami</Link>
-        <Link to="/faq" className="hover:underline px-2 py-1 bg-white border border-border rounded">FAQ</Link>
-        <Link to="/kontak" className="hover:underline px-2 py-1 bg-white border border-border rounded">Kontak</Link>
-        <Link to="/profil" className="hover:underline px-2 py-1 bg-white border border-border rounded">Profil/Akun</Link>
-        <Link to="/donasi-saya" className="hover:underline px-2 py-1 bg-white border border-border rounded">Donasi Saya</Link>
-        <Link to="/search?q=bencana" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Search "?q=bencana"</Link>
-        <Link to="/route-ngawur-404" className="hover:underline px-2 py-1 bg-white border border-border rounded text-error">Test 404</Link>
+      {/* Navigasi Cepat Pengujian Antar Rute */}
+      <div className="mt-8 pt-6 border-t border-border">
+        <span className="block text-xs font-bold text-text-secondary uppercase tracking-wider mb-3">
+          Tautan Uji 16 Rute Fondasi:
+        </span>
+        <div className="flex flex-wrap gap-2 text-xs text-primary">
+          <Link to="/" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">01. Beranda</Link>
+          <Link to="/program" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">02. Daftar Program</Link>
+          <Link to="/program/tanggap-darurat-korban-bencana" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">03. Detail Program</Link>
+          <Link to="/zakat" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">04. Landing Zakat</Link>
+          <Link to="/zakat/zakat-penghasilan-bantu-mustahik" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">05. Detail Zakat</Link>
+          <Link to="/infaq" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">06. Landing Infaq</Link>
+          <Link to="/sedekah" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">07. Landing Sedekah</Link>
+          <Link to="/wakaf" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">08. Landing Wakaf</Link>
+          <Link to="/donasi/bantu-sarana-belajar-pesantren" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">09. Form Donasi</Link>
+          <Link to="/hasil-donasi" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">10. Hasil Simulasi</Link>
+          <Link to="/tentang" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">11. Tentang Kami</Link>
+          <Link to="/faq" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">12. FAQ</Link>
+          <Link to="/kontak" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">13. Kontak</Link>
+          <Link to="/donasi-saya" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">14. Donasi Saya</Link>
+          <Link to="/profil" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">15. Profil/Akun</Link>
+          <Link to="/search?q=pangan" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded">16. Hasil Pencarian</Link>
+          <Link to="/route-ngawur-404" className="hover:underline px-2.5 py-1 bg-background-soft border border-border rounded text-error">Test 404</Link>
+        </div>
       </div>
-    </div>
+    </Container>
   );
 }
 
 export function AppRoutes() {
   return (
     <Routes>
-      {/* 01. Beranda */}
-      <Route
-        path="/"
-        element={
-          <RoutePlaceholder
-            title="01. Beranda OpenDonasi"
-            description="Halaman beranda utama dengan hero carousel, akses cepat layanan, dan program unggulan."
-            pathInfo="/"
-          />
-        }
-      />
-
-      {/* 02. Daftar Program */}
-      <Route
-        path="/program"
-        element={
-          <RoutePlaceholder
-            title="02. Daftar Program"
-            description="Katalog penelusuran, filter kategori, dan pengurutan program donasi."
-            pathInfo="/program"
-          />
-        }
-      />
-
-      {/* 03. Detail Program Donasi Umum */}
-      <Route
-        path="/program/:slug"
-        element={
-          <RoutePlaceholder
-            title="03. Detail Program Donasi"
-            description="Informasi narasi program, dana terkumpul, dan tombol donasi sekarang."
-            pathInfo="/program/:slug"
-            routeKind="program"
-          />
-        }
-      />
-
-      {/* 04. Landing Zakat */}
-      <Route
-        path="/zakat"
-        element={
-          <RoutePlaceholder
-            title="04. Landing Zakat"
-            description="Edukasi zakat, kalkulator zakat simulasi, dan daftar program zakat."
-            pathInfo="/zakat"
-          />
-        }
-      />
-
-      {/* 05. Detail Zakat */}
-      <Route
-        path="/zakat/:slug"
-        element={
-          <RoutePlaceholder
-            title="05. Detail Zakat"
-            description="Detail program zakat khusus dengan tombol Zakat Sekarang dan mini kalkulator."
-            pathInfo="/zakat/:slug"
-            routeKind="zakat"
-          />
-        }
-      />
-
-      {/* 06. Landing Infaq */}
-      <Route
-        path="/infaq"
-        element={
-          <RoutePlaceholder
-            title="06. Landing Infaq"
-            description="Pengantar layanan infaq dan program kemaslahatan terkait."
-            pathInfo="/infaq"
-          />
-        }
-      />
-
-      {/* 07. Landing Sedekah */}
-      <Route
-        path="/sedekah"
-        element={
-          <RoutePlaceholder
-            title="07. Landing Sedekah"
-            description="Pengantar layanan sedekah harian dan program sosial terkait."
-            pathInfo="/sedekah"
-          />
-        }
-      />
-
-      {/* 08. Landing Wakaf */}
-      <Route
-        path="/wakaf"
-        element={
-          <RoutePlaceholder
-            title="08. Landing Wakaf"
-            description="Pengantar layanan wakaf produktif dan poster program wakaf utuh."
-            pathInfo="/wakaf"
-          />
-        }
-      />
-
-      {/* 09. Form Donasi */}
-      <Route
-        path="/donasi/:slug"
-        element={
-          <RoutePlaceholder
-            title="09. Form Donasi"
-            description="Formulir pemilihan nominal preset/manual, identitas donatur, dan doa dukungan."
-            pathInfo="/donasi/:slug"
-            routeKind="donation"
-          />
-        }
-      />
-
-      {/* 10. Hasil Simulasi Donasi */}
-      <Route
-        path="/hasil-donasi"
-        element={
-          <RoutePlaceholder
-            title="10. Hasil Simulasi Donasi"
-            description="Bukti transaksi simulasi dengan nomor referensi OD-XXXXXX dan status transaksi."
-            pathInfo="/hasil-donasi"
-          />
-        }
-      />
-
-      {/* 11. Tentang Kami */}
-      <Route
-        path="/tentang"
-        element={
-          <RoutePlaceholder
-            title="11. Tentang Kami"
-            description="Informasi profil OpenDonasi sebagai digital giving infrastructure."
-            pathInfo="/tentang"
-          />
-        }
-      />
-
-      {/* 12. FAQ */}
-      <Route
-        path="/faq"
-        element={
-          <RoutePlaceholder
-            title="12. FAQ (Pusat Bantuan)"
-            description="Tanya-jawab seputar platform OpenDonasi dengan pencarian dan accordion."
-            pathInfo="/faq"
-          />
-        }
-      />
-
-      {/* 13. Kontak */}
-      <Route
-        path="/kontak"
-        element={
-          <RoutePlaceholder
-            title="13. Kontak Bantuan"
-            description="Saluran bantuan demo via WhatsApp dan email placeholder."
-            pathInfo="/kontak"
-          />
-        }
-      />
-
-      {/* 14. Donasi Saya */}
-      <Route
-        path="/donasi-saya"
-        element={
-          <RoutePlaceholder
-            title="14. Donasi Saya"
-            description="Riwayat donasi donatur demo berbasis sesi lokal."
-            pathInfo="/donasi-saya"
-          />
-        }
-      />
-
-      {/* 15. Profil/Akun */}
-      <Route
-        path="/profil"
-        element={
-          <RoutePlaceholder
-            title="15. Profil / Akun"
-            description="Hub akun demo dan pintu akses eksklusif ke Donasi Saya."
-            pathInfo="/profil"
-          />
-        }
-      />
-
-      {/* 16. Hasil Pencarian */}
-      <Route
-        path="/search"
-        element={
-          <RoutePlaceholder
-            title="16. Hasil Pencarian"
-            description="Hasil penelusuran program berdasarkan kata kunci pencarian global."
-            pathInfo="/search"
-          />
-        }
-      />
-
-      {/* Fallback 404 Route */}
-      <Route
-        path="*"
-        element={
-          <RoutePlaceholder
-            title="404 — Halaman Tidak Ditemukan"
-            description="Halaman yang Anda tuju tidak tersedia atau tautan telah berpindah."
-            pathInfo="404 Fallback"
-          />
-        }
-      />
+      <Route path="/" element={<RoutePlaceholder title="01. Beranda OpenDonasi" description="Fondasi UI siap. Konten seksi dan carousel Beranda akan diimplementasikan pada Tahap 5." pathInfo="/" />} />
+      <Route path="/program" element={<RoutePlaceholder title="02. Daftar Program" description="Katalog penelusuran, filter kategori, dan pengurutan program donasi." pathInfo="/program" />} />
+      <Route path="/program/:slug" element={<RoutePlaceholder title="03. Detail Program Donasi" description="Informasi narasi program, dana terkumpul, dan tombol donasi sekarang." pathInfo="/program/:slug" routeKind="program" />} />
+      <Route path="/zakat" element={<RoutePlaceholder title="04. Landing Zakat" description="Edukasi zakat, kalkulator zakat simulasi, dan daftar program zakat." pathInfo="/zakat" />} />
+      <Route path="/zakat/:slug" element={<RoutePlaceholder title="05. Detail Zakat" description="Detail program zakat khusus dengan tombol Zakat Sekarang dan mini kalkulator." pathInfo="/zakat/:slug" routeKind="zakat" />} />
+      <Route path="/infaq" element={<RoutePlaceholder title="06. Landing Infaq" description="Pengantar layanan infaq dan program kemaslahatan terkait." pathInfo="/infaq" />} />
+      <Route path="/sedekah" element={<RoutePlaceholder title="07. Landing Sedekah" description="Pengantar layanan sedekah harian dan program sosial terkait." pathInfo="/sedekah" />} />
+      <Route path="/wakaf" element={<RoutePlaceholder title="08. Landing Wakaf" description="Pengantar layanan wakaf produktif dan poster program wakaf utuh." pathInfo="/wakaf" />} />
+      <Route path="/donasi/:slug" element={<RoutePlaceholder title="09. Form Donasi" description="Formulir pemilihan nominal preset/manual, identitas donatur, dan doa dukungan." pathInfo="/donasi/:slug" routeKind="donation" />} />
+      <Route path="/hasil-donasi" element={<RoutePlaceholder title="10. Hasil Simulasi Donasi" description="Bukti transaksi simulasi dengan nomor referensi OD-XXXXXX dan status transaksi." pathInfo="/hasil-donasi" />} />
+      <Route path="/tentang" element={<RoutePlaceholder title="11. Tentang Kami" description="Informasi profil OpenDonasi sebagai digital giving infrastructure." pathInfo="/tentang" />} />
+      <Route path="/faq" element={<RoutePlaceholder title="12. FAQ (Pusat Bantuan)" description="Tanya-jawab seputar platform OpenDonasi dengan pencarian dan accordion." pathInfo="/faq" />} />
+      <Route path="/kontak" element={<RoutePlaceholder title="13. Kontak Bantuan" description="Saluran bantuan demo via WhatsApp dan email placeholder." pathInfo="/kontak" />} />
+      <Route path="/donasi-saya" element={<RoutePlaceholder title="14. Donasi Saya" description="Riwayat donasi donatur demo berbasis sesi lokal." pathInfo="/donasi-saya" />} />
+      <Route path="/profil" element={<RoutePlaceholder title="15. Profil / Akun" description="Hub akun demo dan pintu akses eksklusif ke Donasi Saya." pathInfo="/profil" />} />
+      <Route path="/search" element={<RoutePlaceholder title="16. Hasil Pencarian" description="Hasil penelusuran program berdasarkan kata kunci pencarian global." pathInfo="/search" />} />
+      <Route path="*" element={<RoutePlaceholder title="404 — Halaman Tidak Ditemukan" description="Halaman yang Anda tuju tidak tersedia atau tautan telah berpindah." pathInfo="404 Fallback" />} />
     </Routes>
   );
 }
