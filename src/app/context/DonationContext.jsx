@@ -6,13 +6,19 @@ const STORAGE_KEY = 'opendonasi_user_donations';
 
 export function DonationProvider({ children }) {
   const [donations, setDonations] = useState(() => {
+    if (typeof window === 'undefined') {
+      return INITIAL_USER_DONATIONS;
+    }
     try {
       const saved = sessionStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
       }
     } catch {
-      // Fallback jika storage tidak tersedia
+      // Fallback aman jika data rusak atau sessionStorage tidak dapat diakses
     }
     return INITIAL_USER_DONATIONS;
   });
@@ -23,12 +29,13 @@ export function DonationProvider({ children }) {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(donations));
     } catch {
-      // Abaikan jika quota storage terlampaui
+      // Abaikan jika kuota storage terlampaui
     }
   }, [donations]);
 
   const addDonation = (newDonation) => {
-    setDonations((prev) => [newDonation, ...prev]);
+    if (!newDonation || typeof newDonation !== 'object') return;
+    setDonations((prev) => [newDonation, ...(Array.isArray(prev) ? prev : [])]);
   };
 
   return (

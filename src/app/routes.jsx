@@ -1,10 +1,20 @@
 import { Routes, Route, Link, useParams, useSearchParams } from 'react-router-dom';
+import { CAMPAIGNS } from '../data/campaigns';
 
-function RoutePlaceholder({ title, description, pathInfo }) {
+function RoutePlaceholder({ title, description, pathInfo, routeKind }) {
   const params = useParams();
   const [searchParams] = useSearchParams();
   const paramSlug = params.slug;
   const queryQ = searchParams.get('q');
+
+  // Validasi parameter slug terhadap dataset program terpusat
+  const matchedCampaign = paramSlug ? CAMPAIGNS.find((c) => c.slug === paramSlug) : null;
+  const isSlugNotFound = paramSlug && !matchedCampaign;
+
+  // Validasi query pencarian terhadap dataset
+  const searchResultsCount = queryQ
+    ? CAMPAIGNS.filter((c) => c.title.toLowerCase().includes(queryQ.toLowerCase())).length
+    : 0;
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center max-w-desktop mx-auto">
@@ -16,10 +26,40 @@ function RoutePlaceholder({ title, description, pathInfo }) {
       <h1 className="text-2xl md:text-3xl font-bold text-text-primary mb-2">{title}</h1>
       <p className="text-text-secondary max-w-md mb-4">{description}</p>
       
-      {(paramSlug || queryQ) && (
-        <div className="bg-background-soft border border-border rounded-button px-4 py-2 text-sm text-text-secondary mb-6 font-mono">
-          {paramSlug && <span>Param slug: <strong className="text-text-primary">{paramSlug}</strong></span>}
-          {queryQ && <span>Query search: <strong className="text-text-primary">"{queryQ}"</strong></span>}
+      {/* Parameter Slug Display & Validation */}
+      {paramSlug && (
+        <div className="bg-background-soft border border-border rounded-button p-4 text-sm text-text-secondary mb-4 max-w-md w-full text-left">
+          <div className="font-mono text-xs text-text-secondary mb-1">
+            Param Slug: <strong className="text-text-primary">{paramSlug}</strong>
+          </div>
+          {matchedCampaign ? (
+            <div className="mt-2 text-xs text-success bg-green-50 border border-green-200 rounded p-2">
+              ✓ Program Terverifikasi di Mock: <strong>{matchedCampaign.title}</strong>
+              <div className="text-[11px] text-text-secondary mt-1">
+                Tipe Layanan: <span className="font-semibold uppercase">{matchedCampaign.serviceType}</span> | 
+                Target: {matchedCampaign.targetAmount} | Sisa: {matchedCampaign.daysLeft} hari
+              </div>
+              {routeKind === 'zakat' && matchedCampaign.serviceType !== 'zakat' && (
+                <div className="text-warning text-[11px] mt-1">
+                  ⚠️ Catatan: Program ini bertipe "{matchedCampaign.serviceType}" namun dibuka pada rute zakat.
+                </div>
+              )}
+            </div>
+          ) : isSlugNotFound ? (
+            <div className="mt-2 text-xs text-error bg-red-50 border border-red-200 rounded p-2">
+              ✕ 404 Slug: Program dengan slug "{paramSlug}" tidak ditemukan di dataset mock.
+            </div>
+          ) : null}
+        </div>
+      )}
+
+      {/* Query Search Display & Validation */}
+      {queryQ && (
+        <div className="bg-background-soft border border-border rounded-button p-3 text-sm text-text-secondary mb-4 max-w-md w-full">
+          Kata Kunci Pencarian: <strong className="text-text-primary">"{queryQ}"</strong>
+          <div className="text-xs text-primary mt-1">
+            Ditemukan <strong>{searchResultsCount}</strong> program yang cocok di dataset mock.
+          </div>
         </div>
       )}
 
@@ -27,18 +67,25 @@ function RoutePlaceholder({ title, description, pathInfo }) {
         Status: Fondasi Routing Tahap 3 Aktif ({pathInfo})
       </div>
 
+      {/* Tautan Uji Coba Navigasi Antar-Rute */}
       <div className="flex flex-wrap gap-2 justify-center max-w-xl text-xs text-primary">
         <Link to="/" className="hover:underline px-2 py-1 bg-white border border-border rounded">Beranda</Link>
         <Link to="/program" className="hover:underline px-2 py-1 bg-white border border-border rounded">Daftar Program</Link>
+        <Link to="/program/tanggap-darurat-korban-bencana" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Detail Program</Link>
         <Link to="/zakat" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Zakat</Link>
+        <Link to="/zakat/zakat-penghasilan-bantu-mustahik" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Detail Zakat</Link>
         <Link to="/infaq" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Infaq</Link>
         <Link to="/sedekah" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Sedekah</Link>
         <Link to="/wakaf" className="hover:underline px-2 py-1 bg-white border border-border rounded">Landing Wakaf</Link>
+        <Link to="/donasi/bantu-sarana-belajar-pesantren" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Form Donasi</Link>
+        <Link to="/hasil-donasi" className="hover:underline px-2 py-1 bg-white border border-border rounded">Hasil Simulasi</Link>
         <Link to="/tentang" className="hover:underline px-2 py-1 bg-white border border-border rounded">Tentang Kami</Link>
         <Link to="/faq" className="hover:underline px-2 py-1 bg-white border border-border rounded">FAQ</Link>
         <Link to="/kontak" className="hover:underline px-2 py-1 bg-white border border-border rounded">Kontak</Link>
         <Link to="/profil" className="hover:underline px-2 py-1 bg-white border border-border rounded">Profil/Akun</Link>
         <Link to="/donasi-saya" className="hover:underline px-2 py-1 bg-white border border-border rounded">Donasi Saya</Link>
+        <Link to="/search?q=bencana" className="hover:underline px-2 py-1 bg-white border border-border rounded">Test Search "?q=bencana"</Link>
+        <Link to="/route-ngawur-404" className="hover:underline px-2 py-1 bg-white border border-border rounded text-error">Test 404</Link>
       </div>
     </div>
   );
@@ -79,6 +126,7 @@ export function AppRoutes() {
             title="03. Detail Program Donasi"
             description="Informasi narasi program, dana terkumpul, dan tombol donasi sekarang."
             pathInfo="/program/:slug"
+            routeKind="program"
           />
         }
       />
@@ -103,6 +151,7 @@ export function AppRoutes() {
             title="05. Detail Zakat"
             description="Detail program zakat khusus dengan tombol Zakat Sekarang dan mini kalkulator."
             pathInfo="/zakat/:slug"
+            routeKind="zakat"
           />
         }
       />
@@ -151,6 +200,7 @@ export function AppRoutes() {
             title="09. Form Donasi"
             description="Formulir pemilihan nominal preset/manual, identitas donatur, dan doa dukungan."
             pathInfo="/donasi/:slug"
+            routeKind="donation"
           />
         }
       />

@@ -27,6 +27,16 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
+      fontSize: {
+        'display': ['2.5rem', { lineHeight: '1.2' }],        // 40px
+        'display-mobile': ['2rem', { lineHeight: '1.25' }],   // 32px
+        'h1': ['2rem', { lineHeight: '1.25' }],               // 32px
+        'h1-mobile': ['1.75rem', { lineHeight: '1.3' }],      // 28px
+        'h2': ['1.5rem', { lineHeight: '1.3' }],              // 24px
+        'h2-mobile': ['1.375rem', { lineHeight: '1.35' }],    // 22px
+        'h3': ['1.25rem', { lineHeight: '1.4' }],             // 20px
+        'h3-mobile': ['1.125rem', { lineHeight: '1.4' }],     // 18px
+      },
       maxWidth: {
         desktop: '1320px',
         mobile: '448px',
@@ -37,8 +47,14 @@ export default {
         button: '8px',
       },
       spacing: {
-        '4.5': '1.125rem', // 18px
-        '18': '4.5rem',
+        'space-1': '4px',
+        'space-2': '8px',
+        'space-3': '12px',
+        'space-4': '16px',
+        'space-6': '24px',
+        'space-8': '32px',
+        'space-12': '48px',
+        'space-16': '64px',
       },
     },
   },
