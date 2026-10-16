@@ -28,11 +28,11 @@ export function Footer() {
               {/* Penghargaan & Akreditasi */}
               <div className="w-full max-w-md pt-2">
                 <span className="block text-xs font-semibold uppercase tracking-wider text-text-secondary/80 mb-2">
-                  Penghargaan & Akreditasi Mitra
+                  Penghargaan Filantropi Mitra (Aset Demo)
                 </span>
                 <img
                   src={awardsBadgeImg}
-                  alt="Daftar Penghargaan OpenDonasi Mitra"
+                  alt="Daftar Penghargaan Filantropi Mitra (Aset Demo)"
                   className="h-10 w-auto object-contain opacity-90"
                   loading="lazy"
                 />

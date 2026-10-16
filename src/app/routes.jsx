@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { Input } from '../components/ui/Input';
 import { CampaignCard } from '../components/campaign/CampaignCard';
+import { HomePage } from '../features/home/HomePage';
 
 function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' }) {
   const params = useParams();
@@ -171,7 +172,7 @@ function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' 
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<RoutePlaceholder title="01. Beranda OpenDonasi" description="Fondasi UI siap. Konten seksi dan carousel Beranda akan diimplementasikan pada Tahap 5." pathInfo="/" />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/program" element={<RoutePlaceholder title="02. Daftar Program" description="Katalog penelusuran, filter kategori, dan pengurutan program donasi." pathInfo="/program" />} />
       <Route path="/program/:slug" element={<RoutePlaceholder title="03. Detail Program Donasi" description="Informasi narasi program, dana terkumpul, dan tombol donasi sekarang." pathInfo="/program/:slug" routeKind="program" />} />
       <Route path="/zakat" element={<RoutePlaceholder title="04. Landing Zakat" description="Edukasi zakat, kalkulator zakat simulasi, dan daftar program zakat." pathInfo="/zakat" />} />
