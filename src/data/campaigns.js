@@ -1,0 +1,217 @@
+/**
+ * Data mock terpusat untuk Program Donasi, Kategori, dan Kabar Terbaru
+ * Status: Data demonstrasi prototype (bukan data riil)
+ */
+
+import img1 from '../assets/image/gambar1.png';
+import img2 from '../assets/image/gambar2.png';
+import img3 from '../assets/image/gambar3.png';
+import img4 from '../assets/image/gambar4.png';
+import img5 from '../assets/image/gambar5.png';
+import img6 from '../assets/image/gambar6.png';
+import img7 from '../assets/image/gambar7.png';
+import img8 from '../assets/image/gambar 8.png';
+
+import iconSemua from '../assets/icons/icons_kategori/semua.svg';
+import iconPendidikan from '../assets/icons/icons_kategori/pendidikan.svg';
+import iconKemanusiaan from '../assets/icons/icons_kategori/kemanusiaan.svg';
+import iconBencana from '../assets/icons/icons_kategori/bencana.svg';
+import iconZakat from '../assets/icons/icons_kategori/zakat.png';
+import iconLainnya from '../assets/icons/icons_kategori/lainnya.svg';
+
+export const CATEGORIES = [
+  { id: 'semua', name: 'Semua', icon: iconSemua },
+  { id: 'pendidikan', name: 'Pendidikan', icon: iconPendidikan },
+  { id: 'kemanusiaan', name: 'Kemanusiaan', icon: iconKemanusiaan },
+  { id: 'bencana', name: 'Bencana Alam', icon: iconBencana },
+  { id: 'zakat', name: 'Zakat', icon: iconZakat },
+  { id: 'lainnya', name: 'Lainnya', icon: iconLainnya },
+];
+
+export const CAMPAIGNS = [
+  {
+    id: 'camp-001',
+    slug: 'bantu-sarana-belajar-pesantren',
+    title: 'Bangun Pesantren Bangun Peradaban Santri Pelosok',
+    category: 'pendidikan',
+    serviceType: 'wakaf',
+    organizer: {
+      name: 'Yayasan Peduli Pesantren (Demo)',
+      avatar: null,
+    },
+    targetAmount: 150000000,
+    collectedAmount: 82500000,
+    progressPercentage: 55,
+    donorCount: 342,
+    daysLeft: 18,
+    isFeatured: true,
+    image: img3,
+    isImagePoster: true, // Poster berisi tulisan: wajib object-fit: contain
+    description: 'Wujudkan tempat belajar bagi para santri untuk mencetak generasi Qurani yang berakhlak dan berilmu di pelosok nusantara.',
+    status: 'active',
+  },
+  {
+    id: 'camp-002',
+    slug: 'tanggap-darurat-korban-bencana',
+    title: 'Tanggap Darurat dan Dapur Umum Warga Terdampak',
+    category: 'bencana',
+    serviceType: 'donasi',
+    organizer: {
+      name: 'Relawan Kemanusiaan Bersama (Demo)',
+      avatar: null,
+    },
+    targetAmount: 200000000,
+    collectedAmount: 145000000,
+    progressPercentage: 72,
+    donorCount: 890,
+    daysLeft: 5,
+    isFeatured: true,
+    image: img1,
+    isImagePoster: false,
+    description: 'Penyaluran bantuan logistik darurat, tenda evakuasi, dan makanan siap santap bagi keluarga terdampak bencana.',
+    status: 'active',
+  },
+  {
+    id: 'camp-003',
+    slug: 'dukung-operasional-ambulans-gratis',
+    title: 'Dukungan Operasional dan Logistik Armada Relawan',
+    category: 'kemanusiaan',
+    serviceType: 'donasi',
+    organizer: {
+      name: 'Aksi Siaga Masyarakat (Demo)',
+      avatar: null,
+    },
+    targetAmount: 80000000,
+    collectedAmount: 52000000,
+    progressPercentage: 65,
+    donorCount: 215,
+    daysLeft: 12,
+    isFeatured: true,
+    image: img2,
+    isImagePoster: false,
+    description: 'Layanan armada ambulans dan operasional siaga darurat gratis untuk pasien dhuafa di daerah pelosok.',
+    status: 'active',
+  },
+  {
+    id: 'camp-004',
+    slug: 'beasiswa-santri-yatim-dhuafa',
+    title: 'Paket Perlengkapan Belajar & Beasiswa Yatim Dhuafa',
+    category: 'pendidikan',
+    serviceType: 'donasi',
+    organizer: {
+      name: 'Sahabat Cerdas Nusantara (Demo)',
+      avatar: null,
+    },
+    targetAmount: 60000000,
+    collectedAmount: 27000000,
+    progressPercentage: 45,
+    donorCount: 140,
+    daysLeft: 24,
+    isFeatured: false,
+    image: img4,
+    isImagePoster: false,
+    description: 'Bantuan biaya pendidikan, buku teks, dan seragam sekolah bagi anak-anak yatim dhuafa yang berprestasi.',
+    status: 'active',
+  },
+  {
+    id: 'camp-005',
+    slug: 'paket-pangan-lansia-dhuafa',
+    title: 'Bantuan Pangan Pokok & Nutrisi Lansia Pra-Sejahtera',
+    category: 'kemanusiaan',
+    serviceType: 'sedekah',
+    organizer: {
+      name: 'Lumbung Pangan Umat (Demo)',
+      avatar: null,
+    },
+    targetAmount: 50000000,
+    collectedAmount: 41000000,
+    progressPercentage: 82,
+    donorCount: 420,
+    daysLeft: 8,
+    isFeatured: false,
+    image: img5,
+    isImagePoster: false,
+    description: 'Penyaluran beras dan sembako bergizi untuk kakek-nenek sebatang kara dan keluarga dhuafa.',
+    status: 'active',
+  },
+  {
+    id: 'camp-006',
+    slug: 'zakat-penghasilan-bantu-mustahik',
+    title: 'Tunaikan Zakat Penghasilan Bantu Pangan Mustahik',
+    category: 'zakat',
+    serviceType: 'zakat',
+    organizer: {
+      name: 'Lembaga Amil Zakat Peduli (Demo)',
+      avatar: null,
+    },
+    targetAmount: 100000000,
+    collectedAmount: 45000000,
+    progressPercentage: 45,
+    donorCount: 180,
+    daysLeft: 30,
+    isFeatured: false,
+    image: img6,
+    isImagePoster: false,
+    description: 'Penyaluran dana zakat fitrah dan zakat maal untuk 8 asnaf fakir miskin yang membutuhkan dukungan pangan.',
+    status: 'active',
+  },
+  {
+    id: 'camp-007',
+    slug: 'sedekah-renovasi-sarana-ibadah',
+    title: 'Sedekah Gotong Royong Sarana Air Bersih & Bersuci',
+    category: 'kemanusiaan',
+    serviceType: 'infaq',
+    organizer: {
+      name: 'Panitia Air Bersih Desa (Demo)',
+      avatar: null,
+    },
+    targetAmount: 40000000,
+    collectedAmount: 19500000,
+    progressPercentage: 48,
+    donorCount: 112,
+    daysLeft: 14,
+    isFeatured: false,
+    image: img7,
+    isImagePoster: false,
+    description: 'Pembangunan instalasi pipa dan bak penampungan air bersih untuk keperluan berwudhu dan warga sekitar.',
+    status: 'active',
+  },
+  {
+    id: 'camp-008',
+    slug: 'layanan-kesehatan-keliling-desa',
+    title: 'Layanan Pengobatan Gratis & Vitamin Warga Pelosok',
+    category: 'kemanusiaan',
+    serviceType: 'sedekah',
+    organizer: {
+      name: 'Pos Sehat Mandiri (Demo)',
+      avatar: null,
+    },
+    targetAmount: 75000000,
+    collectedAmount: 60000000,
+    progressPercentage: 80,
+    donorCount: 388,
+    daysLeft: 9,
+    isFeatured: false,
+    image: img8,
+    isImagePoster: false,
+    description: 'Pemeriksaan kesehatan gratis, cek tensi gula darah, dan pembagian obat-obatan dasar untuk warga perbatasan.',
+    status: 'active',
+  },
+];
+
+export const CAMPAIGN_UPDATES = [
+  {
+    id: 'upd-001',
+    campaignId: 'camp-001',
+    date: '2026-03-25',
+    title: 'Pengecoran Pondasi Tahap 1 Selesai',
+    content: 'Alhamdulillah proses pengecoran pondasi asrama tahap awal telah selesai berkat doa dan dukungan para muhsinin.',
+  },
+  {
+    id: 'upd-002',
+    campaignId: 'camp-002',
+    date: '2026-04-02',
+    title: 'Penyaluran Paket Dapur Umum 500 Porsi',
+    content: 'Relawan telah membagikan 500 paket makanan hangat untuk pengungsi di titik kumpul posko barat.',
+  },
+];
