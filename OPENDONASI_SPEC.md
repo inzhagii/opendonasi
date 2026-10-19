@@ -64,6 +64,9 @@ Semua status dan nomor referensi transaksi harus jelas merupakan simulasi. Janga
 16. Pencairan Dana.
 17. Daftar Donatur.
 
+### Halaman fallback
+18. Halaman 404 (Halaman Tidak Ditemukan): Rute wildcard `*` menampilkan pesan bersahabat bahwa halaman tidak ditemukan, penjelasan singkat, dan tombol CTA 'Kembali ke Beranda'. Bukan panel pengujian internal pengembang.
+
 Halaman turunan yang sudah dirancang pada Detail Program tidak boleh dibuat sebagai fitur kedua dengan tujuan yang sama. Berita Terbaru dan Detail Berita adalah satu rangkaian; Donatur dan Daftar Donatur adalah satu rangkaian; Pencairan Dana adalah satu halaman turunan; Kalkulator Zakat hanya satu halaman kalkulator yang dibuka dari landing Zakat.
 
 ## 5. Navigasi Umum
@@ -106,7 +109,8 @@ Urutan section:
 - Awal berisi tiga banner.
 - Rasio gambar 16:9.
 - Desktop: maksimal 1320 px; mobile: maksimal konten sekitar 430 px sesuai wireframe.
-- Gambar ditampilkan utuh jika komposisi banner memerlukan gambar penuh; hindari distorsi dan crop subjek penting.
+- Gambar ditampilkan utuh tanpa crop (`object-contain`); hindari distorsi dan pemotongan subjek penting.
+- Gambar banner grafis ditampilkan bersih tanpa overlay teks HTML atau gradasi gelap yang menduplikasi teks grafis poster. Aksesibilitas dipertahankan via atribut alt yang bermakna atau elemen pembaca layar (`sr-only`).
 - Autoplay awal setiap 6 detik.
 - Dapat digeser manual ke kanan/kiri dan berputar tanpa ujung secara natural.
 - Memiliki dot indicator; hero Beranda tidak memakai tombol panah.
@@ -116,6 +120,7 @@ Urutan section:
 
 ### 6.2 Quick Action
 - Menggunakan ikon yang disediakan dalam aset project.
+- Pengecualian sementara yang disetujui: Layanan Zakat menggunakan aset `src/assets/icons/icons_kategori/zakat.svg` karena keterbatasan aset layanan yang tersedia. Jangan mengganti ikon Infaq atau Wakaf tanpa aset alternatif yang terbukti sesuai.
 - Selalu tampilkan teks “Mau berbuat baik apa hari ini?” atau copy final yang telah disepakati.
 - Desktop: heading rata tengah; mobile: rata kiri.
 - Mobile menampilkan empat item awal; jika lebih banyak, gunakan carousel horizontal.
@@ -171,8 +176,7 @@ Gunakan komponen yang sama di Beranda, Program, Pencarian, Profil Penggalang, da
 ### 7.1 Card Biasa
 - Desktop: gambar 16:9 di bagian atas; informasi berada dalam satu wadah yang menyatu dengan gambar.
 - Padding area teks acuan: top 16 px, kiri/kanan 24 px, bottom 48 px pada desain desktop referensi; sesuaikan responsif agar tidak boros ruang di layar kecil.
-- Informasi: nama penggalang/yayasan, judul program, dana terkumpul, sisa hari dengan ikon `time.svg`, indikator progres dan dot.
-- Hover desktop dapat menampilkan persentase progres di area indikator. Data progres tetap dapat dipahami tanpa hover, terutama di mobile.
+- Nominal dana terkumpul dan progress bar selalu terlihat langsung. Persentase numerik donasi ditampilkan secara eksklusif melalui tooltip saat kursor hover di atas indikator progres pada desktop. Pada mobile, progres disajikan visual melalui bilah progres bar tanpa mewajibkan persentase numerik terlihat terus-menerus.
 - Tidak memakai efek dekoratif yang tidak diperlukan.
 
 ### 7.2 Card Horizontal

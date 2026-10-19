@@ -23,34 +23,30 @@
 
 ## A. Ringkasan Kondisi Proyek
 
-### 1. Fakta Proyek Aktual (Berdasarkan Audit Tahap 1)
-- **Teknologi Eksisting:** React 19 (`19.2.8`) + Vite 8 (`8.3.0`) dengan modul ES, dipaketkan oleh template awal `create-vite`.
+### 1. Fakta Proyek Aktual (Status Baseline Tahap 1D & 1E)
+- **Teknologi Eksisting:** React 19 (`19.2.8`) + Vite 8 (`8.3.4`) + Tailwind CSS (`3.4.19`) + React Router (`7.18.4`).
+- **Status Repository & Version Control:** Repositori Git aktif pada branch `master`. Commit checkpoint Tahap 1D telah terverifikasi (`21e87b5` dan `7fa26eb`). Seluruh aset lokal dan baseline terkunci secara aman.
 - **Kondisi Kode Sumber:**
-  - `src/App.jsx` masih berisi halaman demo counter default Vite.
-  - `src/index.css` dan `src/App.css` masih berisi gaya bawaan Vite (dengan warna ungu `#aa3bff` dan font sistem `system-ui`).
-  - `index.html` masih berbahasa Inggris (`lang="en"`), title `opendonasi`, tanpa font Inter, dan favicon bawaan Vite.
-- **Kondisi Dependensi:**
-  - `package.json` hanya memuat dependensi inti: `react` dan `react-dom`.
-  - **Belum terpasang:** `react-router-dom`, `tailwindcss`, `postcss`, `autoprefixer`, maupun library ikon.
-- **Status Repository & Version Control:** Direktori lokal belum diinisialisasi sebagai repository Git (`fatal: not a git repository`).
-- **Aset Visual yang Tersedia di Proyek:**
-  - Logo resmi: `src/assets/logo/logo.png` (2170x725 px, warna brand `#2E7DFA`).
-  - Gambar program/banner: 8 file di `src/assets/image/` (7 biner AVIF dan 1 biner WebP berekstensi `.png`).
-  - Ikon kategori: 7 file di `src/assets/icons/icons_kategori/` (`semua`, `pendidikan`, `kemanusiaan`, `bencana`, `lainnya`, `time`, `zakat.png`).
-  - Ikon layanan: 4 file SVG di `src/assets/icons/icons_layanan/` (`courier-express-`, `devices`, `lovely`, `messages`).
-  - Aset pendukung: Ikon kegiatan (kalender, lokasi), kutipan doa, watermark tipografi *"Kata Mereka"*, badge penghargaan footer, serta ikon sosial media.
+  - Halaman Beranda (`src/features/home/HomePage.jsx`) telah selesai diimplementasikan sebagai **baseline visual terkunci**.
+  - Fondasi komponen bersama OpenDonasi (`CampaignCard`, `ProgressBar`, `Button`, `Badge`, `Header`, `Footer`, `MobileBottomNav`, `PosterCarousel`, `HeroCarousel`) telah berfungsi.
+  - `HeroCarousel.jsx` telah dibersihkan dari overlay teks HTML dan gradasi gelap yang menimpa banner grafis, menjaga banner utuh (`object-contain`) dengan aksesibilitas screen reader (`sr-only`).
+  - Mock data terpusat tersedia di `src/data/` (`campaigns.js`, `content.js`, `userHistory.js`).
+  - Rute produk (`src/app/routes.jsx`) telah terdefinisi untuk 16 halaman, namun **15 rute selain Beranda masih berstatus rute placeholder** dan belum diimplementasikan.
+- **Aset Visual & Standarisasi Format:**
+  - Logo resmi: `src/assets/logo/logo.png` (warna brand `#2E7DFA`).
+  - Gambar banner & program: 14 file gambar di `src/assets/image/banner/` (4 file) dan `src/assets/image/gambar/` (10 file) telah diverifikasi dan dikonversi ke **format PNG sejati** dengan mempertahankan dimensi piksel visual aslinya.
+  - Ikon SVG di `src/assets/icons/` telah distandarisasi atribut `fill` ke warna brand `#2E7DFA`.
+  - Ikon layanan Zakat menggunakan `src/assets/icons/icons_kategori/zakat.svg` sebagai **pengecualian sementara yang telah disetujui**.
+  - Empat kampanye tanpa aset yang cocok (`camp-004`, `camp-006`, `camp-009`, `camp-010`) secara eksplisit ditandai secara internal sebagai `UNRESOLVED — ASSET BELUM TERSEDIA`.
 
 ### 2. Kesenjangan Faktual vs Target Arsitektur
-- **Fitur & Halaman Tersedia:** 0 dari 16 halaman yang dispesifikasikan.
-- **Komponen Tersedia:** 0 komponen bersama OpenDonasi (belum ada Navbar, CampaignCard, ProgressBar, Carousel, dll.).
-- **Routing:** 0 route terpasang.
-- **Mock Data:** Belum ada sumber data dummy terpusat.
+- **Fitur & Halaman Tersedia:** 1 dari 16 halaman selesai (Beranda sebagai baseline). 15 halaman lainnya memerlukan implementasi bertahap.
+- **Komponen Spesifik Halaman:** Filter popover katalog, sorting popover, mini kalkulator zakat, sticky detail sidebar, form donasi multi-step, dan bukti simulasi masih perlu dibangun.
+- **Halaman 404:** Rute wildcard `*` saat ini masih menampilkan panel showcase komponen internal; perlu diwujudkan sebagai halaman 404 produk yang ramah pengguna dengan tombol kembali ke Beranda.
 
-### 3. Kendala dan Risiko Teknis Teridentifikasi
-1. **Defisit Aset Layanan:** Spesifikasi mewajibkan 5 akses cepat layanan (*Donasi, Zakat, Infaq, Sedekah, Wakaf*), sedangkan folder `icons_layanan` hanya memiliki 4 SVG. Pemetaan 5 layanan harus diperlakukan sebagai **usulan sementara yang menunggu konfirmasi visual**.
-2. **Keterbatasan Pewarnaan SVG:** Seluruh file SVG di `icons_layanan` dan kategori aktif diekspor dengan hardcoded `fill="#5B0A82"` (ungu). Teknik `currentColor` tidak dapat bekerja jika SVG dimuat via tag `<img>`. Penggunaan `mask-image` atau inlining SVG memerlukan uji coba teknis (*spike test*) pada satu ikon terlebih dahulu.
-3. **Format Biner Gambar Terselubung:** Tujuh file gambar di `src/assets/image/` berekstensi `.png` namun header binernya adalah AVIF (dan satu file WebP), serta terdapat spasi pada nama file `gambar 8.png`.
-4. **Absensi Version Control:** Belum adanya repositori Git membuat proyek rentan terhadap hilangnya tracking perubahan. Direkomendasikan melakukan inisialisasi Git atau backup lokal sebelum memodifikasi kode di Tahap 3.
+### 3. Tahap Implementasi Berikutnya
+- **Tahap Aktif Selanjutnya (Tahap 2):** Implementasi katalog `/program` (grid 3 kolom, filter kategori reaktif, popover filter & sort, load more) dan halaman pencarian `/search`.
+- **Tahap Lanjutan (Tahap 3 s/d 6):** Detail program `/program/:slug`, landing layanan (`/zakat`, `/infaq`, `/sedekah`, `/wakaf`), alur formulir donasi & hasil simulasi, serta halaman informasi & profil.
 
 ---
 
@@ -457,37 +453,36 @@ File SVG di `icons_layanan` dan sebagian `icons_kategori` memiliki hardcoded att
 
 ## H. Rencana Tahapan Implementasi & Checkpoint
 
-Untuk memastikan pengerjaan rapi, terukur, dan tidak merombak banyak hal sekaligus, implementasi dibagi menjadi 9 tahap bertahap dengan **Checkpoint Kunci pada Beranda**:
+Untuk memastikan pengerjaan rapi, terukur, dan tidak merombak banyak hal sekaligus, tahapan implementasi diselaraskan dengan kemajuan aktual proyek:
 
 ```mermaid
 graph TD
-    T1["Tahap 1: Audit Proyek (SELESAI)"] --> T2["Tahap 2: Pemetaan & Rencana (REVISI SELESAI)"]
-    T2 --> T3["Tahap 3: Fondasi Teknis, Dependensi, & Backup"]
-    T3 --> T4["Tahap 4: Design Tokens, Layout, & Shared Components (Spike Test Icon)"]
-    T4 --> T5["Tahap 5: Implementasi Beranda"]
-    T5 --> CP["CHECKPOINT REVIEW: Evaluasi Visual & Interaksi Beranda"]
-    CP -->|Disetujui Pengguna| T6["Tahap 6: Listing, Detail Program, & Hasil Pencarian"]
-    T6 --> T7["Tahap 7: Halaman Layanan (Zakat, Infaq, Sedekah, Wakaf)"]
-    T7 --> T8["Tahap 8: Alur Donasi (Form Donasi & Hasil Simulasi)"]
-    T8 --> T9["Tahap 9: Halaman Profil, Donasi Saya, & Pusat Bantuan"]
-    T9 --> T10["Tahap 10: QA Komprehensif, Aksesibilitas, & Final Review"]
+    T1["Tahap 1 s/d 5: Baseline Beranda & Shared Components (SELESAI — b30b595)"] --> T1D["Tahap 1D: Checkpoint Git Build-Safe (SELESAI — 21e87b5 & 7fa26eb)"]
+    T1D --> T1E["Tahap 1E: Finalisasi Dokumen, Format PNG, Mapping, & Hero Cleaned (SELESAI)"]
+    T1E --> T2["Tahap 2: Listing Program (/program) & Pencarian (/search) — TAHAP BERIKUTNYA"]
+    T2 --> T3["Tahap 3: Detail Program (/program/:slug) & Halaman Layanan"]
+    T3 --> T4["Tahap 4: Alur Donasi (/donasi/:slug) & Hasil Simulasi (/hasil-donasi)"]
+    T4 --> T5["Tahap 5: Halaman Informasi, Profil Akun, & Halaman 404 Produk"]
+    T5 --> T6["Tahap 6: QA Komprehensif, Aksesibilitas, & Final Review"]
 ```
 
-### Rincian Setiap Tahap Implementasi:
+### Rincian Status Tahapan Implementasi:
 
-#### Tahap 3: Fondasi Teknis, Dependensi, dan Rekomendasi Backup
+#### Tahap 1 s/d 5: Baseline Beranda (SELESAI & TERKUNCI)
+- **Status:** Selesai. Seluruh fondasi dependensi (`react-router-dom`, `tailwindcss`), layout responsif, komponen kartu 16:9, dan 7 seksi Beranda telah terkunci pada commit `b30b595`.
+
+#### Tahap 1D & 1E: Pengamanan Repositori & Penyelarasan Fondasi (SELESAI)
+- **Status:** Selesai.
+  - Checkpoint Git dua commit build-safe telah diamankan (`21e87b5` dan `7fa26eb`).
+  - Seluruh 14 file gambar AVIF telah dikonversi secara lossless ke format PNG sejati dengan mempertahankan dimensi asli.
+  - Overlay teks HTML pada Hero Carousel telah dihapus bersih dengan aksesibilitas screen reader (`sr-only`) terjaga.
+  - Mapping aset kampanye telah diperbaiki sesuai verifikasi visual, dan kampanye tanpa aset ditandai `UNRESOLVED`.
+  - Seluruh dokumen acuan (`OPENDONASI_SPEC.md`, `DESIGN_SYSTEM.md`, `GEMINI.md`, `OPENDONASI_IMPLEMENTATION_PLAN.md`) telah disinkronkan.
+
+#### Tahap 2: Listing Program dan Pencarian (TAHAP AKTIF BERIKUTNYA)
 - **Cakupan:**
-  - **Rekomendasi Checkpoint Backup:** Karena audit Tahap 1 mengonfirmasi workspace belum memiliki Git, direkomendasikan melakukan `git init` awal dan initial commit (atau snapshot backup lokal) sebelum instalasi paket.
-  - Instalasi paket yang diperlukan: `react-router-dom`, `tailwindcss`, `postcss`, `autoprefixer`.
-  - Konfigurasi `tailwind.config.js` dengan token warna (`primary: #2E7DFA`, `background: #FFFFFF`, dll.), font Inter, dan screens.
-  - Setup font Google Fonts Inter di `index.html` dan penyesuaian atribut `lang="id"`.
-  - Penyiapan struktur folder `src/app`, `src/components`, `src/data`, `src/features`, `src/lib`, `src/hooks`.
-  - Pembuatan data mock terpusat di `src/data/` (`campaigns.js`, `content.js`, `userHistory.js`).
-- **Kriteria Penerimaan yang Dapat Diuji:**
-  1. `npm run build` dan `npm run lint` lolos dengan exit code 0.
-  2. Tailwind CSS classes menghasilkan styling yang valid di browser.
-  3. Font Inter ter-load dengan benar di browser inspector.
-- **Titik Review:** Konfirmasi instalasi dependensi dan berjalannya pipeline build.
+  - `02. Daftar Program (/program)`: Grid 3 kolom desktop / kartu horizontal mobile, tab filter kategori reaktif, popover filter (target & sisa hari), popover urutkan, dan fitur load more.
+  - `16. Hasil Pencarian (/search?q=...)`: Menampilkan hasil penelusuran program berdasarkan kata kunci dengan empty state yang ramah jika tidak ditemukan.
 
 #### Tahap 4: Design Tokens, Layout, dan Komponen Bersama
 - **Cakupan:**

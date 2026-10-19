@@ -1,3 +1,4 @@
+// Komponen carousel poster beranda OpenDonasi yang menampilkan program terkurasi.
 import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';

@@ -1,10 +1,8 @@
-/**
- * Data mock terpusat untuk riwayat donasi pengguna demo dan profil akun
- * Status: Data demonstrasi prototype
- */
+// Data mock terpusat untuk riwayat donasi pengguna demo dan profil akun OpenDonasi.
+// Status: Data demonstrasi prototype
 
-import img3 from '../assets/image/gambar/gambar3.png';
 import img1 from '../assets/image/gambar/gambar1.png';
+import img6 from '../assets/image/gambar/gambar6.png';
 
 export const CURRENT_USER = {
   id: 'user-demo-001',
@@ -20,7 +18,7 @@ export const INITIAL_USER_DONATIONS = [
     campaignId: 'camp-001',
     campaignTitle: 'Bangun Pesantren Bangun Peradaban Santri Pelosok',
     campaignSlug: 'bantu-sarana-belajar-pesantren',
-    campaignImage: img3,
+    campaignImage: img1,
     serviceType: 'wakaf',
     amount: 150000,
     date: '2026-04-01',
@@ -34,7 +32,7 @@ export const INITIAL_USER_DONATIONS = [
     campaignId: 'camp-002',
     campaignTitle: 'Tanggap Darurat dan Dapur Umum Warga Terdampak',
     campaignSlug: 'tanggap-darurat-korban-bencana',
-    campaignImage: img1,
+    campaignImage: img6,
     serviceType: 'donasi',
     amount: 50000,
     date: '2026-03-28',

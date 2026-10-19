@@ -298,16 +298,14 @@ Informasi yang dapat ditampilkan: - Gambar 16:9. - Judul program. - Nama
 penggalang dana/organisasi. - Dana terkumpul. - Progress bar. - Sisa
 waktu, bila relevan.
 
-Aturan: - Dana terkumpul dan progress selalu terlihat, bukan hanya saat
-hover. - Progress bar menggunakan warna utama untuk bagian yang
-terkumpul dan warna netral untuk sisanya. - Persentase boleh muncul saat
-hover di desktop, tetapi tidak boleh menjadi satu-satunya cara untuk
-mengetahui progress. - Judul dan nama penggalang dana harus memiliki
-hierarki yang jelas. - Hindari metadata berlebihan dan badge yang tidak
-dibutuhkan. - Jangan menampilkan tombol Bagikan di kartu program. -
-Kartu mengarah ke detail program yang sesuai. - Pada layout horizontal
-mobile, gambar menempati sekitar separuh lebar kartu dan informasi
-berada di sampingnya; gambar tetap 16:9.
+Aturan: - Dana terkumpul dan progress bar selalu terlihat langsung tanpa interaksi.
+- Progress bar menggunakan warna utama untuk bagian yang terkumpul dan warna netral untuk sisanya.
+- Persentase numerik donasi ditampilkan secara eksklusif melalui tooltip saat kursor hover di atas indikator progres pada desktop. Pada mobile, progres disajikan visual melalui bilah tanpa mewajibkan persentase numerik terlihat terus-menerus.
+- Judul dan nama penggalang dana harus memiliki hierarki yang jelas.
+- Hindari metadata berlebihan dan badge yang tidak dibutuhkan.
+- Jangan menampilkan tombol Bagikan di kartu program.
+- Kartu mengarah ke detail program yang sesuai.
+- Pada layout horizontal mobile, gambar menempati sekitar separuh lebar kartu dan informasi berada di sampingnya; gambar tetap 16:9.
 
 ### 4.6 ProgressBar
 
@@ -323,7 +321,11 @@ berada di sampingnya; gambar tetap 16:9.
 ### 4.7 Carousel
 
 -   Carousel hero: rasio banner mengikuti aset dan layout, gambar utuh
-    tanpa crop; indikator titik di bawah.
+    tanpa crop (`object-contain`); indikator titik di bawah.
+-   Gambar banner grafis ditampilkan bersih tanpa overlay teks HTML atau
+    gradasi gelap yang menduplikasi teks grafis di dalam banner.
+    Aksesibilitas dipertahankan via atribut alt yang bermakna atau teks
+    screen reader (`sr-only`).
 -   Hero berganti otomatis sekitar setiap 6 detik, mendukung swipe/drag,
     tidak memakai tombol panah, dan berhenti sejenak setelah interaksi
     manual.
@@ -351,7 +353,10 @@ berada di sampingnya; gambar tetap 16:9.
 
 ### 4.9 Akses cepat layanan
 
--   Menggunakan aset dari `icons_layanan`.
+-   Menggunakan aset dari `icons_layanan`. Pengecualian sementara yang
+    disetujui: Layanan Zakat menggunakan aset `src/assets/icons/icons_kategori/zakat.svg`
+    karena keterbatasan aset fisik di folder layanan. Jangan mengganti
+    ikon Infaq atau Wakaf tanpa aset alternatif yang terbukti sesuai.
 -   Judul section homepage: **"Mau berbuat baik apa hari ini?"**
 -   Pilihan: Donasi, Zakat, Infaq, Sedekah, Wakaf.
 -   Tampilkan ikon dan label saja, tanpa kartu mini atau layer

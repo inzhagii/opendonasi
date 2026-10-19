@@ -1,3 +1,4 @@
+// Komponen carousel hero beranda OpenDonasi dengan swipe responsif dan banner utuh.
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { BANNERS } from '../../data/content';
@@ -189,17 +190,10 @@ export function HeroCarousel() {
                   loading={index === 0 ? 'eager' : 'lazy'}
                 />
 
-                {/* Overlay Gradasi Halus untuk Memastikan Teks & Konten Terbaca */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-4 sm:p-6 md:p-8 text-white">
-                  <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold max-w-2xl line-clamp-2 leading-tight drop-shadow-sm">
-                    {banner.title}
-                  </h2>
-                  {banner.subtitle && (
-                    <p className="hidden sm:block text-xs sm:text-sm md:text-base text-white/90 mt-1.5 max-w-xl line-clamp-1 drop-shadow-sm">
-                      {banner.subtitle}
-                    </p>
-                  )}
-                </div>
+                {/* Teks tersembunyi khusus screen reader demi aksesibilitas */}
+                <span className="sr-only">
+                  {banner.title} {banner.subtitle ? `— ${banner.subtitle}` : ''}
+                </span>
               </Link>
             </div>
           ))}

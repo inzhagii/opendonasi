@@ -10,8 +10,9 @@ OpenDonasi adalah prototype frontend platform penggalangan dana. Prioritasnya ad
 - Jangan menambahkan fitur di luar spesifikasi yang disetujui tanpa alasan yang jelas.
 
 ## Sumber Acuan
-- Ikuti spesifikasi produk dan alur yang telah disetujui dalam `OPENDONASI_SPEC.md` (atau nama dokumen spesifikasi yang secara resmi ditetapkan kemudian).
-- Ikuti aturan visual dalam `DESIGN_SYSTEM.md`.
+- Ikuti spesifikasi produk dan alur yang telah disetujui dalam `OPENDONASI_SPEC.md`.
+- Ikuti aturan visual dan komponen dalam `DESIGN_SYSTEM.md`.
+- Ikuti tahapan kerja dan arsitektur dalam `OPENDONASI_IMPLEMENTATION_PLAN.md`.
 - Jika dokumen belum tersedia, jangan mengarang keputusan desain atau produk. Gunakan keputusan yang sudah disepakati dan tandai ketidakpastian yang berdampak besar.
 - Jika instruksi bertentangan, utamakan keputusan terbaru yang telah disetujui pengguna. Untuk konflik yang berdampak pada desain, alur utama, atau struktur data, berhenti dan minta klarifikasi.
 
@@ -30,17 +31,19 @@ OpenDonasi adalah prototype frontend platform penggalangan dana. Prioritasnya ad
 - Jangan mengganti warna utama, font, bentuk komponen, atau pola responsif atas inisiatif sendiri. Rujuk `DESIGN_SYSTEM.md` untuk detail visual.
 - Prioritaskan logo, ikon, banner, dan gambar yang sudah tersedia di project.
 - Periksa lokasi, ekstensi, dan format aset sebelum menggunakannya. Jangan mengubah atau mengganti aset secara massal tanpa memeriksa dampaknya.
-- Jangan mengambil gambar acak dari internet atau membuat aset baru kecuali diminta. Jika aset yang dibutuhkan tidak tersedia, gunakan placeholder yang konsisten dan laporkan.
+- Jangan mengambil gambar acak dari internet atau membuat aset baru kecuali diminta. Jika aset yang dibutuhkan tidak tersedia, tandai secara internal sebagai unresolved dan gunakan fallback yang aman.
 - Gambar program menggunakan rasio 16:9 sesuai desain yang disepakati; jangan meregangkan gambar atau memotong bagian penting. Pertahankan gambar secara utuh bila diperlukan.
+- Hero Carousel menampilkan gambar banner secara utuh (`object-contain`) tanpa overlay teks HTML atau gradasi gelap yang menduplikasi teks grafis di dalam banner. Aksesibilitas dipertahankan via alt text atau teks screen reader (`sr-only`).
+- Penggunaan `src/assets/icons/icons_kategori/zakat.svg` untuk layanan Zakat adalah pengecualian sementara yang disetujui. Jangan mengganti ikon Infaq atau Wakaf tanpa aset alternatif yang terbukti sesuai.
 
 ## Aturan UX OpenDonasi
 - Halaman umum mengikuti rancangan navbar desktop dan bottom navigation mobile yang telah disepakati.
 - Detail Program menggunakan layout khusus: tanpa navbar utama; tombol kembali dan bagikan berada di area banner, dan pada mobile tersedia CTA tetap di bawah.
 - Halaman khusus seperti Kalkulator Zakat, formulir donasi, daftar berita, dan detail berita menggunakan header yang sesuai dengan rancangan masing-masing.
 - Landing Zakat menyediakan akses ke Kalkulator Zakat melalui tombol yang disepakati; hasil perhitungan dapat diteruskan sebagai nominal awal ke formulir donasi dan tetap bisa diedit pengguna.
-- Kartu program harus konsisten pada Beranda, daftar Program, Pencarian, Profil Penggalang, dan rekomendasi program.
+- Kartu program harus konsisten pada Beranda, daftar Program, Pencarian, Profil Penggalang, dan rekomendasi program. Nominal terkumpul dan progress bar selalu terlihat; persentase numerik hanya muncul melalui tooltip hover desktop dan tidak diwajibkan terus-menerus di mobile.
 - Pencarian, kategori, filter, dan pengurutan harus mengikuti spesifikasi yang disetujui. Filter program tidak menggantikan pilihan kategori.
-- Berikan state yang layak untuk kondisi kosong, tidak ditemukan, input tidak valid, gambar gagal dimuat, dan halaman atau transaksi demo yang tidak ditemukan.
+- Berikan state yang layak untuk kondisi kosong, tidak ditemukan, input tidak valid, gambar gagal dimuat, dan halaman atau transaksi demo yang tidak ditemukan. Rute 404 produk harus ramah pengguna dengan CTA kembali ke Beranda.
 - Jangan membuat tombol atau tautan yang tampak aktif tetapi tidak memiliki perilaku. Jika fitur belum tersedia, jelaskan atau gunakan placeholder yang jelas.
 - Jaga responsivitas: hindari horizontal overflow, gambar terdistorsi, teks terpotong tanpa alasan, dan CTA yang tertutup navigasi tetap.
 - Jaga desain tetap natural dan sederhana. Hindari gradient, glow, animasi, dekorasi, dan efek yang tidak dibutuhkan oleh desain yang disetujui.

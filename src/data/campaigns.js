@@ -1,7 +1,5 @@
-/**
- * Data mock terpusat untuk Program Donasi, Kategori, dan Kabar Terbaru
- * Status: Data demonstrasi prototype (bukan data riil)
- */
+// Data mock terpusat untuk Program Donasi, Kategori, dan Kabar Terbaru OpenDonasi.
+// Status: Data demonstrasi prototype (bukan data riil)
 
 import img1 from '../assets/image/gambar/gambar1.png';
 import img2 from '../assets/image/gambar/gambar2.png';
@@ -9,10 +7,9 @@ import img3 from '../assets/image/gambar/gambar3.png';
 import img4 from '../assets/image/gambar/gambar4.png';
 import img6 from '../assets/image/gambar/gambar6.png';
 import img8 from '../assets/image/gambar/gambar8.png';
-import img9 from '../assets/image/gambar/gambar9.png';
-import img10 from '../assets/image/gambar/gambar10.png';
 import img11 from '../assets/image/gambar/gambar11.png';
 import img12 from '../assets/image/gambar/gambar12.png';
+import banner2 from '../assets/image/banner/banner2.png';
 
 import iconSemua from '../assets/icons/icons_kategori/semua.svg';
 import iconPendidikan from '../assets/icons/icons_kategori/pendidikan.svg';
@@ -47,8 +44,8 @@ export const CAMPAIGNS = [
     donorCount: 342,
     daysLeft: 18,
     isFeatured: true,
-    image: img3,
-    isImagePoster: true, // Poster berisi tulisan: wajib object-fit: contain
+    image: img1,
+    isImagePoster: false,
     description: 'Wujudkan tempat belajar bagi para santri untuk mencetak generasi Qurani yang berakhlak dan berilmu di pelosok nusantara.',
     status: 'active',
   },
@@ -68,8 +65,8 @@ export const CAMPAIGNS = [
     donorCount: 890,
     daysLeft: 5,
     isFeatured: true,
-    image: img1,
-    isImagePoster: false,
+    image: img6,
+    isImagePoster: true,
     description: 'Penyaluran bantuan logistik darurat, tenda evakuasi, dan makanan siap santap bagi keluarga terdampak bencana.',
     status: 'active',
   },
@@ -89,8 +86,8 @@ export const CAMPAIGNS = [
     donorCount: 215,
     daysLeft: 12,
     isFeatured: true,
-    image: img2,
-    isImagePoster: false,
+    image: img3,
+    isImagePoster: true,
     description: 'Layanan armada ambulans dan operasional siaga darurat gratis untuk pasien dhuafa di daerah pelosok.',
     status: 'active',
   },
@@ -112,6 +109,7 @@ export const CAMPAIGNS = [
     isFeatured: false,
     image: img4,
     isImagePoster: false,
+    assetStatus: 'UNRESOLVED — ASSET BELUM TERSEDIA',
     description: 'Bantuan biaya pendidikan, buku teks, dan seragam sekolah bagi anak-anak yatim dhuafa yang berprestasi.',
     status: 'active',
   },
@@ -131,7 +129,7 @@ export const CAMPAIGNS = [
     donorCount: 420,
     daysLeft: 8,
     isFeatured: false,
-    image: img6,
+    image: img2,
     isImagePoster: false,
     description: 'Penyaluran beras dan sembako bergizi untuk kakek-nenek sebatang kara dan keluarga dhuafa.',
     status: 'active',
@@ -154,6 +152,7 @@ export const CAMPAIGNS = [
     isFeatured: false,
     image: img8,
     isImagePoster: false,
+    assetStatus: 'UNRESOLVED — ASSET BELUM TERSEDIA',
     description: 'Penyaluran dana zakat fitrah dan zakat maal untuk 8 asnaf fakir miskin yang membutuhkan dukungan pangan.',
     status: 'active',
   },
@@ -173,8 +172,8 @@ export const CAMPAIGNS = [
     donorCount: 112,
     daysLeft: 14,
     isFeatured: false,
-    image: img9,
-    isImagePoster: false,
+    image: img12,
+    isImagePoster: true,
     description: 'Pembangunan instalasi pipa dan bak penampungan air bersih untuk keperluan berwudhu dan warga sekitar.',
     status: 'active',
   },
@@ -194,8 +193,8 @@ export const CAMPAIGNS = [
     donorCount: 388,
     daysLeft: 9,
     isFeatured: false,
-    image: img10,
-    isImagePoster: false,
+    image: banner2,
+    isImagePoster: true,
     description: 'Pemeriksaan kesehatan gratis, cek tensi gula darah, dan pembagian obat-obatan dasar untuk warga perbatasan.',
     status: 'active',
   },
@@ -217,6 +216,7 @@ export const CAMPAIGNS = [
     isFeatured: false,
     image: img11,
     isImagePoster: false,
+    assetStatus: 'UNRESOLVED — ASSET BELUM TERSEDIA',
     description: 'Dukungan perlengkapan sekolah, buku, dan beasiswa tempat tinggal bagi siswa berprestasi di wilayah 3T.',
     status: 'active',
   },
@@ -238,6 +238,7 @@ export const CAMPAIGNS = [
     isFeatured: false,
     image: img12,
     isImagePoster: false,
+    assetStatus: 'UNRESOLVED — ASSET BELUM TERSEDIA',
     description: 'Penyaluran asupan nutrisi tambahan, biskuit gizi, dan susu balita cegah stunting bagi anak-anak Indonesia.',
     status: 'active',
   },
