@@ -1,14 +1,13 @@
 import { Link } from 'react-router-dom';
-import { formatRupiah, formatNumber } from '../../lib/formatters';
-import { ProgressBar } from '../ui/ProgressBar';
-import { Badge } from '../ui/Badge';
+import { formatRupiah } from '../../lib/formatters';
+import timeIcon from '../../assets/icons/icons_kategori/time.svg';
 
 /**
  * Komponen CampaignCard Utama
  * - Rasio gambar wajib 16:9 di desktop dan mobile
- * - Poster bertulisan (isImagePoster: true) wajib object-fit: contain utuh
- * - Nominal dana dan progress bar selalu terlihat (tidak disembunyikan di hover)
- * - Menangani teks panjang dan data opsional secara aman
+ * - Tata letak kartu horizontal mobile tepat 50/50 (gambar dan keterangan) tanpa efek hover
+ * - Sisa hari dilengkapi ikon time.svg
+ * - Saat kursor diarahkan ke card (desktop), bilah indikator memunculkan titik thumb dan tooltip persentase
  */
 export function CampaignCard({ campaign, variant = 'vertical', className = '' }) {
   if (!campaign) return null;
@@ -16,13 +15,11 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
   const {
     slug,
     title,
-    category,
     serviceType,
     organizer,
     collectedAmount = 0,
     targetAmount,
     progressPercentage,
-    donorCount,
     daysLeft,
     image,
     isImagePoster = false,
@@ -44,26 +41,26 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
 
   return (
     <article
-      className={`group bg-white rounded-card border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}
+      className={`group bg-white rounded-2xl border border-border overflow-hidden md:transition-colors md:hover:border-slate-300 ${className}`}
     >
       <Link
         to={targetRoute}
-        className={`focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 flex ${
+        className={`focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
           isHorizontal
-            ? 'flex-row'
+            ? 'grid grid-cols-2 items-center p-2.5 sm:p-3 gap-3'
             : isResponsive
-            ? 'flex-row md:flex-col'
-            : 'flex-col'
+            ? 'grid grid-cols-2 items-center p-2.5 sm:p-3 gap-3 md:flex md:flex-col md:p-0 md:gap-0'
+            : 'flex flex-col'
         } h-full`}
       >
-        {/* Kontainer Gambar Rasio 16:9 Mutlak */}
+        {/* Kontainer Gambar Rasio 16:9 (Tepat 50% pada mobile) */}
         <div
-          className={`relative overflow-hidden bg-background-soft shrink-0 aspect-[16/9] ${
+          className={`relative overflow-hidden bg-slate-100 aspect-[16/9] w-full ${
             isHorizontal
-              ? 'w-2/5 max-w-[160px] self-center m-2.5 rounded-lg'
+              ? 'rounded-xl'
               : isResponsive
-              ? 'w-2/5 sm:w-[150px] md:w-full self-center md:self-auto m-2.5 md:m-0 rounded-lg md:rounded-none'
-              : 'w-full'
+              ? 'rounded-xl md:rounded-none md:rounded-t-2xl'
+              : 'rounded-t-2xl'
           }`}
         >
           {image ? (
@@ -71,7 +68,7 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
               src={image}
               alt={title || 'Program Donasi OpenDonasi'}
               loading="lazy"
-              className={`w-full h-full transition-transform duration-300 group-hover:scale-[1.02] ${
+              className={`w-full h-full ${
                 isImagePoster ? 'object-contain bg-slate-900/5' : 'object-cover'
               }`}
             />
@@ -80,83 +77,96 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
               OpenDonasi
             </div>
           )}
-
-          {category && (
-            <div className={`absolute top-2 left-2 ${isResponsive ? 'hidden sm:block md:block' : ''}`}>
-              <Badge variant="primary" size="sm" className="bg-white/95 backdrop-blur-sm shadow-sm capitalize text-[10px] md:text-xs py-0.5 px-2">
-                {category}
-              </Badge>
-            </div>
-          )}
         </div>
 
-        {/* Konten Kartu */}
+        {/* Konten Informasi Kartu (Tepat 50% pada mobile) */}
         <div
-          className={`flex flex-col flex-1 min-w-0 justify-between ${
+          className={`flex flex-col justify-between self-stretch min-w-0 ${
             isHorizontal
-              ? 'p-3'
+              ? 'py-0.5'
               : isResponsive
-              ? 'p-2.5 sm:p-3 md:p-5'
-              : 'p-4 md:p-5'
+              ? 'py-0.5 md:p-4'
+              : 'p-4'
           }`}
         >
-          <div>
-            {/* Kategori untuk mobile responsive jika disembunyikan di atas gambar */}
-            {category && isResponsive && (
-              <span className="inline-block sm:hidden text-[10px] font-semibold text-primary uppercase tracking-wider mb-1">
-                {category}
-              </span>
-            )}
-
-            {/* Judul Program dengan Line Clamp 2 */}
-            <h3 className="text-xs sm:text-sm md:text-base font-semibold text-text-primary line-clamp-2 leading-snug group-hover:text-primary transition-colors">
+          {/* Bagian Atas: Judul Donasi lalu Nama Yayasan */}
+          <div className="min-w-0">
+            {/* 1. Judul Donasi */}
+            <h3
+              title={title}
+              className="text-xs sm:text-sm md:text-base font-bold text-slate-900 line-clamp-2 leading-snug md:group-hover:text-primary md:transition-colors"
+            >
               {title || 'Program Kebaikan OpenDonasi'}
             </h3>
 
-            {/* Nama Penggalang Dana / Organisasi */}
-            <p className="mt-0.5 md:mt-1 text-[11px] md:text-xs text-text-secondary truncate">
-              {organizer?.name || 'Yayasan Mitra OpenDonasi'}
+            {/* 2. Nama Yayasan / Penggalang Dana dengan Badge Terverifikasi */}
+            <p className="mt-1 text-[11px] sm:text-xs text-text-secondary flex items-center gap-1 truncate">
+              <span className="truncate">{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
+              <svg
+                className="w-3.5 h-3.5 text-primary shrink-0"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-label="Terverifikasi"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </p>
           </div>
 
-          <div>
-            {/* Bilah Progres (Selalu Terlihat) */}
-            <div className="mt-2 md:mt-3.5">
-              <ProgressBar value={calculatedPercentage} size="sm" />
+          {/* Bagian Bawah: Nominal & Sisa Hari (di atas bar) lalu Bilah Progres Bar */}
+          <div className="mt-2.5">
+            {/* Label: Dana Terkumpul & Sisa Hari */}
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-text-secondary leading-tight">
+              <span>Dana Terkumpul</span>
+              <span>Sisa Hari</span>
             </div>
 
-            {/* Ringkasan Nominal & Sisa Waktu (Selalu Terlihat) */}
-            <div className="mt-2 md:mt-3 pt-2 md:pt-2.5 border-t border-border/60 flex items-end justify-between text-[11px] md:text-xs">
-              <div>
-                <span className="block text-[10px] md:text-[11px] text-text-secondary">Terkumpul</span>
-                <strong className="text-xs md:text-sm font-bold text-primary font-sans">
-                  {formatRupiah(collectedAmount)}
-                </strong>
+            {/* Nilai: Nominal Terkumpul (Biru) & Sisa Hari dengan Icon time.svg */}
+            <div className="mt-0.5 flex items-center justify-between gap-2 leading-tight">
+              <span className="text-xs sm:text-sm font-bold text-primary font-sans truncate">
+                {formatRupiah(collectedAmount)}
+              </span>
+
+              <div className="flex items-center gap-1 shrink-0 text-xs sm:text-sm font-bold text-slate-800">
+                <img
+                  src={timeIcon}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-3.5 h-3.5 object-contain shrink-0"
+                />
+                <span>{typeof daysLeft === 'number' ? `${daysLeft} Hari` : '∞'}</span>
+              </div>
+            </div>
+
+            {/* Bilah Progres Bar dengan Titik Thumb & Tooltip Persentase saat Hover */}
+            <div className="relative mt-2 mb-1 md:mb-5">
+              {/* Track Bar */}
+              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${calculatedPercentage}%` }}
+                />
               </div>
 
-              <div className="text-right">
-                {typeof daysLeft === 'number' ? (
-                  <>
-                    <span className="block text-[10px] md:text-[11px] text-text-secondary">Sisa Waktu</span>
-                    <strong className="font-semibold text-text-primary text-[11px] md:text-xs">
-                      {daysLeft > 0 ? `${daysLeft} hari` : 'Berakhir'}
-                    </strong>
-                  </>
-                ) : targetAmount ? (
-                  <>
-                    <span className="block text-[10px] md:text-[11px] text-text-secondary">Target</span>
-                    <span className="font-medium text-text-secondary text-[11px] md:text-xs">
-                      {formatRupiah(targetAmount)}
-                    </span>
-                  </>
-                ) : donorCount ? (
-                  <>
-                    <span className="block text-[10px] md:text-[11px] text-text-secondary">Donatur</span>
-                    <strong className="font-semibold text-text-primary text-[11px] md:text-xs">
-                      {formatNumber(donorCount)}
-                    </strong>
-                  </>
-                ) : null}
+              {/* Titik Thumb Bulat (Hanya desktop saat kursor hover) */}
+              <div
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white border-2 border-primary rounded-full shadow-xs z-10 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                style={{ left: `${calculatedPercentage}%` }}
+              />
+
+              {/* Tooltip Persen (Hanya desktop saat kursor hover, tepat di bawah titik indikator) */}
+              <div
+                className="absolute top-full pt-1 -translate-x-1/2 z-20 hidden md:flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                style={{ left: `${Math.min(92, Math.max(8, calculatedPercentage))}%` }}
+              >
+                <div className="w-2 h-2 -mb-1 rotate-45 bg-[#EEF4FF] border-t border-l border-primary/20" />
+                <div className="bg-[#EEF4FF] border border-primary/20 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs whitespace-nowrap">
+                  {calculatedPercentage}%
+                </div>
               </div>
             </div>
           </div>

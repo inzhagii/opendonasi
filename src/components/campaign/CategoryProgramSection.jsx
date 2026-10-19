@@ -198,21 +198,11 @@ export function CategoryProgramSection({ className = '' }) {
         </div>
       )}
 
-      {/* Tombol Lihat Selengkapnya (Bila program > limit atau ingin navigasi ke katalog lengkap) */}
-      <div className="mt-8 text-center flex flex-col sm:flex-row items-center justify-center gap-3">
-        {filteredCampaigns.length > initialLimit && !showAllCards && (
-          <Button
-            variant="outline"
-            size="md"
-            onClick={() => setShowAllCards(true)}
-            className="w-full sm:w-auto"
-          >
-            Lihat Lebih Banyak Program ({filteredCampaigns.length - initialLimit} tersisa)
-          </Button>
-        )}
-        <Link to="/program" className="w-full sm:w-auto">
-          <Button variant="primary" size="md" className="w-full sm:w-auto">
-            Buka Katalog Semua Program
+      {/* Tombol Lihat Selengkapnya menuju halaman katalog semua program */}
+      <div className="mt-8 text-center">
+        <Link to="/program">
+          <Button variant="outline" size="md" className="w-full sm:w-auto px-8 font-semibold">
+            Lihat Selengkapnya
           </Button>
         </Link>
       </div>

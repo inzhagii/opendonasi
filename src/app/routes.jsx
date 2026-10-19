@@ -72,73 +72,94 @@ function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' 
         </div>
       )}
 
-      {/* Showcase Pengujian Komponen Reusable Tahap 4 */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 my-8 pt-4 border-t border-border/80">
-        {/* Kolom Kiri: Verifikasi CampaignCard Props-Driven */}
-        <div className="lg:col-span-5 flex flex-col items-start">
-          <div className="flex items-center justify-between w-full mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">
-              Verifikasi CampaignCard (16:9)
-            </span>
-            <Badge variant="neutral" size="sm">
-              Prop-Driven
-            </Badge>
-          </div>
-          <div className="w-full max-w-sm mx-auto lg:mx-0">
-            <CampaignCard campaign={sampleCampaign} />
-          </div>
-          <p className="text-[11px] text-text-secondary mt-2">
-            *Rasio gambar 16:9 stabil, nominal dan progres selalu terlihat tanpa hover.
-          </p>
-        </div>
-
-        {/* Kolom Kanan: Verifikasi Komponen UI Dasar (Button, Badge, Input) */}
-        <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
-          {/* Uji Variasi Button */}
-          <div>
-            <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
-              Verifikasi Variasi Button
-            </span>
-            <div className="flex flex-wrap gap-2.5 items-center">
-              <Button variant="primary" size="sm">Primary Sm</Button>
-              <Button variant="primary" size="md">Primary Md</Button>
-              <Button variant="secondary" size="md">Secondary</Button>
-              <Button variant="outline" size="md">Outline</Button>
-              <Button variant="primary" size="md" disabled>Disabled</Button>
+      {/* Jika di rute /program: Tampilkan Grid Seluruh Program Donasi */}
+      {pathInfo === '/program' ? (
+        <div className="my-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-text-primary">
+                Katalog Lengkap Program Kebaikan ({CAMPAIGNS.length} Program)
+              </h3>
+              <p className="text-xs text-text-secondary mt-1">
+                Pilih dan salurkan donasi Anda untuk program kemanusiaan, bencana, pendidikan, dan wakaf.
+              </p>
             </div>
           </div>
-
-          {/* Uji Variasi Badge */}
-          <div>
-            <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
-              Verifikasi Variasi Badge Semantik
-            </span>
-            <div className="flex flex-wrap gap-2 items-center">
-              <Badge variant="primary">Primary</Badge>
-              <Badge variant="success">Berhasil</Badge>
-              <Badge variant="warning">Menunggu</Badge>
-              <Badge variant="error">Dibatalkan</Badge>
-              <Badge variant="neutral">Kategori</Badge>
-            </div>
-          </div>
-
-          {/* Uji Komponen Input Aksesibel */}
-          <div>
-            <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
-              Verifikasi Komponen Input
-            </span>
-            <div className="max-w-md">
-              <Input
-                label="Uji Input Interaktif"
-                placeholder="Ketik untuk menguji state fokus dan binding..."
-                value={testInput}
-                onChange={(e) => setTestInput(e.target.value)}
-                helperText="Input aksesibel dengan border #E5E7EB dan ring fokus brand #2E7DFA"
-              />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {CAMPAIGNS.map((c) => (
+              <CampaignCard key={c.id} campaign={c} />
+            ))}
           </div>
         </div>
-      </div>
+      ) : (
+        /* Showcase Pengujian Komponen Reusable Tahap 4 */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 my-8 pt-4 border-t border-border/80">
+          {/* Kolom Kiri: Verifikasi CampaignCard Props-Driven */}
+          <div className="lg:col-span-5 flex flex-col items-start">
+            <div className="flex items-center justify-between w-full mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+                Verifikasi CampaignCard (16:9)
+              </span>
+              <Badge variant="neutral" size="sm">
+                Prop-Driven
+              </Badge>
+            </div>
+            <div className="w-full max-w-sm mx-auto lg:mx-0">
+              <CampaignCard campaign={sampleCampaign} />
+            </div>
+            <p className="text-[11px] text-text-secondary mt-2">
+              *Rasio gambar 16:9 stabil, nominal dan progres selalu terlihat tanpa hover.
+            </p>
+          </div>
+
+          {/* Kolom Kanan: Verifikasi Komponen UI Dasar (Button, Badge, Input) */}
+          <div className="lg:col-span-7 flex flex-col justify-between space-y-6">
+            {/* Uji Variasi Button */}
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
+                Verifikasi Variasi Button
+              </span>
+              <div className="flex flex-wrap gap-2.5 items-center">
+                <Button variant="primary" size="sm">Primary Sm</Button>
+                <Button variant="primary" size="md">Primary Md</Button>
+                <Button variant="secondary" size="md">Secondary</Button>
+                <Button variant="outline" size="md">Outline</Button>
+                <Button variant="primary" size="md" disabled>Disabled</Button>
+              </div>
+            </div>
+
+            {/* Uji Variasi Badge */}
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
+                Verifikasi Variasi Badge Semantik
+              </span>
+              <div className="flex flex-wrap gap-2 items-center">
+                <Badge variant="primary">Primary</Badge>
+                <Badge variant="success">Berhasil</Badge>
+                <Badge variant="warning">Menunggu</Badge>
+                <Badge variant="error">Dibatalkan</Badge>
+                <Badge variant="neutral">Kategori</Badge>
+              </div>
+            </div>
+
+            {/* Uji Komponen Input Aksesibel */}
+            <div>
+              <span className="block text-xs font-bold uppercase tracking-wider text-text-secondary mb-2.5">
+                Verifikasi Komponen Input
+              </span>
+              <div className="max-w-md">
+                <Input
+                  label="Uji Input Interaktif"
+                  placeholder="Ketik untuk menguji state fokus dan binding..."
+                  value={testInput}
+                  onChange={(e) => setTestInput(e.target.value)}
+                  helperText="Input aksesibel dengan border #E5E7EB dan ring fokus brand #2E7DFA"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigasi Cepat Pengujian Antar Rute */}
       <div className="mt-8 pt-6 border-t border-border">
