@@ -3,12 +3,13 @@
  * Status: Data demonstrasi prototype (bukan data riil)
  */
 
-import img1 from '../assets/image/gambar1.png';
-import img2 from '../assets/image/gambar2.png';
-import img3 from '../assets/image/gambar3.png';
+import banner1 from '../assets/image/banner/banner1.png';
+import banner2 from '../assets/image/banner/banner2.png';
+import banner3 from '../assets/image/banner/banner3.png';
+import banner4 from '../assets/image/banner/banner4.png';
 
 import iconLovely from '../assets/icons/icons_layanan/lovely.svg';
-import iconZakat from '../assets/icons/icons_kategori/zakat.png';
+import iconZakat from '../assets/icons/icons_kategori/zakat.svg';
 import iconDevices from '../assets/icons/icons_layanan/devices.svg';
 import iconCourier from '../assets/icons/icons_layanan/courier-express-.svg';
 import iconMessages from '../assets/icons/icons_layanan/messages.svg';
@@ -18,22 +19,29 @@ export const BANNERS = [
     id: 'banner-1',
     title: 'Gotong Royong Ringankan Duka Saudara Terdampak',
     subtitle: 'Salurkan bantuan makanan hangat, selimut, dan obat-obatan darurat.',
-    image: img1,
+    image: banner1,
     linkUrl: '/program/tanggap-darurat-korban-bencana',
   },
   {
     id: 'banner-2',
     title: 'Ambulans Gratis Siaga Layani Pasien Dhuafa Pelosok',
     subtitle: 'Bantu biaya operasional dan bahan bakar armada relawan.',
-    image: img2,
+    image: banner2,
     linkUrl: '/program/dukung-operasional-ambulans-gratis',
   },
   {
     id: 'banner-3',
-    title: 'Bangun Pesantren Bangun Peradaban',
-    subtitle: 'Wakaf pembangunan fasilitas asrama para penghafal Al-Quran.',
-    image: img3,
+    title: 'Bangun Pesantren Bangun Peradaban Santri Pelosok',
+    subtitle: 'Wakaf sarana pembangunan asrama para penghafal Al-Quran.',
+    image: banner3,
     linkUrl: '/wakaf',
+  },
+  {
+    id: 'banner-4',
+    title: 'Sedekah Air Bersih & Bersuci Pelosok Nusantara',
+    subtitle: 'Wujudkan sumur bor dan instalasi air bersih untuk jamaah dan warga.',
+    image: banner4,
+    linkUrl: '/program/sedekah-renovasi-sarana-ibadah',
   },
 ];
 

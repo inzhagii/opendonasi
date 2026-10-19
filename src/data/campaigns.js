@@ -3,20 +3,22 @@
  * Status: Data demonstrasi prototype (bukan data riil)
  */
 
-import img1 from '../assets/image/gambar1.png';
-import img2 from '../assets/image/gambar2.png';
-import img3 from '../assets/image/gambar3.png';
-import img4 from '../assets/image/gambar4.png';
-import img5 from '../assets/image/gambar5.png';
-import img6 from '../assets/image/gambar6.png';
-import img7 from '../assets/image/gambar7.png';
-import img8 from '../assets/image/gambar 8.png';
+import img1 from '../assets/image/gambar/gambar1.png';
+import img2 from '../assets/image/gambar/gambar2.png';
+import img3 from '../assets/image/gambar/gambar3.png';
+import img4 from '../assets/image/gambar/gambar4.png';
+import img6 from '../assets/image/gambar/gambar6.png';
+import img8 from '../assets/image/gambar/gambar8.png';
+import img9 from '../assets/image/gambar/gambar9.png';
+import img10 from '../assets/image/gambar/gambar10.png';
+import img11 from '../assets/image/gambar/gambar11.png';
+import img12 from '../assets/image/gambar/gambar12.png';
 
 import iconSemua from '../assets/icons/icons_kategori/semua.svg';
 import iconPendidikan from '../assets/icons/icons_kategori/pendidikan.svg';
 import iconKemanusiaan from '../assets/icons/icons_kategori/kemanusiaan.svg';
 import iconBencana from '../assets/icons/icons_kategori/bencana.svg';
-import iconZakat from '../assets/icons/icons_kategori/zakat.png';
+import iconZakat from '../assets/icons/icons_kategori/zakat.svg';
 import iconLainnya from '../assets/icons/icons_kategori/lainnya.svg';
 
 export const CATEGORIES = [
@@ -129,7 +131,7 @@ export const CAMPAIGNS = [
     donorCount: 420,
     daysLeft: 8,
     isFeatured: false,
-    image: img5,
+    image: img6,
     isImagePoster: false,
     description: 'Penyaluran beras dan sembako bergizi untuk kakek-nenek sebatang kara dan keluarga dhuafa.',
     status: 'active',
@@ -150,7 +152,7 @@ export const CAMPAIGNS = [
     donorCount: 180,
     daysLeft: 30,
     isFeatured: false,
-    image: img6,
+    image: img8,
     isImagePoster: false,
     description: 'Penyaluran dana zakat fitrah dan zakat maal untuk 8 asnaf fakir miskin yang membutuhkan dukungan pangan.',
     status: 'active',
@@ -171,7 +173,7 @@ export const CAMPAIGNS = [
     donorCount: 112,
     daysLeft: 14,
     isFeatured: false,
-    image: img7,
+    image: img9,
     isImagePoster: false,
     description: 'Pembangunan instalasi pipa dan bak penampungan air bersih untuk keperluan berwudhu dan warga sekitar.',
     status: 'active',
@@ -192,9 +194,51 @@ export const CAMPAIGNS = [
     donorCount: 388,
     daysLeft: 9,
     isFeatured: false,
-    image: img8,
+    image: img10,
     isImagePoster: false,
     description: 'Pemeriksaan kesehatan gratis, cek tensi gula darah, dan pembagian obat-obatan dasar untuk warga perbatasan.',
+    status: 'active',
+  },
+  {
+    id: 'camp-009',
+    slug: 'beasiswa-anak-negeri-pelosok',
+    title: 'Beasiswa Pendidikan & Asrama Anak Negeri Terluar',
+    category: 'pendidikan',
+    serviceType: 'donasi',
+    organizer: {
+      name: 'Yayasan Insan Cita Nusantara (Demo)',
+      avatar: null,
+    },
+    targetAmount: 90000000,
+    collectedAmount: 64800000,
+    progressPercentage: 72,
+    donorCount: 295,
+    daysLeft: 21,
+    isFeatured: false,
+    image: img11,
+    isImagePoster: false,
+    description: 'Dukungan perlengkapan sekolah, buku, dan beasiswa tempat tinggal bagi siswa berprestasi di wilayah 3T.',
+    status: 'active',
+  },
+  {
+    id: 'camp-010',
+    slug: 'bantuan-gizi-balita-keluarga-dhuafa',
+    title: 'Paket Gizi & Susu Balita Sehat Keluarga Pra-Sejahtera',
+    category: 'kemanusiaan',
+    serviceType: 'sedekah',
+    organizer: {
+      name: 'Sahabat Sehat Ibu Anak (Demo)',
+      avatar: null,
+    },
+    targetAmount: 45000000,
+    collectedAmount: 38250000,
+    progressPercentage: 85,
+    donorCount: 512,
+    daysLeft: 6,
+    isFeatured: false,
+    image: img12,
+    isImagePoster: false,
+    description: 'Penyaluran asupan nutrisi tambahan, biskuit gizi, dan susu balita cegah stunting bagi anak-anak Indonesia.',
     status: 'active',
   },
 ];

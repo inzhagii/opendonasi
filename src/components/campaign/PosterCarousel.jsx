@@ -2,6 +2,10 @@ import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { SectionHeading } from '../ui/SectionHeading';
+import banner1 from '../../assets/image/banner/banner1.png';
+import banner2 from '../../assets/image/banner/banner2.png';
+import banner3 from '../../assets/image/banner/banner3.png';
+import banner4 from '../../assets/image/banner/banner4.png';
 
 /**
  * PosterCarousel ("Yang Baru di OpenDonasi")
@@ -15,25 +19,35 @@ export function PosterCarousel({ className = '' }) {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  // Pilih item yang memiliki komposisi poster atau program baru
+  // Item yang menggunakan komposisi poster/banner dari image/banner
   const posterItems = [
     {
       id: 'poster-1',
-      campaign: CAMPAIGNS.find((c) => c.id === 'camp-001') || CAMPAIGNS[0],
-      tag: 'Wakaf Produktif',
-      caption: 'Wakaf Asrama Santri Penghafal Quran di Pelosok Nusantara',
+      campaign: CAMPAIGNS.find((c) => c.slug === 'tanggap-darurat-korban-bencana') || CAMPAIGNS[1],
+      image: banner1,
+      tag: 'Tanggap Darurat',
+      caption: 'Gotong Royong Ringankan Duka Saudara Terdampak Bencana',
     },
     {
       id: 'poster-2',
-      campaign: CAMPAIGNS.find((c) => c.id === 'camp-002') || CAMPAIGNS[1],
-      tag: 'Tanggap Darurat',
-      caption: 'Penyaluran Makanan Hangat & Logistik Dapur Umum Korban Bencana',
+      campaign: CAMPAIGNS.find((c) => c.slug === 'dukung-operasional-ambulans-gratis') || CAMPAIGNS[2],
+      image: banner2,
+      tag: 'Layanan Medis',
+      caption: 'Ambulans Gratis Siaga Layani Pasien Dhuafa Pelosok',
     },
     {
       id: 'poster-3',
-      campaign: CAMPAIGNS.find((c) => c.id === 'camp-007') || CAMPAIGNS[6],
+      campaign: CAMPAIGNS.find((c) => c.slug === 'bantu-sarana-belajar-pesantren') || CAMPAIGNS[0],
+      image: banner3,
+      tag: 'Wakaf Produktif',
+      caption: 'Bangun Pesantren Bangun Peradaban Santri Pelosok',
+    },
+    {
+      id: 'poster-4',
+      campaign: CAMPAIGNS.find((c) => c.slug === 'sedekah-renovasi-sarana-ibadah') || CAMPAIGNS[6],
+      image: banner4,
       tag: 'Sedekah Air Bersih',
-      caption: 'Gotong Royong Pengadaan Instalasi Air Bersih & Bersuci',
+      caption: 'Sedekah Gotong Royong Sarana Air Bersih & Bersuci',
     },
   ];
 
@@ -116,7 +130,7 @@ export function PosterCarousel({ className = '' }) {
                 {/* Gambar Poster 16:9 Utuh Tanpa Crop */}
                 <div className="relative w-full aspect-[16/9] bg-neutral-900 overflow-hidden flex items-center justify-center">
                   <img
-                    src={item.campaign.image}
+                    src={item.image || item.campaign.image}
                     alt={item.caption}
                     loading="lazy"
                     className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"

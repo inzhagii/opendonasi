@@ -3,8 +3,8 @@
  * Status: Data demonstrasi prototype
  */
 
-import img3 from '../assets/image/gambar3.png';
-import img1 from '../assets/image/gambar1.png';
+import img3 from '../assets/image/gambar/gambar3.png';
+import img1 from '../assets/image/gambar/gambar1.png';
 
 export const CURRENT_USER = {
   id: 'user-demo-001',
