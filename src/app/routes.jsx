@@ -1,3 +1,4 @@
+// Konfigurasi routing aplikasi OpenDonasi.
 import { useState } from 'react';
 import { Routes, Route, Link, useParams, useSearchParams } from 'react-router-dom';
 import { CAMPAIGNS } from '../data/campaigns';
@@ -8,6 +9,8 @@ import { Badge } from '../components/ui/Badge';
 import { Input } from '../components/ui/Input';
 import { CampaignCard } from '../components/campaign/CampaignCard';
 import { HomePage } from '../features/home/HomePage';
+import { ProgramPage } from '../features/program/ProgramPage';
+import { SearchPage } from '../features/search/SearchPage';
 
 function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' }) {
   const params = useParams();
@@ -194,7 +197,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/program" element={<RoutePlaceholder title="02. Daftar Program" description="Katalog penelusuran, filter kategori, dan pengurutan program donasi." pathInfo="/program" />} />
+      <Route path="/program" element={<ProgramPage />} />
       <Route path="/program/:slug" element={<RoutePlaceholder title="03. Detail Program Donasi" description="Informasi narasi program, dana terkumpul, dan tombol donasi sekarang." pathInfo="/program/:slug" routeKind="program" />} />
       <Route path="/zakat" element={<RoutePlaceholder title="04. Landing Zakat" description="Edukasi zakat, kalkulator zakat simulasi, dan daftar program zakat." pathInfo="/zakat" />} />
       <Route path="/zakat/:slug" element={<RoutePlaceholder title="05. Detail Zakat" description="Detail program zakat khusus dengan tombol Zakat Sekarang dan mini kalkulator." pathInfo="/zakat/:slug" routeKind="zakat" />} />
@@ -208,7 +211,7 @@ export function AppRoutes() {
       <Route path="/kontak" element={<RoutePlaceholder title="13. Kontak Bantuan" description="Saluran bantuan demo via WhatsApp dan email placeholder." pathInfo="/kontak" />} />
       <Route path="/donasi-saya" element={<RoutePlaceholder title="14. Donasi Saya" description="Riwayat donasi donatur demo berbasis sesi lokal." pathInfo="/donasi-saya" />} />
       <Route path="/profil" element={<RoutePlaceholder title="15. Profil / Akun" description="Hub akun demo dan pintu akses eksklusif ke Donasi Saya." pathInfo="/profil" />} />
-      <Route path="/search" element={<RoutePlaceholder title="16. Hasil Pencarian" description="Hasil penelusuran program berdasarkan kata kunci pencarian global." pathInfo="/search" />} />
+      <Route path="/search" element={<SearchPage />} />
       <Route path="*" element={<RoutePlaceholder title="404 — Halaman Tidak Ditemukan" description="Halaman yang Anda tuju tidak tersedia atau tautan telah berpindah." pathInfo="404 Fallback" />} />
     </Routes>
   );
