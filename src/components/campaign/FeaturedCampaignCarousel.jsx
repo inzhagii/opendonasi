@@ -1,49 +1,178 @@
-import { useRef, useState, useEffect } from 'react';
+// Komponen FeaturedCampaignCarousel ("Ada Kebaikan yang Menantimu") OpenDonasi
+// Mengimplementasikan 3 main card di tengah, 2 peek card di kiri dan kanan, infinite looping tanpa henti, shadow putih, dan tombol arrow.
+
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { CampaignCard } from './CampaignCard';
 import { SectionHeading } from '../ui/SectionHeading';
 
-/**
- * FeaturedCampaignCarousel ("Ada Kebaikan yang Menantimu")
- * Spesifikasi OPENDONASI_SPEC:
- * - Carousel kartu program unggulan (isFeatured: true).
- * - Mendukung drag/swipe manual, TANPA autoplay.
- * - Desktop: menampilkan 3 kartu penuh dan sebagian kartu berikutnya (overflow hint).
- * - Tombol panah di sisi carousel sejajar area kartu.
- * - Mobile: kartu dapat digeser secara horizontal (snap).
- */
 export function FeaturedCampaignCarousel({ className = '' }) {
-  const scrollContainerRef = useRef(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-
-  // Ambil program unggulan (isFeatured: true)
+  // Ambil program unggulan (minimal 5-7 kampanye untuk infinite loop mulus)
   const featuredCampaigns = CAMPAIGNS.filter((c) => c.isFeatured);
+  const items = featuredCampaigns.length >= 5 ? featuredCampaigns : CAMPAIGNS.slice(0, 7);
+  const totalCount = items.length;
 
-  const checkScrollability = () => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanScrollLeft(scrollLeft > 5);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
-  };
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState('idle'); // 'idle' | 'next' | 'prev'
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragDeltaX, setDragDeltaX] = useState(0);
+
+  const trackRef = useRef(null);
+  const dragStartXRef = useRef(null);
+
+  // Responsif cardWidth dan gap
+  const [dimensions, setDimensions] = useState({ cardWidth: 340, gap: 24 });
 
   useEffect(() => {
-    checkScrollability();
-    window.addEventListener('resize', checkScrollability);
-    return () => window.removeEventListener('resize', checkScrollability);
-  }, [featuredCampaigns]);
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setDimensions({ cardWidth: 280, gap: 14 });
+      } else if (width < 1024) {
+        setDimensions({ cardWidth: 310, gap: 18 });
+      } else {
+        setDimensions({ cardWidth: 340, gap: 24 });
+      }
+    };
 
-  const scrollLeft = () => {
-    if (!scrollContainerRef.current) return;
-    scrollContainerRef.current.scrollBy({ left: -360, behavior: 'smooth' });
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
+  const stepWidth = dimensions.cardWidth + dimensions.gap;
+
+  // Navigasi Next (Geser ke Kiri, kartu bergerak ke Kanan)
+  const handleNext = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setDirection('next');
+  }, [isAnimating]);
+
+  // Navigasi Prev (Geser ke Kanan, kartu bergerak ke Kiri)
+  const handlePrev = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setDirection('prev');
+  }, [isAnimating]);
+
+  // Reset indeks dan transform setelah animasi selesai
+  const finishTransition = useCallback(() => {
+    if (direction === 'next') {
+      setCurrentIndex((prev) => (prev + 1) % totalCount);
+    } else if (direction === 'prev') {
+      setCurrentIndex((prev) => (prev - 1 + totalCount) % totalCount);
+    }
+    setDirection('idle');
+    setIsAnimating(false);
+    setDragDeltaX(0);
+  }, [direction, totalCount]);
+
+  // Handler onTransitionEnd pada track
+  const handleTransitionEnd = (e) => {
+    if (e.target !== trackRef.current) return;
+    finishTransition();
   };
 
-  const scrollRight = () => {
-    if (!scrollContainerRef.current) return;
-    scrollContainerRef.current.scrollBy({ left: 360, behavior: 'smooth' });
+  // Fallback safety timeout jika onTransitionEnd terlewat
+  useEffect(() => {
+    if (isAnimating) {
+      const timeout = setTimeout(() => {
+        finishTransition();
+      }, 400);
+      return () => clearTimeout(timeout);
+    }
+  }, [isAnimating, finishTransition]);
+
+  // Mouse Drag Handlers
+  const handleMouseDown = (e) => {
+    if (isAnimating) return;
+    dragStartXRef.current = e.clientX;
+    setIsDragging(true);
+    setDragDeltaX(0);
   };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || dragStartXRef.current === null) return;
+    const delta = e.clientX - dragStartXRef.current;
+    setDragDeltaX(delta);
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (dragDeltaX < -40) {
+      handleNext();
+    } else if (dragDeltaX > 40) {
+      handlePrev();
+    } else {
+      setDragDeltaX(0);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleMouseUp();
+    }
+  };
+
+  // Touch Swipe Handlers (Mobile)
+  const handleTouchStart = (e) => {
+    if (isAnimating) return;
+    dragStartXRef.current = e.touches[0].clientX;
+    setIsDragging(true);
+    setDragDeltaX(0);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || dragStartXRef.current === null) return;
+    const delta = e.touches[0].clientX - dragStartXRef.current;
+    setDragDeltaX(delta);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    if (dragDeltaX < -40) {
+      handleNext();
+    } else if (dragDeltaX > 40) {
+      handlePrev();
+    } else {
+      setDragDeltaX(0);
+    }
+  };
+
+  // Cegah klik kartu jika pengguna sengaja melakukan drag
+  const handleClickCapture = (e) => {
+    if (Math.abs(dragDeltaX) > 8) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  // Hitung offset perpindahan transform secara presisi
+  let currentTranslate = 0;
+  if (isDragging) {
+    currentTranslate = dragDeltaX;
+  } else if (direction === 'next') {
+    currentTranslate = -stepWidth;
+  } else if (direction === 'prev') {
+    currentTranslate = stepWidth;
+  }
+
+  // 7 slot kartu yang selalu berputar tanpa henti:
+  // Offset: [-2, -1 (Peek Kiri), 0 (Main 1), 1 (Main 2 Center), 2 (Main 3), 3 (Peek Kanan), 4]
+  const offsets = [-2, -1, 0, 1, 2, 3, 4];
+  const visibleCards = offsets.map((offset) => {
+    const index = (currentIndex + offset + totalCount * 10) % totalCount;
+    return {
+      campaign: items[index],
+      offset,
+      key: `${items[index].id}-${offset}`,
+    };
+  });
 
   return (
     <section aria-labelledby="featured-section-title" className={`w-full ${className}`}>
@@ -66,48 +195,77 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         />
       </div>
 
-      {/* Rel Carousel dengan Tombol Navigasi Sisi */}
-      <div className="relative group/carousel">
-        {/* Tombol Panah Kiri (Desktop) */}
-        {canScrollLeft && (
-          <button
-            type="button"
-            onClick={scrollLeft}
-            aria-label="Geser ke program sebelumnya"
-            className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-border shadow-md items-center justify-center text-text-primary hover:text-primary hover:border-primary transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-        )}
-
-        {/* Tombol Panah Kanan (Desktop) */}
-        {canScrollRight && (
-          <button
-            type="button"
-            onClick={scrollRight}
-            aria-label="Geser ke program berikutnya"
-            className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-border shadow-md items-center justify-center text-text-primary hover:text-primary hover:border-primary transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        )}
-
-        {/* Kontainer Scroll Kartu */}
+      {/* Viewport Carousel: 3 Main Card Center, 2 Peek Card di Sisi, Shadow Putih & Tombol Arrow */}
+      <div
+        className="relative w-full h-[435px] overflow-hidden select-none"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClickCapture={handleClickCapture}
+      >
+        {/* Shadow Gradasi Putih Sisi Kiri (Menutup sebagian Peek Card Kiri) */}
         <div
-          ref={scrollContainerRef}
-          onScroll={checkScrollability}
-          className="flex gap-4 sm:gap-6 overflow-x-auto snap-x scrollbar-none pb-4 pt-1 px-1 -mx-1"
+          className="absolute left-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none"
+          aria-hidden="true"
+        />
+
+        {/* Shadow Gradasi Putih Sisi Kanan (Menutup sebagian Peek Card Kanan) */}
+        <div
+          className="absolute right-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none"
+          aria-hidden="true"
+        />
+
+        {/* Tombol Panah Kiri (Arrow Prev) */}
+        <button
+          type="button"
+          onClick={handlePrev}
+          aria-label="Geser ke program sebelumnya"
+          className="absolute left-2 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
         >
-          {featuredCampaigns.map((campaign) => (
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Tombol Panah Kanan (Arrow Next) */}
+        <button
+          type="button"
+          onClick={handleNext}
+          aria-label="Geser ke program berikutnya"
+          className="absolute right-2 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        {/* Rel Track Kartu: Selalu Terpusat Simetris di Tengah Viewport */}
+        <div
+          ref={trackRef}
+          onTransitionEnd={handleTransitionEnd}
+          className={`flex items-center absolute left-1/2 top-2.5 bottom-2.5 ${
+            isAnimating
+              ? 'transition-transform duration-[350ms] ease-out'
+              : 'transition-none'
+          } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          style={{
+            transform: `translateX(calc(-50% + ${currentTranslate}px))`,
+          }}
+        >
+          {visibleCards.map((item, idx) => (
             <div
-              key={campaign.id}
-              className="shrink-0 snap-start w-[280px] sm:w-[320px] md:w-[calc((100%-36px)/3.2)]"
+              key={item.key}
+              className="shrink-0 h-[400px] transition-opacity duration-200"
+              style={{
+                width: `${dimensions.cardWidth}px`,
+                marginRight: idx === visibleCards.length - 1 ? 0 : `${dimensions.gap}px`,
+              }}
             >
-              <CampaignCard campaign={campaign} variant="vertical" className="h-full" />
+              <CampaignCard campaign={item.campaign} variant="vertical" className="h-full" />
             </div>
           ))}
         </div>
@@ -115,3 +273,5 @@ export function FeaturedCampaignCarousel({ className = '' }) {
     </section>
   );
 }
+
+export default FeaturedCampaignCarousel;
