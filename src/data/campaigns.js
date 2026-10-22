@@ -249,14 +249,18 @@ export const CAMPAIGN_UPDATES = [
     id: 'upd-001',
     campaignId: 'camp-001',
     date: '2026-03-25',
+    disbursementAmount: 35000000,
     title: 'Pengecoran Pondasi Tahap 1 Selesai',
-    content: 'Alhamdulillah proses pengecoran pondasi asrama tahap awal telah selesai berkat doa dan dukungan para muhsinin.',
+    content:
+      'Alhamdulillah proses pengecoran pondasi asrama tahap awal telah selesai berkat doa dan dukungan para muhsinin. Seluruh alokasi dana tahap ini difokuskan untuk material semen, pasir, dan operasional pengerjaan di lapangan.',
   },
   {
     id: 'upd-002',
     campaignId: 'camp-002',
     date: '2026-04-02',
+    disbursementAmount: 45000000,
     title: 'Penyaluran Paket Dapur Umum 500 Porsi',
-    content: 'Relawan telah membagikan 500 paket makanan hangat untuk pengungsi di titik kumpul posko barat.',
+    content:
+      'Relawan telah membagikan 500 paket makanan hangat untuk pengungsi di titik kumpul posko barat. Keberhasilan penyaluran ini mendorong kami melanjutkan bantuan pemenuhan nutrisi dan logistik pengungsian.',
   },
 ];
