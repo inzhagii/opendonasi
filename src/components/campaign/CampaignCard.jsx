@@ -15,7 +15,6 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
   const {
     slug,
     title,
-    serviceType,
     organizer,
     collectedAmount = 0,
     targetAmount,
@@ -25,8 +24,8 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
     isImagePoster = false,
   } = campaign;
 
-  // Tentukan rute target: zakat mengarah ke /zakat/:slug, lainnya ke /program/:slug
-  const targetRoute = serviceType === 'zakat' ? `/zakat/${slug}` : `/program/${slug}`;
+  // Rute target konsisten ke detail program: /program/:slug
+  const targetRoute = `/program/${slug}`;
 
   // Hitung persentase jika tidak disediakan
   const calculatedPercentage =

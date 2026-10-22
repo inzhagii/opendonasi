@@ -20,6 +20,13 @@ export function MobileBottomNav() {
 
   const closeLayanan = () => setIsLayananOpen(false);
 
+  // Sesuai OPENDONASI_SPEC: Pada Detail Program, bottom nav umum digantikan oleh action bar donasi khusus
+  const isDetailPage =
+    (location.pathname.startsWith('/program/') && location.pathname !== '/program') ||
+    (location.pathname.startsWith('/zakat/') && location.pathname !== '/zakat');
+
+  if (isDetailPage) return null;
+
   return (
     <>
       {/* Overlay Menu Layanan Mobile */}

@@ -10,7 +10,12 @@ import { Input } from '../components/ui/Input';
 import { CampaignCard } from '../components/campaign/CampaignCard';
 import { HomePage } from '../features/home/HomePage';
 import { ProgramPage } from '../features/program/ProgramPage';
+import { ProgramDetailPage } from '../features/program/ProgramDetailPage';
 import { SearchPage } from '../features/search/SearchPage';
+import { ZakatPage } from '../features/services/ZakatPage';
+import { InfaqPage } from '../features/services/InfaqPage';
+import { SedekahPage } from '../features/services/SedekahPage';
+import { WakafPage } from '../features/services/WakafPage';
 
 function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' }) {
   const params = useParams();
@@ -198,12 +203,12 @@ export function AppRoutes() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/program" element={<ProgramPage />} />
-      <Route path="/program/:slug" element={<RoutePlaceholder title="03. Detail Program Donasi" description="Informasi narasi program, dana terkumpul, dan tombol donasi sekarang." pathInfo="/program/:slug" routeKind="program" />} />
-      <Route path="/zakat" element={<RoutePlaceholder title="04. Landing Zakat" description="Edukasi zakat, kalkulator zakat simulasi, dan daftar program zakat." pathInfo="/zakat" />} />
-      <Route path="/zakat/:slug" element={<RoutePlaceholder title="05. Detail Zakat" description="Detail program zakat khusus dengan tombol Zakat Sekarang dan mini kalkulator." pathInfo="/zakat/:slug" routeKind="zakat" />} />
-      <Route path="/infaq" element={<RoutePlaceholder title="06. Landing Infaq" description="Pengantar layanan infaq dan program kemaslahatan terkait." pathInfo="/infaq" />} />
-      <Route path="/sedekah" element={<RoutePlaceholder title="07. Landing Sedekah" description="Pengantar layanan sedekah harian dan program sosial terkait." pathInfo="/sedekah" />} />
-      <Route path="/wakaf" element={<RoutePlaceholder title="08. Landing Wakaf" description="Pengantar layanan wakaf produktif dan poster program wakaf utuh." pathInfo="/wakaf" />} />
+      <Route path="/program/:slug" element={<ProgramDetailPage />} />
+      <Route path="/zakat" element={<ZakatPage />} />
+      <Route path="/zakat/:slug" element={<ProgramDetailPage />} />
+      <Route path="/infaq" element={<InfaqPage />} />
+      <Route path="/sedekah" element={<SedekahPage />} />
+      <Route path="/wakaf" element={<WakafPage />} />
       <Route path="/donasi/:slug" element={<RoutePlaceholder title="09. Form Donasi" description="Formulir pemilihan nominal preset/manual, identitas donatur, dan doa dukungan." pathInfo="/donasi/:slug" routeKind="donation" />} />
       <Route path="/hasil-donasi" element={<RoutePlaceholder title="10. Hasil Simulasi Donasi" description="Bukti transaksi simulasi dengan nomor referensi OD-XXXXXX dan status transaksi." pathInfo="/hasil-donasi" />} />
       <Route path="/tentang" element={<RoutePlaceholder title="11. Tentang Kami" description="Informasi profil OpenDonasi sebagai digital giving infrastructure." pathInfo="/tentang" />} />
