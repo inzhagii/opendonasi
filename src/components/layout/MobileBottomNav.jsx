@@ -94,7 +94,7 @@ export function MobileBottomNav() {
       {/* Bar Navigasi Tetap Bawah (Mobile Only) */}
       <nav
         aria-label="Navigasi Bawah Mobile"
-        className="fixed bottom-0 inset-x-0 z-40 bg-white/98 backdrop-blur-md border-t border-border md:hidden"
+        className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200 md:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.05)]"
       >
         <div className="grid grid-cols-4 h-16 max-w-mobile mx-auto px-2">
           {/* Tab 1: Home */}

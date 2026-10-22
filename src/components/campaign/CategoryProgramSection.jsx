@@ -46,18 +46,19 @@ export function CategoryProgramSection({ className = '' }) {
 
   return (
     <section aria-labelledby="program-section-title" className={`w-full ${className}`}>
-      {/* Header Seksi */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-2">
+      {/* Header Seksi Terpusat */}
+      <div className="mb-6">
         <SectionHeading
           title="Program Donasi Pilihan"
           subtitle="Pilih kategori kebaikan dan salurkan bantuan langsung kepada mereka yang paling membutuhkan."
+          align="center"
         />
       </div>
 
-      {/* Baris Kategori Ikon */}
+      {/* Baris Kategori Ikon Terpusat */}
       <div className="mb-8">
-        {/* Mobile View: Horizontal Scrollable List (~3 item terlihat di awal) */}
-        <div className="flex md:hidden gap-2.5 overflow-x-auto snap-x scrollbar-none pb-2 px-1">
+        {/* Mobile View: Horizontal Scrollable List Terpusat */}
+        <div className="flex md:hidden gap-2.5 overflow-x-auto snap-x scrollbar-none pb-2 px-1 justify-start sm:justify-center">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
@@ -83,8 +84,8 @@ export function CategoryProgramSection({ className = '' }) {
           })}
         </div>
 
-        {/* Desktop View: Satu Baris (Semua + 4 Kategori + Popover 'Lainnya') */}
-        <div className="hidden md:flex items-center gap-3 flex-wrap">
+        {/* Desktop View: Satu Baris Terpusat (Semua + 4 Kategori + Popover 'Lainnya') */}
+        <div className="hidden md:flex items-center justify-center gap-3 flex-wrap">
           {desktopMainCategories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (

@@ -4,8 +4,10 @@ import { Routes, Route } from 'react-router-dom';
 import { HomePage } from '../features/home/HomePage';
 import { ProgramPage } from '../features/program/ProgramPage';
 import { ProgramDetailPage } from '../features/program/ProgramDetailPage';
+import { ProgramDonorsPage } from '../features/program/ProgramDonorsPage';
 import { SearchPage } from '../features/search/SearchPage';
 import { ZakatPage } from '../features/services/ZakatPage';
+import { ZakatCalculatorPage } from '../features/services/ZakatCalculatorPage';
 import { InfaqPage } from '../features/services/InfaqPage';
 import { SedekahPage } from '../features/services/SedekahPage';
 import { WakafPage } from '../features/services/WakafPage';
@@ -17,6 +19,7 @@ import { AboutPage } from '../features/info/AboutPage';
 import { FaqPage } from '../features/info/FaqPage';
 import { ContactPage } from '../features/info/ContactPage';
 import { NotFoundPage } from '../features/info/NotFoundPage';
+import { OrganizerProfilePage } from '../features/organizer/OrganizerProfilePage';
 
 export function AppRoutes() {
   return (
@@ -24,8 +27,11 @@ export function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/program" element={<ProgramPage />} />
       <Route path="/program/:slug" element={<ProgramDetailPage />} />
+      <Route path="/program/:slug/donatur" element={<ProgramDonorsPage />} />
       <Route path="/zakat" element={<ZakatPage />} />
+      <Route path="/zakat/kalkulator" element={<ZakatCalculatorPage />} />
       <Route path="/zakat/:slug" element={<ProgramDetailPage />} />
+      <Route path="/zakat/:slug/donatur" element={<ProgramDonorsPage />} />
       <Route path="/infaq" element={<InfaqPage />} />
       <Route path="/sedekah" element={<SedekahPage />} />
       <Route path="/wakaf" element={<WakafPage />} />
@@ -37,6 +43,8 @@ export function AppRoutes() {
       <Route path="/donasi-saya" element={<DonationHistoryPage />} />
       <Route path="/profil" element={<ProfilePage />} />
       <Route path="/search" element={<SearchPage />} />
+      <Route path="/penggalang/:organizerId" element={<OrganizerProfilePage />} />
+      <Route path="/yayasan/:organizerId" element={<OrganizerProfilePage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

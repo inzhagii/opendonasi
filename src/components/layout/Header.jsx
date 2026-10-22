@@ -1,14 +1,27 @@
-// Komponen Header/Navbar OpenDonasi dengan tata letak modern, full search bar expandable, dan responsif.
+// Komponen Header/Navbar OpenDonasi dengan tata letak modern, tanpa border pembatas ke hero, expandable search, dan popover menu tanpa arrow.
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logoImg from '../../assets/logo/logo.png';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import { Container } from '../ui/Container';
 
+const SEARCH_SUGGESTIONS = [
+  'Santri...',
+  'Bantu Bangun Masjid...',
+  'Sedekah Subuh Dhuafa...',
+  'Operasi Balita Sakit...',
+  'Ambulans Gratis Pelosok...',
+  'Zakat Penghasilan...',
+  'Wakaf Sumur Air Bersih...',
+  'Tanggap Darurat Bencana...',
+];
+
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isFullSearch, setIsFullSearch] = useState(false);
   const [openPopover, setOpenPopover] = useState(null); // 'layanan' | 'bantuan' | null
+  const [suggestionIndex, setSuggestionIndex] = useState(0);
+
   const fullSearchInputRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +33,14 @@ export function Header() {
   const bantuanRef = useClickOutside(() => {
     if (openPopover === 'bantuan') setOpenPopover(null);
   }, openPopover === 'bantuan');
+
+  // Interval animasi pergantian teks saran pencarian (ticker)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSuggestionIndex((prev) => (prev + 1) % SEARCH_SUGGESTIONS.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
 
   // Auto focus input ketika full search aktif
   useEffect(() => {
@@ -39,8 +60,9 @@ export function Header() {
   // Handle submit pencarian
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    const q = searchQuery.trim() || SEARCH_SUGGESTIONS[suggestionIndex].replace(/\.+$/, '');
+    if (q) {
+      navigate(`/search?q=${encodeURIComponent(q)}`);
       setIsFullSearch(false);
     }
   };
@@ -56,7 +78,7 @@ export function Header() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-[0_1px_3px_0_rgba(0,0,0,0.02)] transition-all duration-200">
+    <header className="sticky top-0 z-40 bg-white transition-all duration-200">
       {/* ========================================================================= */}
       {/* 1. KONDISI FULL SEARCH MODE (MENGGANTIKAN SELURUH NAVBAR SECARA PENUH)   */}
       {/* ========================================================================= */}
@@ -79,14 +101,14 @@ export function Header() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Cari program kebaikan, zakat, bencana, yayasan..."
-                className="w-full text-sm sm:text-base text-slate-800 placeholder:text-slate-400 bg-transparent focus:outline-none py-2"
+                className="w-full text-sm sm:text-base text-slate-800 placeholder:text-slate-400 bg-transparent focus:outline-none py-2 font-normal"
                 aria-label="Pencarian program donasi penuh"
               />
 
               {/* Tombol Aksi Cari */}
               <button
                 type="submit"
-                className="shrink-0 px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-full shadow-xs transition-all active:scale-95"
+                className="shrink-0 px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-full shadow-xs transition-all active:scale-95"
               >
                 Cari
               </button>
@@ -107,7 +129,7 @@ export function Header() {
         </div>
       ) : (
         /* ========================================================================= */
-        /* 2. KONDISI NAVBAR NORMAL (SESUAI GAMBAR REFERENSI PO)                     */
+        /* 2. KONDISI NAVBAR NORMAL (SESUAI GAMBAR REFERENSI PO TERBARU)             */
         /* ========================================================================= */
         <>
           {/* ===== HEADER DESKTOP (md:block) ===== */}
@@ -125,52 +147,41 @@ export function Header() {
                 </Link>
               </div>
 
-              {/* Sisi Tengah: Menu Navigasi (Program, Layanan, Tentang Kami, Bantuan) */}
-              <nav className="flex items-center gap-1 lg:gap-2 text-sm font-medium" aria-label="Navigasi Utama">
+              {/* Sisi Tengah: Menu Navigasi (Program, Layanan, Tentang Kami, Bantuan - TANPA ARROW) */}
+              <nav className="flex items-center gap-6 lg:gap-8 text-sm font-semibold text-slate-800" aria-label="Navigasi Utama">
                 {/* Menu Program */}
                 <Link
                   to="/program"
                   onClick={closePopovers}
-                  className={`px-3 py-1.5 rounded-lg text-[14px] transition-all duration-150 ${
+                  className={`transition-colors ${
                     isActive('/program')
-                      ? 'text-primary font-semibold'
-                      : 'text-slate-700 hover:text-primary hover:bg-slate-50'
+                      ? 'text-primary'
+                      : 'text-slate-800 hover:text-primary'
                   }`}
                 >
                   Program
                 </Link>
 
-                {/* Menu Layanan (Popover Interaktif) */}
+                {/* Menu Layanan (Tanpa Arrow, Popover saat diklik) */}
                 <div className="relative" ref={layananRef}>
                   <button
                     type="button"
                     onClick={() => setOpenPopover(openPopover === 'layanan' ? null : 'layanan')}
                     aria-expanded={openPopover === 'layanan'}
                     aria-haspopup="true"
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[14px] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                    className={`transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded ${
                       openPopover === 'layanan' || ['/zakat', '/infaq', '/sedekah', '/wakaf'].includes(location.pathname)
-                        ? 'text-primary font-semibold'
-                        : 'text-slate-700 hover:text-primary hover:bg-slate-50'
+                        ? 'text-primary'
+                        : 'text-slate-800 hover:text-primary'
                     }`}
                   >
-                    <span>Layanan</span>
-                    <svg
-                      className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                        openPopover === 'layanan' ? 'rotate-180 text-primary' : 'text-slate-400'
-                      }`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    Layanan
                   </button>
 
                   {openPopover === 'layanan' && (
                     <div
                       role="menu"
-                      className="absolute left-0 mt-2.5 w-80 bg-white rounded-2xl border border-slate-100 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
+                      className="absolute left-1/2 -translate-x-1/2 mt-3 w-80 bg-white rounded-2xl border border-slate-100 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
                     >
                       <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         Kategori Layanan
@@ -254,46 +265,35 @@ export function Header() {
                 <Link
                   to="/tentang"
                   onClick={closePopovers}
-                  className={`px-3 py-1.5 rounded-lg text-[14px] transition-all duration-150 ${
+                  className={`transition-colors ${
                     isActive('/tentang')
-                      ? 'text-primary font-semibold'
-                      : 'text-slate-700 hover:text-primary hover:bg-slate-50'
+                      ? 'text-primary'
+                      : 'text-slate-800 hover:text-primary'
                   }`}
                 >
                   Tentang Kami
                 </Link>
 
-                {/* Menu Bantuan (Popover) */}
+                {/* Menu Bantuan (Tanpa Arrow, Popover saat diklik) */}
                 <div className="relative" ref={bantuanRef}>
                   <button
                     type="button"
                     onClick={() => setOpenPopover(openPopover === 'bantuan' ? null : 'bantuan')}
                     aria-expanded={openPopover === 'bantuan'}
                     aria-haspopup="true"
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[14px] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                    className={`transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded ${
                       openPopover === 'bantuan' || ['/faq', '/kontak'].includes(location.pathname)
-                        ? 'text-primary font-semibold'
-                        : 'text-slate-700 hover:text-primary hover:bg-slate-50'
+                        ? 'text-primary'
+                        : 'text-slate-800 hover:text-primary'
                     }`}
                   >
-                    <span>Bantuan</span>
-                    <svg
-                      className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                        openPopover === 'bantuan' ? 'rotate-180 text-primary' : 'text-slate-400'
-                      }`}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    Bantuan
                   </button>
 
                   {openPopover === 'bantuan' && (
                     <div
                       role="menu"
-                      className="absolute left-0 mt-2.5 w-72 bg-white rounded-2xl border border-slate-100 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
+                      className="absolute left-1/2 -translate-x-1/2 mt-3 w-72 bg-white rounded-2xl border border-slate-100 shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12)] p-2 z-50 animate-in fade-in zoom-in-95 duration-150"
                     >
                       <Link
                         to="/faq"
@@ -333,42 +333,57 @@ export function Header() {
                 </div>
               </nav>
 
-              {/* Sisi Kanan: Search Input Pill & Tombol Sign In / Login */}
+              {/* Sisi Kanan: Search Input Pill Bergaris Biru & Tombol Sign In / Login */}
               <div className="flex items-center gap-3 shrink-0">
-                {/* Search Bar Pill (Klik untuk membuka Full Search Mode) */}
+                {/* Search Bar Pill (Border Biru dengan Ticker Saran Pencarian Bergerak) */}
                 <div
-                  onClick={() => setIsFullSearch(true)}
-                  className="cursor-pointer relative w-44 lg:w-52 flex items-center bg-slate-50/90 hover:bg-slate-100/90 border border-slate-200/90 rounded-full px-3 py-1.5 transition-all text-xs text-slate-400 group"
+                  onClick={() => navigate('/search')}
+                  className="cursor-pointer relative h-10 w-52 lg:w-60 flex items-center bg-white hover:bg-slate-50/50 border border-primary/70 hover:border-primary rounded-full px-3.5 transition-all text-sm text-slate-400 group shadow-2xs"
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      setIsFullSearch(true);
+                      navigate('/search');
                     }
                   }}
-                  aria-label="Buka pencarian penuh"
+                  aria-label="Buka halaman pencarian"
                 >
-                  <svg className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors mr-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-primary mr-2.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <span className="truncate">{searchQuery ? searchQuery : 'Search...'}</span>
+                  {searchQuery ? (
+                    <span className="truncate text-slate-700">{searchQuery}</span>
+                  ) : (
+                    <div className="h-5 overflow-hidden flex-1 relative">
+                      <div
+                        className="transition-transform duration-500 ease-in-out flex flex-col"
+                        style={{ transform: `translateY(-${suggestionIndex * 20}px)` }}
+                      >
+                        {SEARCH_SUGGESTIONS.map((item, idx) => (
+                          <span key={idx} className="h-5 flex items-center text-xs text-slate-400 select-none truncate">
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
-                {/* Tombol Sign In (Rounded-Full Pill, Soft Blue Background & Border, Blue Text) */}
+                {/* Tombol Sign In (Pill Lembut Biru Muda & Teks Biru) */}
                 <Link to="/profil" onClick={closePopovers}>
                   <button
                     type="button"
-                    className="px-4 py-1.5 text-xs font-semibold text-primary bg-[#EBF3FE] hover:bg-primary/15 border border-primary/20 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95"
+                    className="h-10 px-5 text-sm font-semibold text-primary bg-[#E8F1FD] hover:bg-[#d8e8fc] rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 inline-flex items-center justify-center"
                   >
                     Sign In
                   </button>
                 </Link>
 
-                {/* Tombol Login (Rounded-Full Pill, Solid Primary Blue Background, White Text) */}
+                {/* Tombol Login (Pill Biru Solid & Teks Putih) */}
                 <Link to="/profil" onClick={closePopovers}>
                   <button
                     type="button"
-                    className="px-4.5 py-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary-hover rounded-full shadow-2xs hover:shadow-xs transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95"
+                    className="h-10 px-6 text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 inline-flex items-center justify-center"
                   >
                     Login
                   </button>
@@ -377,26 +392,57 @@ export function Header() {
             </Container>
           </div>
 
-          {/* ===== HEADER MOBILE RINGKAS (md:hidden) ===== */}
-          <div className="block md:hidden px-4 py-3">
-            <div className="flex items-center justify-between gap-3">
-              {/* Logo Mobile */}
-              <Link to="/" onClick={closePopovers} className="shrink-0 flex items-center" aria-label="Kembali ke Beranda OpenDonasi">
+          {/* ===== HEADER MOBILE FULL WIDTH SEARCH (md:hidden) ===== */}
+          {/* Sesuai referensi visual: Logo di sebelah kiri dibatasi rapi, search bar mengambil sisa lebar penuh (full width) dengan saran bergerak */}
+          <div className="block md:hidden px-3.5 py-2.5 bg-white border-b border-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+            <div className="flex items-center gap-2.5 sm:gap-3 w-full">
+              {/* Logo Mobile (Dengan perbatasan yang jelas ke search bar) */}
+              <Link
+                to="/"
+                onClick={closePopovers}
+                className="shrink-0 flex items-center pr-1.5 focus:outline-none"
+                aria-label="Kembali ke Beranda OpenDonasi"
+              >
                 <img src={logoImg} alt="OpenDonasi" className="h-7 w-auto object-contain" />
               </Link>
 
-              {/* Tombol Search Mobile (Pill Shape: Klik untuk Buka Full Search Navbar) */}
-              <button
-                type="button"
-                onClick={() => setIsFullSearch(true)}
-                className="flex-1 max-w-[200px] flex items-center gap-2 bg-slate-50 border border-slate-200/90 rounded-full px-3 py-1.5 text-xs text-slate-400 active:bg-slate-100 transition-colors"
-                aria-label="Buka pencarian"
+              {/* Garis / Perbatasan Halus antara Logo & Search Bar */}
+              <div className="h-6 w-px bg-slate-200 shrink-0" aria-hidden="true" />
+
+              {/* Search Bar Full Width Mobile (Klik langsung membuka halaman search) */}
+              <div
+                onClick={() => navigate('/search')}
+                role="button"
+                tabIndex={0}
+                className="flex-1 min-w-0 relative flex items-center bg-white border border-slate-200/90 rounded-xl sm:rounded-2xl h-10 px-3 transition-all duration-200 shadow-2xs cursor-pointer active:scale-[0.99]"
+                aria-label="Buka halaman pencarian"
               >
-                <svg className="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span className="truncate">Search...</span>
-              </button>
+                {/* Ikon Kaca Pembesar (Warna biru utama #2E7DFA sesuai DESIGN_SYSTEM.md) */}
+                <div className="shrink-0 text-primary mr-2">
+                  <svg className="w-4 h-4 stroke-[2.2]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
+                {/* Ticker Saran Pencarian Bergerak */}
+                <div className="relative flex-1 h-full flex items-center overflow-hidden">
+                  <div className="h-5 overflow-hidden w-full relative">
+                    <div
+                      className="transition-transform duration-500 ease-in-out flex flex-col"
+                      style={{ transform: `translateY(-${suggestionIndex * 20}px)` }}
+                    >
+                      {SEARCH_SUGGESTIONS.map((item, idx) => (
+                        <span
+                          key={idx}
+                          className="h-5 flex items-center text-xs sm:text-sm text-slate-400 select-none truncate"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </>

@@ -40,21 +40,6 @@ export function FaqPage() {
   return (
     <div className="w-full py-6 md:py-12">
       <Container>
-        {/* Breadcrumb Navigasi */}
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium" aria-current="page">
-              FAQ
-            </li>
-          </ol>
-        </nav>
-
         {/* Kontainer Utama Terpusat */}
         <div className="max-w-3xl mx-auto space-y-8">
           {/* Header Utama */}
@@ -90,7 +75,7 @@ export function FaqPage() {
                 className="w-full pl-11 pr-10 py-3 text-sm rounded-xl border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary shadow-xs placeholder:text-slate-400"
               />
               <svg
-                className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                className="w-5 h-5 text-primary absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

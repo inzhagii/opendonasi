@@ -61,7 +61,7 @@ export function QuickServiceBar({ className = '' }) {
       {/* Judul Akses Cepat */}
       <h2
         id="quick-service-title"
-        className="text-xl sm:text-2xl md:text-[26px] font-bold text-slate-900 text-center tracking-tight mb-8"
+        className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 text-center tracking-tight leading-tight mb-8"
       >
         Mau berbuat baik apa hari ini
       </h2>
@@ -91,8 +91,8 @@ export function QuickServiceBar({ className = '' }) {
                 <div
                   className="w-7 h-7 sm:w-9 sm:h-9 bg-white group-hover:bg-primary transition-colors duration-200 pointer-events-none"
                   style={{
-                    maskImage: `url(${service.icon})`,
-                    WebkitMaskImage: `url(${service.icon})`,
+                    maskImage: `url("${service.icon}")`,
+                    WebkitMaskImage: `url("${service.icon}")`,
                     maskRepeat: 'no-repeat',
                     WebkitMaskRepeat: 'no-repeat',
                     maskPosition: 'center',

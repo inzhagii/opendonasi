@@ -15,21 +15,6 @@ export function ContactPage() {
   return (
     <div className="w-full py-6 md:py-12">
       <Container>
-        {/* Breadcrumb Navigasi */}
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium" aria-current="page">
-              Kontak Bantuan
-            </li>
-          </ol>
-        </nav>
-
         {/* Kontainer Utama Terpusat */}
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Header Utama */}
@@ -205,11 +190,6 @@ export function ContactPage() {
               <Link to="/tentang" className="w-full sm:w-auto">
                 <Button variant="primary" size="md" isFullWidth className="font-bold">
                   Pelajari Lebih Lanjut Tentang Kami
-                </Button>
-              </Link>
-              <Link to="/" className="w-full sm:w-auto">
-                <Button variant="outline" size="md" isFullWidth>
-                  Kembali ke Beranda
                 </Button>
               </Link>
             </div>

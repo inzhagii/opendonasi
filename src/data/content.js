@@ -12,6 +12,7 @@ import iconLovely from '../assets/icons/icons_layanan/lovely.svg';
 import iconDevices from '../assets/icons/icons_layanan/devices.svg';
 import iconCourier from '../assets/icons/icons_layanan/courier-express-.svg';
 import iconMessages from '../assets/icons/icons_layanan/messages.svg';
+import iconZakat from '../assets/icons/icons_kategori/zakat.svg';
 
 export const BANNERS = [
   {
@@ -56,14 +57,14 @@ export const SERVICES = [
     id: 'zakat',
     name: 'Zakat',
     route: '/zakat',
-    icon: iconMessages,
+    icon: iconZakat,
     desc: 'Hitung dan tunaikan zakat maal & penghasilan',
   },
   {
     id: 'infaq',
     name: 'Infaq',
     route: '/infaq',
-    icon: iconDevices,
+    icon: iconMessages,
     desc: 'Salurkan infaq kemaslahatan sarana ibadah',
   },
   {
@@ -112,6 +113,76 @@ export const PRAYERS = [
     message: 'Lekas sembuh untuk para korban, semoga relawan selalu dalam perlindungan Allah SWT.',
     aminCount: 45,
     createdAt: '1 jam yang lalu',
+  },
+  {
+    id: 'pray-004',
+    donorName: 'Budi Santoso',
+    campaignTitle: 'Paket Perlengkapan Belajar & Beasiswa Yatim Dhuafa',
+    campaignSlug: 'beasiswa-santri-yatim-dhuafa',
+    amount: 150000,
+    message: 'Bismillah, semoga sedikit rezeki ini bermanfaat untuk adik-adik santri yatim agar terus bersemangat menggapai cita-cita.',
+    aminCount: 38,
+    createdAt: '2 jam yang lalu',
+  },
+  {
+    id: 'pray-005',
+    donorName: 'Nurul Hidayah',
+    campaignTitle: 'Tunaikan Zakat Penghasilan Bantu Pangan Mustahik',
+    campaignSlug: 'zakat-penghasilan-bantu-mustahik',
+    amount: 500000,
+    message: 'Alhamdulillah telah ditunaikan zakat penghasilan bulan ini. Semoga membersihkan harta dan membawa berkah bagi keluarga.',
+    aminCount: 56,
+    createdAt: '3 jam yang lalu',
+  },
+  {
+    id: 'pray-006',
+    donorName: 'Hendra Wijaya',
+    campaignTitle: 'Sedekah Gotong Royong Sarana Air Bersih & Bersuci',
+    campaignSlug: 'sedekah-renovasi-sarana-ibadah',
+    amount: 100000,
+    message: 'Semoga instalasi air bersih segera terwujud agar warga dan jamaah masjid tidak lagi kesulitan bersuci saat kemarau.',
+    aminCount: 19,
+    createdAt: '4 jam yang lalu',
+  },
+  {
+    id: 'pray-007',
+    donorName: 'Hamba Allah',
+    campaignTitle: 'Bantuan Pangan Pokok & Nutrisi Lansia Pra-Sejahtera',
+    campaignSlug: 'paket-pangan-lansia-dhuafa',
+    amount: 75000,
+    message: 'Doa tulus untuk kakek nenek lansia dhuafa, semoga selalu sehat, diberi kebahagiaan dan kecukupan hidup sehari-hari.',
+    aminCount: 62,
+    createdAt: '5 jam yang lalu',
+  },
+  {
+    id: 'pray-008',
+    donorName: 'Maya Kartika',
+    campaignTitle: 'Dukungan Operasional dan Logistik Armada Relawan',
+    campaignSlug: 'dukung-operasional-ambulans-gratis',
+    amount: 200000,
+    message: 'Terima kasih para relawan yang tulus mengabdi. Semoga armada ambulans terus siaga melayani pasien dhuafa di pelosok.',
+    aminCount: 31,
+    createdAt: '6 jam yang lalu',
+  },
+  {
+    id: 'pray-009',
+    donorName: 'Dimas Pratama',
+    campaignTitle: 'Layanan Pengobatan Gratis & Vitamin Warga Pelosok',
+    campaignSlug: 'layanan-kesehatan-keliling-desa',
+    amount: 50000,
+    message: 'Semoga donasi ini membawa kesembuhan bagi bapak ibu di pelosok desa yang sulit menjangkau fasilitas kesehatan.',
+    aminCount: 27,
+    createdAt: '7 jam yang lalu',
+  },
+  {
+    id: 'pray-010',
+    donorName: 'Rina Marlina',
+    campaignTitle: 'Bangun Pesantren Bangun Peradaban Santri Pelosok',
+    campaignSlug: 'bantu-sarana-belajar-pesantren',
+    amount: 300000,
+    message: 'Wakaf jariyah atas nama almarhum kedua orang tua, semoga pahalanya terus mengalir menjadi penerang kubur mereka. Aamiin.',
+    aminCount: 84,
+    createdAt: '8 jam yang lalu',
   },
 ];
 

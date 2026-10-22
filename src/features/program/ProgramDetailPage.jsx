@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { CAMPAIGNS, CAMPAIGN_UPDATES, CATEGORIES } from '../../data/campaigns';
 import { PRAYERS } from '../../data/content';
+import { getOrganizerSlug } from '../../data/organizers';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -239,26 +240,20 @@ export function ProgramDetailPage() {
   return (
     <div className="w-full py-4 sm:py-6 md:py-10 pb-28 lg:pb-12 bg-white">
       <Container>
-        {/* Navigasi Breadcrumb Desktop */}
-        <nav aria-label="Breadcrumb" className="hidden lg:block mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link to="/program" className="hover:text-primary transition-colors">
-                Program
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium truncate" aria-current="page">
-              {title}
-            </li>
-          </ol>
-        </nav>
+        {/* Tombol Kembali Bersih */}
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary transition-colors px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50"
+            aria-label="Kembali ke halaman sebelumnya"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Kembali</span>
+          </button>
+        </div>
 
         {/* Layout Utama: Desktop Dua Kolom, Mobile Satu Kolom */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -310,10 +305,20 @@ export function ProgramDetailPage() {
 
               {/* Judul & Deskripsi Singkat Langsung Di Bawah Banner (Sesuai Screenshot 1) */}
               <div className="space-y-1.5 pt-1">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <Badge variant="neutral" size="sm" className="capitalize">
                     {categoryName}
                   </Badge>
+                  <Link
+                    to={`/penggalang/${getOrganizerSlug(organizer?.name)}`}
+                    className="inline-flex items-center gap-1 text-xs text-text-secondary hover:text-primary transition-colors font-medium group"
+                    title={`Lihat profil ${organizer?.name || 'yayasan penggalang'}`}
+                  >
+                    <span className="group-hover:underline">{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
+                    <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </Link>
                 </div>
                 <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 leading-snug tracking-tight">
                   {title}
@@ -390,10 +395,18 @@ export function ProgramDetailPage() {
                           <span>{typeof daysLeft === 'number' ? `${daysLeft} Hari` : '∞'}</span>
                         </div>
                       </div>
-                      <div className="col-span-2 pt-1 border-t border-slate-200/60">
-                        <span className="text-slate-500 block text-[11px]">Donatur Terkumpul</span>
-                        <strong className="text-slate-800 font-bold">{formatNumber(donorCount)} Donatur</strong>
-                      </div>
+                      <Link
+                        to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                        className="col-span-2 pt-1 border-t border-slate-200/60 flex items-center justify-between group hover:opacity-90 transition-opacity cursor-pointer"
+                      >
+                        <div>
+                          <span className="text-slate-500 block text-[11px]">Donatur Terkumpul</span>
+                          <strong className="text-slate-800 font-bold group-hover:text-primary transition-colors">{formatNumber(donorCount)} Donatur</strong>
+                        </div>
+                        <svg className="w-4 h-4 text-slate-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -438,10 +451,14 @@ export function ProgramDetailPage() {
                 Informasi Mitra
               </h2>
 
-              <div className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between gap-3 shadow-2xs hover:border-slate-300 transition-colors">
+              <Link
+                to={`/penggalang/${getOrganizerSlug(organizer?.name)}`}
+                className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center justify-between gap-3 shadow-2xs hover:border-primary/50 hover:shadow-xs transition-all group cursor-pointer block"
+                title={`Kunjungi profil lengkap ${organizer?.name || 'yayasan mitra'}`}
+              >
                 <div className="flex items-center gap-3.5 min-w-0">
                   {/* Logo Bulat Mitra Empat Warna */}
-                  <div className="w-11 h-11 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-2xs">
+                  <div className="w-11 h-11 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 shadow-2xs group-hover:border-primary/30 transition-colors">
                     <svg className="w-7 h-7" viewBox="0 0 40 40" fill="none">
                       <circle cx="20" cy="20" r="18" fill="#F0FDF4" />
                       <path d="M14 16C14 13.7909 15.7909 12 18 12C20.2091 12 22 13.7909 22 16C22 18.2091 20.2091 20 18 20C15.7909 20 14 18.2091 14 16Z" fill="#0EA5E9" />
@@ -452,8 +469,8 @@ export function ProgramDetailPage() {
                   </div>
 
                   <div className="min-w-0">
-                    <h3 className="text-sm font-bold text-slate-900 truncate">
-                      {organizer?.name || 'Yayasan Mitra OpenDonasi'}
+                    <h3 className="text-sm font-bold text-slate-900 truncate group-hover:text-primary transition-colors flex items-center gap-1.5">
+                      <span>{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
                     </h3>
                     <div className="mt-1">
                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-primary border border-blue-100">
@@ -466,12 +483,12 @@ export function ProgramDetailPage() {
                   </div>
                 </div>
 
-                <div className="text-slate-400 shrink-0">
+                <div className="text-slate-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
-              </div>
+              </Link>
             </div>
 
             {/* DIVIDER SECTION */}
@@ -607,25 +624,30 @@ export function ProgramDetailPage() {
             {/* DIVIDER SECTION */}
             <div className="border-t-8 border-slate-100 -mx-4 sm:-mx-6 my-6" />
 
-            {/* 5. BAGIAN E — DONATUR (Pengganti Fundraiser Sesuai Screenshot 2) */}
+            {/* 5. BAGIAN E — DONATUR (Menghubungkan ke Halaman Donatur Lengkap) */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-base sm:text-lg font-bold text-slate-900">
-                  Donatur
-                </h2>
+                <Link
+                  to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                  className="group inline-flex items-center gap-1.5 cursor-pointer"
+                >
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">
+                    Donatur
+                  </h2>
+                  <span className="text-xs text-slate-400 font-normal">
+                    ({formatNumber(donorCount || campaignDonors.length)})
+                  </span>
+                </Link>
 
-                {campaignDonors.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setIsAllDonorsModalOpen(true)}
-                    className="text-xs sm:text-sm font-semibold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer"
-                  >
-                    <span>Semua Donatur</span>
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                )}
+                <Link
+                  to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                  className="text-xs sm:text-sm font-semibold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer"
+                >
+                  <span>Semua Donatur</span>
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </div>
 
               {campaignDonors.length === 0 ? (
@@ -633,31 +655,45 @@ export function ProgramDetailPage() {
                   Belum ada donatur untuk program ini. Jadilah donatur pertama!
                 </div>
               ) : (
-                <div className="divide-y divide-slate-100">
-                  {campaignDonors.slice(0, 5).map((donor, idx) => (
-                    <div key={donor.id || idx} className="py-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        {/* Avatar Bulat dengan Inisial Sesuai Screenshot 2 */}
-                        <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">
-                          {getInitials(donor.name)}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-xs sm:text-sm font-bold text-slate-900 truncate">
-                            {donor.name}
+                <div className="space-y-2.5">
+                  <div className="divide-y divide-slate-100">
+                    {campaignDonors.slice(0, 5).map((donor, idx) => (
+                      <Link
+                        key={donor.id || idx}
+                        to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                        className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 -mx-2 px-2 rounded-xl transition-colors group cursor-pointer"
+                        title="Buka daftar lengkap donatur"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          {/* Avatar Bulat dengan Inisial Sesuai Screenshot */}
+                          <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary-soft group-hover:text-primary transition-colors">
+                            {getInitials(donor.name)}
                           </div>
-                          <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-                            {donor.timeAgo}
+                          <div className="min-w-0">
+                            <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors truncate">
+                              {donor.name}
+                            </div>
+                            <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                              {donor.timeAgo}
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="text-right shrink-0">
-                        <span className="text-xs sm:text-sm font-semibold text-slate-800">
-                          {formatRupiah(donor.amount)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                        <div className="text-right shrink-0">
+                          <span className="text-xs sm:text-sm font-semibold text-slate-800">
+                            {formatRupiah(donor.amount)}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+
+                  <Link
+                    to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                    className="block w-full py-2.5 text-center text-xs sm:text-sm font-semibold text-primary bg-primary-soft hover:bg-primary/10 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Lihat Semua Donatur ({formatNumber(donorCount || campaignDonors.length)})
+                  </Link>
                 </div>
               )}
             </div>
@@ -744,10 +780,18 @@ export function ProgramDetailPage() {
                   </div>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-text-secondary">
-                  <span>Dukungan Terkumpul</span>
-                  <strong className="text-slate-800 font-semibold">{formatNumber(donorCount)} Donatur</strong>
-                </div>
+                <Link
+                  to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                  className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-text-secondary hover:text-primary group transition-colors cursor-pointer"
+                >
+                  <span className="group-hover:text-primary transition-colors">Dukungan Terkumpul</span>
+                  <strong className="text-slate-800 font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                    <span>{formatNumber(donorCount)} Donatur</span>
+                    <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </strong>
+                </Link>
               </div>
 
               {/* Tombol Aksi Desktop */}
@@ -901,13 +945,19 @@ export function ProgramDetailPage() {
 
             <div className="overflow-y-auto divide-y divide-slate-100 flex-1 pr-1">
               {campaignDonors.map((donor, idx) => (
-                <div key={donor.id || idx} className="py-3 flex items-center justify-between gap-3">
+                <Link
+                  key={donor.id || idx}
+                  to={`/penggalang/${getOrganizerSlug(organizer?.name)}`}
+                  onClick={() => setIsAllDonorsModalOpen(false)}
+                  className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 -mx-1 px-2 rounded-xl transition-colors group cursor-pointer block"
+                  title={`Lihat profil yayasan penggalang program ini`}
+                >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary-soft group-hover:text-primary transition-colors">
                       {getInitials(donor.name)}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-xs font-bold text-slate-900 truncate">
+                      <div className="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors truncate">
                         {donor.name}
                       </div>
                       <div className="text-[11px] text-slate-400 mt-0.5">
@@ -919,7 +969,7 @@ export function ProgramDetailPage() {
                   <span className="text-xs font-semibold text-slate-800 shrink-0">
                     {formatRupiah(donor.amount)}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
 

@@ -1,8 +1,9 @@
 // Komponen Kartu Program OpenDonasi (Card Biasa Desktop & Card Horizontal Mobile)
 // Sesuai panduan visual referensi Gambar 1 (Card Biasa) & Gambar 2 (Card Horizontal).
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { formatRupiah } from '../../lib/formatters';
+import { getOrganizerSlug } from '../../data/organizers';
 import timeIcon from '../../assets/icons/icons_kategori/time.svg';
 
 /**
@@ -13,6 +14,7 @@ import timeIcon from '../../assets/icons/icons_kategori/time.svg';
  *    - Urutan: Organizer + Verified -> Judul Program -> Label Dana & Sisa Hari -> Nilai Nominal (Biru) & Sisa Hari (Biru) -> Progress Bar + Titik Dot Selalu Terlihat + Tooltip Persentase saat Hover.
  */
 function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
+  const navigate = useNavigate();
   const {
     title,
     organizer,
@@ -23,13 +25,13 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
   } = campaign;
 
   return (
-    <article className="group bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs hover:border-slate-300 transition-colors w-full h-full flex flex-col">
+    <article className="group bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 transition-colors w-full h-full flex flex-col relative">
       <Link
         to={targetRoute}
         className="flex flex-col h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         {/* Wadah Banner: ~350px x 200px */}
-        <div className="relative w-full h-[200px] overflow-hidden bg-slate-100 shrink-0">
+        <div className="relative w-full h-[200px] overflow-hidden bg-slate-100 shrink-0 rounded-t-2xl">
           {image ? (
             <img
               src={image}
@@ -46,12 +48,23 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
           )}
         </div>
 
-        {/* Wadah Keterangan: ~200px, pt-4 (16px), px-6 (24px), pb-12 (48px) */}
-        <div className="h-[200px] pt-4 px-6 pb-12 flex flex-col justify-between flex-1">
+        {/* Wadah Keterangan: ~200px, pt-4 (16px), px-6 (24px), pb-6 (24px) */}
+        <div className="min-h-[200px] pt-4 px-6 pb-6 flex flex-col justify-between flex-1">
           {/* Bagian Atas: Organizer + Verified Badge, lalu Judul Program */}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-              <span className="truncate">{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/penggalang/${getOrganizerSlug(organizer?.name)}`);
+                }}
+                className="hover:text-primary hover:underline transition-colors truncate text-left cursor-pointer z-10 focus:outline-none"
+                title={`Kunjungi profil ${organizer?.name || 'yayasan penggalang'}`}
+              >
+                {organizer?.name || 'Yayasan Mitra OpenDonasi'}
+              </button>
               <svg
                 className="w-3.5 h-3.5 text-primary shrink-0"
                 fill="currentColor"
@@ -100,7 +113,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
             </div>
 
             {/* Bilah Progres Bar dengan Titik Dot & Tooltip Persentase saat Hover */}
-            <div className="relative mt-2.5">
+            <div className="relative mt-2.5 pb-2">
               <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                 <div
                   className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
@@ -110,19 +123,19 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
 
               {/* Titik Dot Indikator (Selalu terlihat di ujung progres bar) */}
               <div
-                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
+                className="absolute top-[3px] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
                 style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
               />
 
-              {/* Tooltip Persen saat Hover */}
+              {/* Tooltip Persen saat Hover (Di Bawah Titik Dot Indikator) */}
               <div
-                className="absolute bottom-full mb-1.5 -translate-x-1/2 z-20 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                className="absolute top-full mt-0.5 -translate-x-1/2 z-30 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
                 style={{ left: `${Math.min(92, Math.max(8, calculatedPercentage))}%` }}
               >
+                <div className="w-1.5 h-1.5 -mb-0.5 rotate-45 bg-[#EEF4FF] border-t border-l border-primary/20" />
                 <div className="bg-[#EEF4FF] border border-primary/20 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded shadow-xs whitespace-nowrap">
                   {calculatedPercentage}%
                 </div>
-                <div className="w-1.5 h-1.5 -mt-0.5 rotate-45 bg-[#EEF4FF] border-b border-r border-primary/20" />
               </div>
             </div>
           </div>
@@ -138,6 +151,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
  *    - Urutan: Judul Program (Besar & Tebal) -> Organizer + Verified -> Progress Bar + Titik Dot -> Nilai Nominal (Besar Biru) & Sisa Hari (Biru) -> Label Dana Terkumpul & Sisa Hari di bawahnya.
  */
 function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
+  const navigate = useNavigate();
   const {
     title,
     organizer,
@@ -184,7 +198,18 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
 
             {/* 2. Nama Penggalang / Yayasan dengan Badge Terverifikasi */}
             <div className="mt-1 text-[11px] sm:text-xs text-text-secondary flex items-center gap-1 truncate">
-              <span className="truncate">{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate(`/penggalang/${getOrganizerSlug(organizer?.name)}`);
+                }}
+                className="hover:text-primary hover:underline transition-colors truncate text-left cursor-pointer z-10 focus:outline-none"
+                title={`Kunjungi profil ${organizer?.name || 'yayasan penggalang'}`}
+              >
+                {organizer?.name || 'Yayasan Mitra OpenDonasi'}
+              </button>
               <svg
                 className="w-3.5 h-3.5 text-primary shrink-0"
                 fill="currentColor"
@@ -216,11 +241,12 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
                 style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
               />
 
-              {/* Tooltip Persen saat Hover */}
+              {/* Tooltip Persen saat Hover (Di Bawah Titik Dot Indikator) */}
               <div
-                className="absolute bottom-full mb-1 -translate-x-1/2 z-20 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                className="absolute top-full mt-1.5 -translate-x-1/2 z-20 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
                 style={{ left: `${Math.min(90, Math.max(10, calculatedPercentage))}%` }}
               >
+                <div className="w-1.5 h-1.5 -mb-0.5 rotate-45 bg-[#EEF4FF] border-t border-l border-primary/20" />
                 <div className="bg-[#EEF4FF] border border-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.2 rounded shadow-xs whitespace-nowrap">
                   {calculatedPercentage}%
                 </div>

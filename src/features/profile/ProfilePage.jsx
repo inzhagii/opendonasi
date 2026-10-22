@@ -45,21 +45,6 @@ export function ProfilePage() {
   return (
     <div className="w-full py-6 md:py-10">
       <Container>
-        {/* Navigasi Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium" aria-current="page">
-              Profil Saya
-            </li>
-          </ol>
-        </nav>
-
         {/* Kontainer Utama Terpusat */}
         <div className="max-w-3xl mx-auto space-y-6">
           {/* Feedback Notifikasi Aksi */}

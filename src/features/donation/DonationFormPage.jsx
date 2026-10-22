@@ -1,19 +1,21 @@
 // Halaman formulir donasi OpenDonasi (/donasi/:slug).
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { formatRupiah } from '../../lib/formatters';
 import { useDonation } from '../../hooks/useDonation';
+import { getOrganizerSlug } from '../../data/organizers';
 
 const PRESET_AMOUNTS = [10000, 25000, 50000, 100000];
 const MIN_AMOUNT = 10000;
 
 export function DonationFormPage() {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { addDonation, currentUser } = useDonation();
 
@@ -25,9 +27,24 @@ export function DonationFormPage() {
   // Alur langkah: 'form' (pengisian) | 'confirm' (pratinjau ringkasan)
   const [step, setStep] = useState('form');
 
+  // Baca nominal awal dari query parameter (misal dari kalkulator zakat)
+  const initialAmount = useMemo(() => {
+    const qAmount = searchParams.get('amount');
+    if (qAmount) {
+      const cleanNum = parseInt(qAmount.replace(/\D/g, ''), 10);
+      if (cleanNum && cleanNum >= 1000) {
+        return String(cleanNum);
+      }
+    }
+    return '50000';
+  }, [searchParams]);
+
   // State formulir
-  const [selectedPreset, setSelectedPreset] = useState(50000);
-  const [nominalInput, setNominalInput] = useState('50000');
+  const [selectedPreset, setSelectedPreset] = useState(() => {
+    const num = parseInt(initialAmount, 10);
+    return PRESET_AMOUNTS.includes(num) ? num : null;
+  });
+  const [nominalInput, setNominalInput] = useState(initialAmount);
   const [donorName, setDonorName] = useState(currentUser?.name || '');
   const [donorEmail, setDonorEmail] = useState(currentUser?.email || '');
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -190,35 +207,18 @@ export function DonationFormPage() {
   return (
     <div className="w-full py-6 md:py-10">
       <Container>
-        {/* Navigasi Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li>
-              <Link to="/program" className="hover:text-primary transition-colors">
-                Program
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="truncate">
-              <Link
-                to={`/program/${campaign.slug}`}
-                className="hover:text-primary transition-colors truncate"
-              >
-                {campaign.title}
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium" aria-current="page">
-              Formulir Donasi
-            </li>
-          </ol>
-        </nav>
+        {/* Tombol Kembali Sederhana */}
+        <div className="mb-6">
+          <Link
+            to={`/program/${campaign.slug}`}
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 hover:text-primary transition-colors group"
+          >
+            <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Kembali ke Detail Program</span>
+          </Link>
+        </div>
 
         {/* Layout Utama: Desktop Dua Kolom, Mobile Satu Kolom */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -252,10 +252,18 @@ export function DonationFormPage() {
                   {campaign.title}
                 </h2>
                 <p className="mt-1.5 text-xs text-text-secondary flex items-center gap-1.5">
-                  <span>{campaign.organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
-                  <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
+                  <Link
+                    to={`/penggalang/${getOrganizerSlug(campaign.organizer?.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary hover:underline transition-colors font-medium inline-flex items-center gap-1"
+                    title={`Lihat profil ${campaign.organizer?.name || 'yayasan mitra'} (tab baru)`}
+                  >
+                    <span>{campaign.organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
+                    <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </Link>
                 </p>
               </div>
 

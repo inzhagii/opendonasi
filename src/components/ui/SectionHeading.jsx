@@ -14,14 +14,18 @@ export function SectionHeading({
 
   return (
     <div
-      className={`flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8 ${isCenter ? 'text-center md:flex-col md:items-center' : ''} ${className}`}
+      className={`flex flex-col ${
+        isCenter
+          ? 'items-center text-center justify-center'
+          : 'md:flex-row md:items-end justify-between'
+      } gap-3 mb-6 md:mb-8 ${className}`}
     >
       <div className={isCenter ? 'max-w-2xl mx-auto' : 'max-w-2xl'}>
-        <h2 className="text-h2-mobile md:text-h2 font-bold text-text-primary tracking-tight">
+        <h2 className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 tracking-tight leading-tight">
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-1.5 md:mt-2 text-sm md:text-base text-text-secondary leading-relaxed">
+          <p className="mt-2 text-sm sm:text-base text-slate-500 leading-relaxed max-w-xl mx-auto">
             {subtitle}
           </p>
         )}

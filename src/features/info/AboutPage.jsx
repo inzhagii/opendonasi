@@ -15,21 +15,6 @@ export function AboutPage() {
   return (
     <div className="w-full py-6 md:py-12">
       <Container>
-        {/* Breadcrumb Navigasi */}
-        <nav aria-label="Breadcrumb" className="mb-6">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium" aria-current="page">
-              Tentang Kami
-            </li>
-          </ol>
-        </nav>
-
         {/* Kontainer Utama Terpusat */}
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Header Utama Halaman */}

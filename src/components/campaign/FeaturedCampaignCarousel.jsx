@@ -2,7 +2,7 @@
 // Mengimplementasikan 3 main card di tengah, 2 peek card di kiri dan kanan, infinite looping tanpa henti, shadow putih, dan tombol arrow.
 
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+
 import { CAMPAIGNS } from '../../data/campaigns';
 import { CampaignCard } from './CampaignCard';
 import { SectionHeading } from '../ui/SectionHeading';
@@ -176,22 +176,12 @@ export function FeaturedCampaignCarousel({ className = '' }) {
 
   return (
     <section aria-labelledby="featured-section-title" className={`w-full ${className}`}>
-      {/* Header Seksi */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-2">
+      {/* Header Seksi Terpusat */}
+      <div className="mb-6">
         <SectionHeading
           title="Ada Kebaikan yang Menantimu"
           subtitle="Bantu program darurat dan kemanusiaan paling mendesak yang membutuhkan uluran tangan Anda."
-          action={
-            <Link
-              to="/program"
-              className="text-xs sm:text-sm font-semibold text-primary hover:underline inline-flex items-center gap-1"
-            >
-              Lihat Semua Program
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          }
+          align="center"
         />
       </div>
 

@@ -8,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { filterCampaigns, sortCampaigns } from '../../lib/campaignFilters';
 import { ProgramToolbar } from './components/ProgramToolbar';
+import { PageBannerCarousel } from '../../components/campaign/PageBannerCarousel';
 
 const INITIAL_PAGE_SIZE = 6;
 const PAGE_SIZE_INCREMENT = 6;
@@ -84,34 +85,13 @@ export function ProgramPage() {
   return (
     <div className="w-full py-6 md:py-10">
       <Container>
-        {/* Breadcrumb Sederhana */}
-        <nav aria-label="Breadcrumb" className="mb-4">
-          <ol className="flex items-center gap-1.5 text-xs text-text-secondary">
-            <li>
-              <Link to="/" className="hover:text-primary transition-colors">
-                Beranda
-              </Link>
-            </li>
-            <li aria-hidden="true">/</li>
-            <li className="text-text-primary font-medium" aria-current="page">
-              Program
-            </li>
-          </ol>
-        </nav>
-
-        {/* Heading & Pengantar Katalog */}
-        <div className="mb-8 max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-text-primary tracking-tight">
-            Katalog Program Kebaikan
-          </h1>
-          <p className="mt-2 text-sm sm:text-base text-text-secondary leading-relaxed">
-            Pilih dan salurkan donasi untuk berbagai program kemanusiaan, bencana, pendidikan,
-            dan sarana ibadah yang telah terkurasi di OpenDonasi.
-          </p>
+        {/* Banner Carousel Geser ("cukup ada banner aja") */}
+        <div className="mb-6 sm:mb-8">
+          <PageBannerCarousel />
         </div>
 
-        {/* Toolbar: Kategori Tabs, Filter Popover, dan Urutkan */}
-        <div className="mb-8">
+        {/* Toolbar: Kategori Tabs, Filter Popover, dan Urutkan (Seimbang Desktop) */}
+        <div className="mb-6 sm:mb-8">
           <ProgramToolbar
             selectedCategory={selectedCategory}
             onSelectCategory={handleSelectCategory}
@@ -129,14 +109,6 @@ export function ProgramPage() {
             }}
             onResetFilters={handleResetFilters}
           />
-        </div>
-
-        {/* Status Ringkasan Hasil */}
-        <div className="flex items-center justify-between mb-6 text-xs sm:text-sm text-text-secondary">
-          <span>
-            Menampilkan <strong className="text-text-primary">{displayedCampaigns.length}</strong> dari{' '}
-            <strong className="text-text-primary">{totalCount}</strong> program
-          </span>
         </div>
 
         {/* Grid Program atau Empty State */}
