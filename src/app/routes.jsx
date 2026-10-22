@@ -16,6 +16,8 @@ import { ZakatPage } from '../features/services/ZakatPage';
 import { InfaqPage } from '../features/services/InfaqPage';
 import { SedekahPage } from '../features/services/SedekahPage';
 import { WakafPage } from '../features/services/WakafPage';
+import { DonationFormPage } from '../features/donation/DonationFormPage';
+import { DonationResultPage } from '../features/donation/DonationResultPage';
 
 function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' }) {
   const params = useParams();
@@ -209,8 +211,8 @@ export function AppRoutes() {
       <Route path="/infaq" element={<InfaqPage />} />
       <Route path="/sedekah" element={<SedekahPage />} />
       <Route path="/wakaf" element={<WakafPage />} />
-      <Route path="/donasi/:slug" element={<RoutePlaceholder title="09. Form Donasi" description="Formulir pemilihan nominal preset/manual, identitas donatur, dan doa dukungan." pathInfo="/donasi/:slug" routeKind="donation" />} />
-      <Route path="/hasil-donasi" element={<RoutePlaceholder title="10. Hasil Simulasi Donasi" description="Bukti transaksi simulasi dengan nomor referensi OD-XXXXXX dan status transaksi." pathInfo="/hasil-donasi" />} />
+      <Route path="/donasi/:slug" element={<DonationFormPage />} />
+      <Route path="/hasil-donasi" element={<DonationResultPage />} />
       <Route path="/tentang" element={<RoutePlaceholder title="11. Tentang Kami" description="Informasi profil OpenDonasi sebagai digital giving infrastructure." pathInfo="/tentang" />} />
       <Route path="/faq" element={<RoutePlaceholder title="12. FAQ (Pusat Bantuan)" description="Tanya-jawab seputar platform OpenDonasi dengan pencarian dan accordion." pathInfo="/faq" />} />
       <Route path="/kontak" element={<RoutePlaceholder title="13. Kontak Bantuan" description="Saluran bantuan demo via WhatsApp dan email placeholder." pathInfo="/kontak" />} />

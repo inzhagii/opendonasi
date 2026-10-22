@@ -1,3 +1,4 @@
+// Komponen navigasi bawah tetap untuk perangkat mobile (OpenDonasi).
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useClickOutside } from '../../hooks/useClickOutside';
@@ -20,12 +21,14 @@ export function MobileBottomNav() {
 
   const closeLayanan = () => setIsLayananOpen(false);
 
-  // Sesuai OPENDONASI_SPEC: Pada Detail Program, bottom nav umum digantikan oleh action bar donasi khusus
-  const isDetailPage =
+  // Sesuai OPENDONASI_SPEC & Tahap 4: Bottom nav disembunyikan pada Detail Program, Form Donasi, dan Hasil Simulasi
+  const shouldHideBottomNav =
     (location.pathname.startsWith('/program/') && location.pathname !== '/program') ||
-    (location.pathname.startsWith('/zakat/') && location.pathname !== '/zakat');
+    (location.pathname.startsWith('/zakat/') && location.pathname !== '/zakat') ||
+    location.pathname.startsWith('/donasi/') ||
+    location.pathname === '/hasil-donasi';
 
-  if (isDetailPage) return null;
+  if (shouldHideBottomNav) return null;
 
   return (
     <>
