@@ -9,7 +9,6 @@ import banner3 from '../assets/image/banner/banner3.png';
 import banner4 from '../assets/image/banner/banner4.png';
 
 import iconLovely from '../assets/icons/icons_layanan/lovely.svg';
-import iconZakat from '../assets/icons/icons_kategori/zakat.svg';
 import iconDevices from '../assets/icons/icons_layanan/devices.svg';
 import iconCourier from '../assets/icons/icons_layanan/courier-express-.svg';
 import iconMessages from '../assets/icons/icons_layanan/messages.svg';
@@ -45,7 +44,6 @@ export const BANNERS = [
   },
 ];
 
-// Usulan sementara pemetaan 5 layanan (menunggu review visual pengguna)
 export const SERVICES = [
   {
     id: 'donasi',
@@ -58,7 +56,7 @@ export const SERVICES = [
     id: 'zakat',
     name: 'Zakat',
     route: '/zakat',
-    icon: iconZakat,
+    icon: iconMessages,
     desc: 'Hitung dan tunaikan zakat maal & penghasilan',
   },
   {
@@ -79,7 +77,7 @@ export const SERVICES = [
     id: 'wakaf',
     name: 'Wakaf',
     route: '/wakaf',
-    icon: iconMessages,
+    icon: iconDevices,
     desc: 'Amal jariyah sarana belajar berkelanjutan',
   },
 ];

@@ -1,47 +1,111 @@
+// Komponen Quick Action / Akses Cepat Layanan OpenDonasi pada Beranda.
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { SERVICES } from '../../data/content';
 
 /**
- * Akses Cepat Layanan (QuickServiceBar)
- * Spesifikasi OPENDONASI_SPEC:
- * - Judul: "Mau berbuat baik apa hari ini?"
- * - 5 Pilihan: Donasi, Zakat, Infaq, Sedekah, Wakaf.
- * - Tampilkan ikon dan label saja; tidak perlu kartu mini atau teks penjelas.
- * - Desktop: susunan horizontal seimbang.
- * - Mobile: carousel horizontal dengan sekitar tiga item terlihat di awal.
+ * Akses Cepat Layanan (QuickServiceBar / Quick Action)
+ * Sesuai referensi visual dan instruksi:
+ * - Judul: "Mau berbuat baik apa hari ini"
+ * - 5 Item: Donasi, Zakat, Infaq, Sedekah, Wakaf.
+ * - Wadah berbentuk lingkaran (circle / rounded-full).
+ * - Default: Wadah biru (#2E7DFA) dengan icon putih.
+ * - Hover: Wadah putih kebiruan (#EEF4FF), border/stroke warna biru (#2E7DFA), icon warna biru (#2E7DFA), dan animasi micro-scale.
+ * - Carousel horizontal yang dapat digeser memakai kursor mouse (drag-to-scroll) atau swipe touch, tanpa indikator dots/arrow.
  */
 export function QuickServiceBar({ className = '' }) {
+  const containerRef = useRef(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollStart, setScrollStart] = useState(0);
+  const [isDragged, setIsDragged] = useState(false);
+
+  // Mouse Drag-to-Scroll Handlers
+  const handleMouseDown = (e) => {
+    if (!containerRef.current) return;
+    setIsMouseDown(true);
+    setIsDragged(false);
+    setStartX(e.pageX - containerRef.current.offsetLeft);
+    setScrollStart(containerRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isMouseDown || !containerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - containerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    if (Math.abs(walk) > 5) {
+      setIsDragged(true);
+    }
+    containerRef.current.scrollLeft = scrollStart - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsMouseDown(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsMouseDown(false);
+  };
+
+  const handleClickCapture = (e) => {
+    // Cegah navigasi jika interaksi adalah tarikan kursor/drag
+    if (isDragged) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   return (
     <section aria-labelledby="quick-service-title" className={`w-full ${className}`}>
       {/* Judul Akses Cepat */}
       <h2
         id="quick-service-title"
-        className="text-lg md:text-xl font-bold text-text-primary text-center mb-6"
+        className="text-xl sm:text-2xl md:text-[26px] font-bold text-slate-900 text-center tracking-tight mb-8"
       >
-        Mau berbuat baik apa hari ini?
+        Mau berbuat baik apa hari ini
       </h2>
 
-      {/* Kontainer Layanan: Desktop grid/flex seimbang, Mobile scroll horizontal snap */}
-      <div className="w-full">
-        <div className="flex md:justify-center items-center gap-4 sm:gap-8 md:gap-12 overflow-x-auto snap-x scrollbar-none pb-2 px-2 md:px-0">
+      {/* Kontainer Carousel Horizontal: Draggable dengan kursor, tanpa indikator dots/arrows */}
+      <div className="w-full relative">
+        <div
+          ref={containerRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          className={`flex items-center gap-6 sm:gap-10 md:gap-14 lg:gap-16 overflow-x-auto scrollbar-none py-3 px-4 sm:px-6 md:justify-center select-none ${
+            isMouseDown ? 'cursor-grabbing' : 'cursor-grab'
+          }`}
+        >
           {SERVICES.map((service) => (
             <Link
               key={service.id}
               to={service.route}
-              className="group flex flex-col items-center shrink-0 snap-start w-[76px] sm:w-[90px] md:w-[100px] text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl p-1 transition-transform hover:-translate-y-1"
+              onClickCapture={handleClickCapture}
+              className="group flex flex-col items-center shrink-0 w-20 sm:w-24 text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl transition-transform"
             >
-              {/* Lingkaran Ikon Layanan Bersih */}
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary-soft/80 border border-primary/20 flex items-center justify-center p-3 group-hover:bg-primary/10 group-hover:border-primary/40 transition-colors shadow-sm">
-                <img
-                  src={service.icon}
-                  alt=""
+              {/* Wadah Lingkaran: Default Biru & Icon Putih; Hover Putih Kebiruan & Stroke Biru & Icon Biru + Animasi */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary border-2 border-transparent flex items-center justify-center p-3.5 sm:p-4 shadow-sm group-hover:bg-[#EEF4FF] group-hover:border-primary group-hover:scale-110 group-hover:shadow-md transition-all duration-300 ease-out">
+                {/* Icon Mask: Otomatis Putih di Default & Biru saat Hover */}
+                <div
+                  className="w-7 h-7 sm:w-9 sm:h-9 bg-white group-hover:bg-primary transition-colors duration-200 pointer-events-none"
+                  style={{
+                    maskImage: `url(${service.icon})`,
+                    WebkitMaskImage: `url(${service.icon})`,
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskPosition: 'center',
+                    WebkitMaskPosition: 'center',
+                    maskSize: 'contain',
+                    WebkitMaskSize: 'contain',
+                  }}
                   aria-hidden="true"
-                  className="w-8 h-8 sm:w-9 sm:h-9 object-contain"
                 />
               </div>
 
-              {/* Label Nama Layanan Saja */}
-              <span className="mt-2 text-xs sm:text-sm font-semibold text-text-primary group-hover:text-primary transition-colors">
+              {/* Label Nama Layanan */}
+              <span className="mt-3 text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors">
                 {service.name}
               </span>
             </Link>
@@ -51,3 +115,5 @@ export function QuickServiceBar({ className = '' }) {
     </section>
   );
 }
+
+export default QuickServiceBar;
