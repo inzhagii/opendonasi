@@ -235,8 +235,8 @@ export function PosterCarousel({ className = '' }) {
 
   return (
     <section aria-labelledby="poster-title" className={`w-full ${className}`}>
-      {/* Judul Seksi Terpusat */}
-      <div className="mb-4 sm:mb-6 text-center">
+      {/* Judul Seksi (Kiri di Mobile, Center di Desktop) */}
+      <div className="mb-4 sm:mb-6 text-left sm:text-center">
         <h2 id="poster-title" className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 tracking-tight leading-tight">
           Yang Baru di OpenDonasi
         </h2>

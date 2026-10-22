@@ -1,41 +1,18 @@
 // Halaman detail program donasi OpenDonasi (/program/:slug).
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { CAMPAIGNS, CAMPAIGN_UPDATES, CATEGORIES } from '../../data/campaigns';
-import { PRAYERS } from '../../data/content';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
+import { CAMPAIGNS, CAMPAIGN_UPDATES } from '../../data/campaigns';
 import { getOrganizerSlug } from '../../data/organizers';
+import { getMergedDonors } from '../../data/campaignDonors';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 import { CampaignCard } from '../../components/campaign/CampaignCard';
 import { formatRupiah, formatNumber, formatDate } from '../../lib/formatters';
 import { useDonation } from '../../hooks/useDonation';
 import timeIcon from '../../assets/icons/icons_kategori/time.svg';
 
-// Format waktu relatif untuk daftar donatur
-function getRelativeTime(timeInput) {
-  if (!timeInput) return 'Baru saja';
-  if (typeof timeInput === 'string' && (timeInput.includes('lalu') || timeInput === 'Baru saja')) {
-    return timeInput;
-  }
-  try {
-    const date = new Date(timeInput);
-    if (isNaN(date.getTime())) return String(timeInput);
-    const now = new Date();
-    const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
-    if (diffSec < 60) return `${Math.max(1, diffSec)} detik yang lalu`;
-    const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin} menit yang lalu`;
-    const diffHours = Math.floor(diffMin / 60);
-    if (diffHours < 24) return `${diffHours} jam yang lalu`;
-    const diffDays = Math.floor(diffHours / 24);
-    if (diffDays < 30) return `${diffDays} hari yang lalu`;
-    return formatDate(timeInput);
-  } catch {
-    return String(timeInput);
-  }
-}
+
 
 // Inisial avatar donatur (contoh: "Hamba Allah" -> "HA")
 function getInitials(name) {
@@ -48,6 +25,7 @@ function getInitials(name) {
 export function ProgramDetailPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { donations } = useDonation();
 
   // State ekspansi konten & modal
@@ -55,6 +33,7 @@ export function ProgramDetailPage() {
   const [isFundDetailExpanded, setIsFundDetailExpanded] = useState(false);
   const [isUsageModalOpen, setIsUsageModalOpen] = useState(false);
   const [isAllDonorsModalOpen, setIsAllDonorsModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [expandedNewsId, setExpandedNewsId] = useState(null);
   const [shareFeedback, setShareFeedback] = useState(false);
 
@@ -82,27 +61,9 @@ export function ProgramDetailPage() {
     }
   };
 
-  // Handler fitur bagikan (Share)
-  const handleShare = async () => {
-    if (!campaign) return;
-
-    const shareData = {
-      title: campaign.title,
-      text: campaign.description,
-      url: window.location.href,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          copyToClipboard();
-        }
-      }
-    } else {
-      copyToClipboard();
-    }
+  // Handler fitur bagikan (Membuka Share Modal)
+  const handleShare = () => {
+    setIsShareModalOpen(true);
   };
 
   const copyToClipboard = () => {
@@ -114,60 +75,10 @@ export function ProgramDetailPage() {
     }
   };
 
-  // Daftar donatur yang terhubung dengan kampanye ini
+  // Daftar donatur yang terhubung dengan kampanye ini (mock 10+ data lengkap)
   const campaignDonors = useMemo(() => {
-    // 1. Ambil dari context donasi pengguna (sesi lokal / realtime dari alur donasi)
-    const contextDonations = (donations || [])
-      .filter((d) => d && (d.campaignSlug === slug || d.campaignId === campaign?.id))
-      .map((d) => ({
-        id: d.transactionId,
-        name: d.isAnonymous ? 'Hamba Allah' : d.donorName || 'Donatur Demo',
-        isAnonymous: Boolean(d.isAnonymous),
-        amount: d.amount,
-        createdAt: d.createdAt || d.date,
-        timeAgo: getRelativeTime(d.createdAt || d.date),
-      }));
-
-    // 2. Ambil dari data mock percontohan proyek (PRAYERS)
-    const mockDonationsFromPrayers = PRAYERS
-      .filter((p) => p.campaignSlug === slug)
-      .map((p) => ({
-        id: p.id,
-        name: p.donorName === 'Hamba Allah' ? 'Hamba Allah' : p.donorName,
-        isAnonymous: p.donorName === 'Hamba Allah',
-        amount: p.amount,
-        createdAt: p.createdAt,
-        timeAgo: p.createdAt || '1 jam yang lalu',
-      }));
-
-    // 3. Data contoh donatur untuk kampanye awal jika belum ada donasi
-    const fallbackList = [];
-    if (campaign?.id === 'camp-001' && mockDonationsFromPrayers.length === 0) {
-      fallbackList.push(
-        { id: 'don-01', name: 'Hamba Allah', isAnonymous: true, amount: 10000, timeAgo: '51 detik yang lalu' },
-        { id: 'don-02', name: 'Hamba Allah', isAnonymous: true, amount: 5000, timeAgo: '53 detik yang lalu' },
-        { id: 'don-03', name: 'Hamba Allah', isAnonymous: true, amount: 2000, timeAgo: '2 menit yang lalu' },
-        { id: 'don-04', name: 'Hamba Allah', isAnonymous: true, amount: 10000, timeAgo: '3 menit yang lalu' }
-      );
-    } else if (campaign?.id === 'camp-001') {
-      // Tambahkan variasi contoh baris donatur agar sesuai referensi
-      fallbackList.push(
-        { id: 'don-01', name: 'Hamba Allah', isAnonymous: true, amount: 10000, timeAgo: '51 detik yang lalu' },
-        { id: 'don-02', name: 'Hamba Allah', isAnonymous: true, amount: 5000, timeAgo: '53 detik yang lalu' },
-        { id: 'don-03', name: 'Hamba Allah', isAnonymous: true, amount: 2000, timeAgo: '2 menit yang lalu' },
-        { id: 'don-04', name: 'Hamba Allah', isAnonymous: true, amount: 10000, timeAgo: '3 menit yang lalu' }
-      );
-    }
-
-    // Gabungkan: donasi sesi pengguna berada paling atas
-    const all = [...contextDonations, ...mockDonationsFromPrayers, ...fallbackList];
-    const seen = new Set();
-    return all.filter((item) => {
-      if (seen.has(item.id)) return false;
-      seen.add(item.id);
-      return true;
-    });
-  }, [donations, slug, campaign]);
+    return getMergedDonors(slug, donations);
+  }, [slug, donations]);
 
   // Fallback jika program tidak ditemukan
   if (!campaign) {
@@ -225,9 +136,7 @@ export function ProgramDetailPage() {
       ? Math.min(100, Math.round((collectedAmount / targetAmount) * 100))
       : 0;
 
-  // Nama kategori
-  const categoryName =
-    CATEGORIES.find((c) => c.id === category)?.name || category || 'Program Kebaikan';
+
 
   // Kabar terbaru program
   const updates = CAMPAIGN_UPDATES.filter((u) => u.campaignId === campaignId);
@@ -261,33 +170,8 @@ export function ProgramDetailPage() {
           <div className="lg:col-span-8 space-y-6">
             {/* 1. BAGIAN A — BANNER & RINGKASAN PROGRAM */}
             <div className="space-y-4">
-              {/* Wadah Banner dengan Tombol Aksi Floating (Kembali & Bagikan) */}
-              <div className="relative overflow-hidden bg-slate-100 rounded-2xl border border-border aspect-[16/9] w-full shadow-xs group">
-                {/* Tombol Floating Kembali (Kiri Atas) */}
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20 bg-white/95 backdrop-blur-xs text-slate-800 hover:text-primary p-2 rounded-full shadow-sm border border-slate-200/80 transition-all flex items-center justify-center cursor-pointer active:scale-95"
-                  aria-label="Kembali"
-                >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-
-                {/* Tombol Floating Bagikan (Kanan Atas Sesuai Screenshot 1) */}
-                <button
-                  type="button"
-                  onClick={handleShare}
-                  className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-white/95 backdrop-blur-xs text-slate-800 hover:text-primary text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm border border-slate-200/80 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                  aria-label="Bagikan program"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                  </svg>
-                  <span>{shareFeedback ? 'Tautan Disalin!' : 'Bagikan'}</span>
-                </button>
-
+              {/* Wadah Banner Bersih Tanpa Tombol Floating */}
+              <div className="relative overflow-hidden bg-slate-100 rounded-2xl border border-border aspect-[16/9] w-full shadow-xs">
                 {image ? (
                   <img
                     src={image}
@@ -303,24 +187,9 @@ export function ProgramDetailPage() {
                 )}
               </div>
 
-              {/* Judul & Deskripsi Singkat Langsung Di Bawah Banner (Sesuai Screenshot 1) */}
-              <div className="space-y-1.5 pt-1">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <Badge variant="neutral" size="sm" className="capitalize">
-                    {categoryName}
-                  </Badge>
-                  <Link
-                    to={`/penggalang/${getOrganizerSlug(organizer?.name)}`}
-                    className="inline-flex items-center gap-1 text-xs text-text-secondary hover:text-primary transition-colors font-medium group"
-                    title={`Lihat profil ${organizer?.name || 'yayasan penggalang'}`}
-                  >
-                    <span className="group-hover:underline">{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
-                    <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  </Link>
-                </div>
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 leading-snug tracking-tight">
+              {/* Judul & Deskripsi Singkat Langsung Di Bawah Banner (Tanpa Kategori dan Yayasan di Atasnya) */}
+              <div className="space-y-2 pt-1">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
                   {title}
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
@@ -657,35 +526,38 @@ export function ProgramDetailPage() {
               ) : (
                 <div className="space-y-2.5">
                   <div className="divide-y divide-slate-100">
-                    {campaignDonors.slice(0, 5).map((donor, idx) => (
-                      <Link
-                        key={donor.id || idx}
-                        to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
-                        className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 -mx-2 px-2 rounded-xl transition-colors group cursor-pointer"
-                        title="Buka daftar lengkap donatur"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          {/* Avatar Bulat dengan Inisial Sesuai Screenshot */}
-                          <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary-soft group-hover:text-primary transition-colors">
-                            {getInitials(donor.name)}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors truncate">
-                              {donor.name}
+                    {campaignDonors.slice(0, 10).map((donor, idx) => {
+                      const donorName = donor.donorName || donor.name || 'Hamba Allah';
+                      return (
+                        <Link
+                          key={donor.id || idx}
+                          to={location.pathname.startsWith('/zakat') ? `/zakat/${slug}/donatur` : `/program/${slug}/donatur`}
+                          className="py-3 flex items-center justify-between gap-3 hover:bg-slate-50/80 -mx-2 px-2 rounded-xl transition-colors group cursor-pointer"
+                          title="Buka daftar lengkap donatur"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Avatar Bulat dengan Inisial */}
+                            <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 group-hover:bg-primary-soft group-hover:text-primary transition-colors">
+                              {getInitials(donorName)}
                             </div>
-                            <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-                              {donor.timeAgo}
+                            <div className="min-w-0">
+                              <div className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-primary transition-colors truncate">
+                                {donorName}
+                              </div>
+                              <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                                {donor.timeAgo || 'Baru saja'}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="text-right shrink-0">
-                          <span className="text-xs sm:text-sm font-semibold text-slate-800">
-                            {formatRupiah(donor.amount)}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
+                          <div className="text-right shrink-0">
+                            <span className="text-xs sm:text-sm font-semibold text-slate-800">
+                              {formatRupiah(donor.amount)}
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
                   </div>
 
                   <Link
@@ -726,9 +598,9 @@ export function ProgramDetailPage() {
             )}
           </div>
 
-          {/* SISI KANAN (PANEL DONASI STICKY DESKTOP): Kolom 9 s/d 12 di Desktop */}
-          <div className="hidden lg:block lg:col-span-4">
-            <div className="sticky top-28 bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-5">
+          {/* SISI KANAN (PANEL DONASI STICKY DESKTOP): Kolom 9 s/d 12 di Desktop Mengikuti Scroll */}
+          <div className="hidden lg:block lg:col-span-4 sticky top-20 self-start">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-5">
               {/* Dana Terkumpul */}
               <div>
                 <span className="text-xs text-text-secondary block mb-1">
@@ -802,18 +674,16 @@ export function ProgramDetailPage() {
                   </Button>
                 </Link>
 
-                <Button
-                  variant="outline"
-                  size="md"
-                  isFullWidth
+                <button
+                  type="button"
                   onClick={handleShare}
-                  className="font-medium"
+                  className="w-full py-2.5 px-4 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
                 >
-                  <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                   </svg>
-                  <span>{shareFeedback ? 'Tautan Berhasil Disalin!' : 'Bagikan Program'}</span>
-                </Button>
+                  <span>Bagikan Program</span>
+                </button>
 
                 {/* Baris Rincian Penggunaan Dana Desktop */}
                 <button
@@ -849,8 +719,22 @@ export function ProgramDetailPage() {
 
       {/* 6. BAGIAN F — STICKY DONATION BAR KHUSUS MOBILE */}
       <div className="block lg:hidden fixed bottom-0 inset-x-0 bg-white/98 backdrop-blur-md border-t border-slate-200/90 px-4 py-3 z-40 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
-        <div className="max-w-md mx-auto">
-          <Link to={`/donasi/${campaign.slug}`} className="block w-full">
+        <div className="max-w-md mx-auto flex items-center gap-2.5">
+          {/* Tombol Bagikan Kecil di Mobile */}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="w-12 h-12 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center shrink-0 shadow-2xs cursor-pointer transition-colors active:scale-95"
+            aria-label="Bagikan Program"
+            title="Bagikan Program"
+          >
+            <svg className="w-5 h-5 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+          </button>
+
+          {/* Tombol Donasi Sekarang Lebar */}
+          <Link to={`/donasi/${campaign.slug}`} className="flex-1">
             <Button variant="primary" size="lg" isFullWidth className="font-bold shadow-xs py-3 text-sm">
               Donasi Sekarang
             </Button>
@@ -982,6 +866,114 @@ export function ProgramDetailPage() {
               >
                 Tutup
               </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL BAGIKAN PROGRAM (WHATSAPP, TELEGRAM, DLL) */}
+      {isShareModalOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setIsShareModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in zoom-in-95 duration-200 border border-slate-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                <span>Bagikan Program Kebaikan</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(false)}
+                className="w-8 h-8 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Tutup"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Sebarkan peluang kebaikan ini ke keluarga, kerabat, dan teman-teman agar manfaatnya semakin luas:
+            </p>
+
+            {/* Pilihan Kanal Berbagi */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* WhatsApp */}
+              <button
+                type="button"
+                onClick={() => {
+                  const shareMsg = `${title}\n\nMari berpartisipasi dalam program kebaikan ini melalui OpenDonasi:\n${window.location.href}`;
+                  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMsg)}`, '_blank');
+                }}
+                className="p-3.5 rounded-2xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-800 flex items-center gap-2.5 font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-2xs hover:scale-[1.02]"
+              >
+                <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.043.072.043.419-.101.824z" />
+                  </svg>
+                </div>
+                <span>WhatsApp</span>
+              </button>
+
+              {/* Telegram */}
+              <button
+                type="button"
+                onClick={() => {
+                  const shareMsg = `${title}\n\nMari berpartisipasi melalui OpenDonasi:`;
+                  window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(shareMsg)}`, '_blank');
+                }}
+                className="p-3.5 rounded-2xl border border-sky-200 bg-sky-50/50 hover:bg-sky-50 text-sky-800 flex items-center gap-2.5 font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-2xs hover:scale-[1.02]"
+              >
+                <div className="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z" />
+                  </svg>
+                </div>
+                <span>Telegram</span>
+              </button>
+
+              {/* Facebook */}
+              <button
+                type="button"
+                onClick={() => {
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+                }}
+                className="p-3.5 rounded-2xl border border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-blue-800 flex items-center gap-2.5 font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-2xs hover:scale-[1.02]"
+              >
+                <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </div>
+                <span>Facebook</span>
+              </button>
+
+              {/* Salin Tautan Langsung */}
+              <button
+                type="button"
+                onClick={copyToClipboard}
+                className={`p-3.5 rounded-2xl border text-slate-800 flex items-center gap-2.5 font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-2xs hover:scale-[1.02] ${
+                  shareFeedback ? 'border-emerald-500 bg-emerald-50/70 text-emerald-800' : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-white ${shareFeedback ? 'bg-emerald-600' : 'bg-slate-700'}`}>
+                  {shareFeedback ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  )}
+                </div>
+                <span>{shareFeedback ? 'Tersalin!' : 'Salin Tautan'}</span>
+              </button>
             </div>
           </div>
         </div>

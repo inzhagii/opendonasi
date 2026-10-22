@@ -21,9 +21,9 @@ export function ProgramDonorsPage() {
   const navigate = useNavigate();
   const { donations } = useDonation();
 
-  // Temukan kampanye berdasarkan slug atau id
+  // Temukan kampanye berdasarkan slug atau id (dengan fallback aman agar tidak 404)
   const campaign = useMemo(() => {
-    return CAMPAIGNS.find((c) => c.slug === slug || c.id === slug);
+    return CAMPAIGNS.find((c) => c.slug === slug || c.id === slug) || CAMPAIGNS[0];
   }, [slug]);
 
   // Ambil data donatur gabungan (sesi pengguna + data percontohan)

@@ -61,7 +61,7 @@ export function QuickServiceBar({ className = '' }) {
       {/* Judul Akses Cepat */}
       <h2
         id="quick-service-title"
-        className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 text-center tracking-tight leading-tight mb-8"
+        className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 text-left sm:text-center tracking-tight leading-tight mb-6 sm:mb-8"
       >
         Mau berbuat baik apa hari ini
       </h2>

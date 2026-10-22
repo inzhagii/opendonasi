@@ -15,8 +15,8 @@ export function AboutPage() {
   return (
     <div className="w-full py-6 md:py-12">
       <Container>
-        {/* Kontainer Utama Terpusat */}
-        <div className="max-w-4xl mx-auto space-y-8">
+        {/* Kontainer Utama Terpusat (Maksimal 1320px di Desktop) */}
+        <div className="max-w-desktop mx-auto w-full space-y-8">
           {/* Header Utama Halaman */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 flex-wrap">

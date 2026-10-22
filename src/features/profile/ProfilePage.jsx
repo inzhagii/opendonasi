@@ -45,8 +45,8 @@ export function ProfilePage() {
   return (
     <div className="w-full py-6 md:py-10">
       <Container>
-        {/* Kontainer Utama Terpusat */}
-        <div className="max-w-3xl mx-auto space-y-6">
+        {/* Kontainer Utama Terpusat (Maksimal 1320px di Desktop) */}
+        <div className="max-w-desktop mx-auto w-full space-y-6">
           {/* Feedback Notifikasi Aksi */}
           {feedbackMsg && (
             <div className="p-3.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs sm:text-sm font-medium flex items-center justify-between animate-in fade-in duration-200">
