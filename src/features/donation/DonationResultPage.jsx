@@ -276,10 +276,16 @@ export function DonationResultPage() {
                     Jelajahi Program Lain
                   </Button>
                 </Link>
-                <Link to="/" className="w-full">
+                <Link to="/donasi-saya" className="w-full">
                   <Button variant="outline" size="md" isFullWidth>
-                    Kembali ke Beranda
+                    Lihat Riwayat Donasi
                   </Button>
+                </Link>
+              </div>
+
+              <div className="pt-1">
+                <Link to="/" className="text-xs text-text-secondary hover:text-primary transition-colors font-medium">
+                  ← Kembali ke Beranda
                 </Link>
               </div>
             </div>

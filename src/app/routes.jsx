@@ -18,6 +18,8 @@ import { SedekahPage } from '../features/services/SedekahPage';
 import { WakafPage } from '../features/services/WakafPage';
 import { DonationFormPage } from '../features/donation/DonationFormPage';
 import { DonationResultPage } from '../features/donation/DonationResultPage';
+import { ProfilePage } from '../features/profile/ProfilePage';
+import { DonationHistoryPage } from '../features/profile/DonationHistoryPage';
 
 function RoutePlaceholder({ title, description, pathInfo, routeKind = 'general' }) {
   const params = useParams();
@@ -216,8 +218,8 @@ export function AppRoutes() {
       <Route path="/tentang" element={<RoutePlaceholder title="11. Tentang Kami" description="Informasi profil OpenDonasi sebagai digital giving infrastructure." pathInfo="/tentang" />} />
       <Route path="/faq" element={<RoutePlaceholder title="12. FAQ (Pusat Bantuan)" description="Tanya-jawab seputar platform OpenDonasi dengan pencarian dan accordion." pathInfo="/faq" />} />
       <Route path="/kontak" element={<RoutePlaceholder title="13. Kontak Bantuan" description="Saluran bantuan demo via WhatsApp dan email placeholder." pathInfo="/kontak" />} />
-      <Route path="/donasi-saya" element={<RoutePlaceholder title="14. Donasi Saya" description="Riwayat donasi donatur demo berbasis sesi lokal." pathInfo="/donasi-saya" />} />
-      <Route path="/profil" element={<RoutePlaceholder title="15. Profil / Akun" description="Hub akun demo dan pintu akses eksklusif ke Donasi Saya." pathInfo="/profil" />} />
+      <Route path="/donasi-saya" element={<DonationHistoryPage />} />
+      <Route path="/profil" element={<ProfilePage />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="*" element={<RoutePlaceholder title="404 — Halaman Tidak Ditemukan" description="Halaman yang Anda tuju tidak tersedia atau tautan telah berpindah." pathInfo="404 Fallback" />} />
     </Routes>

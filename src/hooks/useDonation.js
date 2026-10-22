@@ -1,3 +1,4 @@
+// Hook kustom untuk mengakses konteks donasi lokal OpenDonasi.
 import { useContext } from 'react';
 import { DonationContext } from '../app/context/donationContextInstance';
 
