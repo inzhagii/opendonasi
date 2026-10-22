@@ -122,25 +122,71 @@ export const FAQS = [
     id: 'faq-1',
     category: 'umum',
     question: 'Apa itu OpenDonasi?',
-    answer: 'OpenDonasi adalah prototype infrastruktur penggalangan dana digital yang dirancang untuk membantu yayasan dan lembaga sosial mengelola program donasi secara transparan.',
+    answer:
+      'OpenDonasi adalah prototype antarmuka platform penggalangan dana digital yang dirancang untuk memudahkan masyarakat menemukan program kebaikan, mempelajari transparansi penyaluran, serta mencoba simulasi donasi secara digital.',
   },
   {
     id: 'faq-2',
-    category: 'donasi',
-    question: 'Apakah pembayaran pada website ini memproses uang sungguhan?',
-    answer: 'Tidak. OpenDonasi saat ini berstatus prototype frontend demonstrasi. Seluruh transaksi dan nomor referensi yang dihasilkan bersifat simulasi lokal tanpa memproses uang nyata.',
+    category: 'program',
+    question: 'Bagaimana cara mencari dan memilih program donasi?',
+    answer:
+      'Anda dapat membuka katalog program pada menu "Program" atau menggunakan kolom pencarian di bilah navigasi atas. Program juga dapat difilter berdasarkan kategori kemanusiaan, pendidikan, dan bencana, serta layanan Zakat, Infaq, Sedekah, dan Wakaf.',
   },
   {
     id: 'faq-3',
     category: 'donasi',
-    question: 'Bagaimana cara melihat riwayat donasi saya?',
-    answer: 'Riwayat donasi simulasi dapat diakses secara eksklusif melalui menu Donasi Saya di halaman Profil/Akun.',
+    question: 'Bagaimana cara mencoba simulasi donasi?',
+    answer:
+      'Buka halaman detail program donasi yang ingin Anda dukung, lalu tekan tombol "Donasi Sekarang". Anda akan diarahkan ke formulir donasi untuk memilih nominal preset atau manual, mengisi data donatur, meninjau ringkasan, dan mengonfirmasi simulasi transaksi demo.',
   },
   {
     id: 'faq-4',
-    category: 'zakat',
-    question: 'Bagaimana cara kerja kalkulator zakat?',
-    answer: 'Kalkulator zakat menghitung 2.5% estimasi zakat penghasilan atau zakat maal dari nilai aset yang dimasukkan, sebagai simulasi perhitungan awal.',
+    category: 'donasi',
+    question: 'Apakah pembayaran donasi di sini menggunakan uang asli?',
+    answer:
+      'Tidak. OpenDonasi adalah aplikasi prototype frontend. Seluruh transaksi, nominal, dan nomor referensi (OD-XXXXXX) yang dihasilkan bersifat simulasi demonstrasi. Tidak ada pemotongan saldo rekening bank, dompet digital (e-wallet), atau kartu kredit.',
+  },
+  {
+    id: 'faq-5',
+    category: 'donasi',
+    question: 'Apa arti status "Berhasil (Simulasi)" dan "Menunggu Pembayaran"?',
+    answer:
+      'Status "Berhasil (Simulasi)" menandakan bahwa Anda telah berhasil menyelesaikan alur pengujian formulir donasi demonstrasi. Sedangkan status "Menunggu Pembayaran (Simulasi)" adalah data contoh awal untuk menguji variasi status pada antarmuka prototype.',
+  },
+  {
+    id: 'faq-6',
+    category: 'riwayat',
+    question: 'Di mana saya dapat melihat riwayat donasi saya?',
+    answer:
+      'Riwayat donasi dapat diakses melalui menu "Donasi Saya" (/donasi-saya) yang dapat dibuka dari halaman Profil/Akun (/profil) atau tautan langsung di halaman bukti hasil simulasi transaksi.',
+  },
+  {
+    id: 'faq-7',
+    category: 'privasi',
+    question: 'Bagaimana cara kerja opsi donasi anonim (Hamba Allah)?',
+    answer:
+      'Pada formulir donasi, Anda dapat mencentang opsi "Sembunyikan nama saya". Jika opsi ini aktif, identitas donatur akan ditampilkan sebagai "Hamba Allah (Anonim)" pada kartu hasil donasi dan daftar riwayat, sehingga nama asli tidak ditampilkan ke publik.',
+  },
+  {
+    id: 'faq-8',
+    category: 'akun',
+    question: 'Apakah profil demo merupakan akun pengguna sungguhan?',
+    answer:
+      'Bukan. Profil pada menu "Akun" adalah profil demonstrasi prototype. Tidak diperlukan pendaftaran akun, kata sandi, maupun verifikasi identitas resmi. Seluruh data akun bersumber dari sesi lokal pada peramban Anda.',
+  },
+  {
+    id: 'faq-9',
+    category: 'teknis',
+    question: 'Di mana data transaksi demo disimpan dan berapa lama bertahannya?',
+    answer:
+      'Data transaksi demo disimpan secara lokal pada penyimpanan sesi peramban Anda (sessionStorage). Data ini bertahan selama tab atau sesi peramban aktif dan dapat dikosongkan kapan saja melalui utilitas pengujian di halaman Profil.',
+  },
+  {
+    id: 'faq-10',
+    category: 'bantuan',
+    question: 'Apa yang harus dilakukan jika halaman atau data demo tidak tampil dengan benar?',
+    answer:
+      'Silakan muat ulang (refresh) halaman peramban Anda. Jika riwayat kosong atau ingin mengembalikan data demonstrasi awal, gunakan tombol "Reset ke Data Awal Demo" yang tersedia di bagian bawah halaman Profil Saya.',
   },
 ];
 

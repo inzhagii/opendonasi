@@ -1,3 +1,5 @@
+// Komponen footer navigasi utama dan informasi platform (OpenDonasi).
+
 import { Link } from 'react-router-dom';
 import logoImg from '../../assets/logo/logo.png';
 import awardsBadgeImg from '../../assets/icons/icons_footer/Vector.png';
@@ -167,13 +169,24 @@ export function Footer() {
       </div>
 
       {/* ===== MOBILE FOOTER RINGKAS (md:hidden) ===== */}
-      <div className="block md:hidden py-8 px-4 text-center">
+      <div className="block md:hidden py-8 pb-24 px-4 text-center">
         <Link to="/" className="inline-block mb-3" aria-label="Beranda OpenDonasi">
           <img src={logoImg} alt="OpenDonasi" className="h-7 w-auto mx-auto object-contain" />
         </Link>
         <p className="text-xs text-text-secondary leading-relaxed max-w-xs mx-auto mb-4">
           Digital Giving Infrastructure — Prototype Website Donasi.
         </p>
+
+        {/* Navigasi Cepat Mobile */}
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-text-secondary mb-4">
+          <Link to="/program" className="hover:text-primary transition-colors">Program</Link>
+          <span aria-hidden="true" className="text-slate-300">•</span>
+          <Link to="/tentang" className="hover:text-primary transition-colors">Tentang Kami</Link>
+          <span aria-hidden="true" className="text-slate-300">•</span>
+          <Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link>
+          <span aria-hidden="true" className="text-slate-300">•</span>
+          <Link to="/kontak" className="hover:text-primary transition-colors">Kontak</Link>
+        </div>
 
         {/* Media Sosial Ringkas Mobile */}
         <div className="flex items-center justify-center gap-3 mb-4">
