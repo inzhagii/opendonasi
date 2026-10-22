@@ -239,7 +239,7 @@ export function ZakatCalculatorPage() {
             <button
               type="button"
               onClick={handleBack}
-              className="p-2 -ml-2 text-slate-700 hover:text-emerald-700 hover:bg-slate-100 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600"
+              className="p-2 -ml-2 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Kembali"
             >
               <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
@@ -268,11 +268,11 @@ export function ZakatCalculatorPage() {
       </header>
 
       {/* 2. Hero Pengantar & Judul Halaman */}
-      <div className="bg-emerald-50/60 border-b border-emerald-100 py-6 sm:py-8">
+      <div className="bg-blue-50/60 border-b border-blue-100 py-6 sm:py-8">
         <Container className="max-w-6xl">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/90 text-emerald-800 text-xs font-semibold mb-2.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/90 text-primary text-xs font-semibold mb-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
               <span>Acuan Resmi BAZNAS RI 2026</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -307,14 +307,14 @@ export function ZakatCalculatorPage() {
                   onClick={() => handleTypeChange(tab.id)}
                   className={`p-3.5 sm:p-4 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-500/60 hover:bg-slate-50/70'
+                      ? 'bg-primary text-white border-primary shadow-sm'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-primary/60 hover:bg-slate-50/70'
                   }`}
                 >
                   <div className="text-lg sm:text-xl mb-1">{tab.icon}</div>
                   <div>
                     <div className="text-xs sm:text-sm font-bold leading-snug">{tab.name}</div>
-                    <div className={`text-[11px] mt-0.5 ${isSelected ? 'text-emerald-100' : 'text-slate-400'}`}>
+                    <div className={`text-[11px] mt-0.5 ${isSelected ? 'text-blue-100' : 'text-slate-400'}`}>
                       {tab.sub}
                     </div>
                   </div>
@@ -358,7 +358,7 @@ export function ZakatCalculatorPage() {
                         }}
                         className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                           incomePeriod === 'monthly'
-                            ? 'bg-white text-emerald-800 shadow-2xs'
+                            ? 'bg-white text-primary shadow-2xs'
                             : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
@@ -372,7 +372,7 @@ export function ZakatCalculatorPage() {
                         }}
                         className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                           incomePeriod === 'yearly'
-                            ? 'bg-white text-emerald-800 shadow-2xs'
+                            ? 'bg-white text-primary shadow-2xs'
                             : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
@@ -400,7 +400,7 @@ export function ZakatCalculatorPage() {
                           if (errors.salary) setErrors((prev) => ({ ...prev, salary: null }));
                         }}
                         placeholder="Contoh: 10.000.000"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
                       />
                     </div>
                     {errors.salary && (
@@ -424,7 +424,7 @@ export function ZakatCalculatorPage() {
                         value={otherIncomeInput}
                         onChange={(e) => setOtherIncomeInput(formatRupiahInput(e.target.value))}
                         placeholder="0"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
                       />
                     </div>
                     <p className="mt-1 text-[11px] text-slate-400">
@@ -454,7 +454,7 @@ export function ZakatCalculatorPage() {
                           if (errors.goldWeight) setErrors((prev) => ({ ...prev, goldWeight: null }));
                         }}
                         placeholder="Contoh: 85"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
                         Gram
@@ -487,7 +487,7 @@ export function ZakatCalculatorPage() {
                           if (errors.goldPrice) setErrors((prev) => ({ ...prev, goldPrice: null }));
                         }}
                         placeholder="1.400.000"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900"
                       />
                     </div>
                     <p className="mt-1 text-[11px] text-slate-400">
@@ -502,7 +502,7 @@ export function ZakatCalculatorPage() {
                         type="checkbox"
                         checked={goldHaul}
                         onChange={(e) => setGoldHaul(e.target.checked)}
-                        className="w-4 h-4 mt-0.5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                        className="w-4 h-4 mt-0.5 text-primary border-slate-300 rounded focus:ring-primary"
                       />
                       <span className="text-xs text-slate-700 leading-snug">
                         Emas telah dimiliki dan tersimpan selama minimal <strong>1 tahun hijriyah (Haul)</strong> penuh.
@@ -534,7 +534,7 @@ export function ZakatCalculatorPage() {
                           if (errors.savings) setErrors((prev) => ({ ...prev, savings: null }));
                         }}
                         placeholder="Contoh: 100.000.000"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
                       />
                     </div>
                     {errors.savings && (
@@ -558,7 +558,7 @@ export function ZakatCalculatorPage() {
                         value={otherSavingsInput}
                         onChange={(e) => setOtherSavingsInput(formatRupiahInput(e.target.value))}
                         placeholder="0"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900"
                       />
                     </div>
                   </div>
@@ -578,7 +578,7 @@ export function ZakatCalculatorPage() {
                         inputMode="numeric"
                         value={savingsGoldPriceInput}
                         onChange={(e) => setSavingsGoldPriceInput(formatRupiahInput(e.target.value))}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900"
                       />
                     </div>
                   </div>
@@ -590,7 +590,7 @@ export function ZakatCalculatorPage() {
                         type="checkbox"
                         checked={savingsHaul}
                         onChange={(e) => setSavingsHaul(e.target.checked)}
-                        className="w-4 h-4 mt-0.5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                        className="w-4 h-4 mt-0.5 text-primary border-slate-300 rounded focus:ring-primary"
                       />
                       <span className="text-xs text-slate-700 leading-snug">
                         Saldo tabungan telah mengendap selama minimal <strong>1 tahun (Haul)</strong>.
@@ -622,7 +622,7 @@ export function ZakatCalculatorPage() {
                           if (errors.assets) setErrors((prev) => ({ ...prev, assets: null }));
                         }}
                         placeholder="Contoh: 150.000.000"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400"
                       />
                     </div>
                     {errors.assets && (
@@ -646,7 +646,7 @@ export function ZakatCalculatorPage() {
                         value={debtsInput}
                         onChange={(e) => setDebtsInput(formatRupiahInput(e.target.value))}
                         placeholder="0"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900"
                       />
                     </div>
                     <p className="mt-1 text-[11px] text-slate-400">
@@ -669,7 +669,7 @@ export function ZakatCalculatorPage() {
                         inputMode="numeric"
                         value={tradeGoldPriceInput}
                         onChange={(e) => setTradeGoldPriceInput(formatRupiahInput(e.target.value))}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600 text-sm font-semibold text-slate-900"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary text-sm font-semibold text-slate-900"
                       />
                     </div>
                   </div>
@@ -681,7 +681,7 @@ export function ZakatCalculatorPage() {
                         type="checkbox"
                         checked={tradeHaul}
                         onChange={(e) => setTradeHaul(e.target.checked)}
-                        className="w-4 h-4 mt-0.5 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500"
+                        className="w-4 h-4 mt-0.5 text-primary border-slate-300 rounded focus:ring-primary"
                       />
                       <span className="text-xs text-slate-700 leading-snug">
                         Usaha perniagaan telah berjalan selama minimal <strong>1 tahun (Haul)</strong>.
@@ -695,7 +695,7 @@ export function ZakatCalculatorPage() {
               <div className="pt-3 flex items-center gap-3">
                 <button
                   type="submit"
-                  className="flex-1 py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-bold text-sm shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+                  className="flex-1 py-3 px-5 rounded-xl bg-primary hover:bg-primary-dark active:scale-98 text-white font-bold text-sm shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -724,8 +724,8 @@ export function ZakatCalculatorPage() {
                     Hasil Perhitungan
                   </span>
                   {calculationResult.isObligatory ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                      <svg className="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-primary">
+                      <svg className="w-3.5 h-3.5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       Wajib Zakat
@@ -739,15 +739,15 @@ export function ZakatCalculatorPage() {
 
                 {/* Box Estimasi Nominal Utama */}
                 {calculationResult.isObligatory ? (
-                  <div className="bg-emerald-50 rounded-2xl p-5 border border-emerald-200/80 text-center space-y-1">
-                    <span className="text-xs font-medium text-emerald-800 block">
+                  <div className="bg-blue-50 rounded-2xl p-5 border border-blue-200/80 text-center space-y-1">
+                    <span className="text-xs font-medium text-primary block">
                       Estimasi Zakat yang Wajib Dikeluarkan ({calculationResult.periodLabel || 'per periode'})
                     </span>
-                    <strong className="text-2xl sm:text-3xl font-extrabold text-emerald-700 tracking-tight block">
+                    <strong className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight block">
                       {formatRupiah(calculationResult.estimatedZakat)}
                     </strong>
                     {calculationResult.estimatedZakatGram ? (
-                      <span className="text-xs text-emerald-700 font-semibold block">
+                      <span className="text-xs text-primary font-semibold block">
                         atau setara {calculationResult.estimatedZakatGram} gram emas
                       </span>
                     ) : null}
@@ -786,7 +786,7 @@ export function ZakatCalculatorPage() {
                   </div>
                   <div className="flex items-center justify-between py-1.5">
                     <span className="text-slate-500">Status Syarat Haul:</span>
-                    <span className="font-semibold text-emerald-700">
+                    <span className="font-semibold text-primary">
                       {calculationResult.hasHaul !== false ? 'Terpenuhi (1 Tahun)' : 'Belum 1 Tahun'}
                     </span>
                   </div>
@@ -801,7 +801,7 @@ export function ZakatCalculatorPage() {
                     >
                       <button
                         type="button"
-                        className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                        className="w-full py-3 px-4 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs sm:text-sm shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
                       >
                         <span>Salurkan Zakat Sekarang</span>
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -851,8 +851,8 @@ export function ZakatCalculatorPage() {
             ) : (
               /* 2. KONDISI BELUM DIHITUNG: PANDUAN DASAR NISAB */
               <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-2xs space-y-4">
-                <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-100 flex items-center justify-center text-xs">
+                <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                  <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-xs">
                     📜
                   </div>
                   <span>Dasar Ketentuan Nisab Zakat</span>

@@ -181,9 +181,9 @@ export function ServiceLandingPage({
               Hitung dan salurkan ke lembaga amil terpercaya
             </p>
 
-            <div className="mt-4 bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs max-w-xl">
-              <div className="flex items-center gap-3.5 sm:gap-4 mb-5">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 text-emerald-600 shadow-2xs">
+            <div className="mt-4 bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs w-full flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+              <div className="flex items-center gap-3.5 sm:gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 text-primary shadow-2xs">
                   <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}>
                     <rect x="4" y="2" width="16" height="20" rx="3" stroke="currentColor" />
                     <line x1="8" y1="6" x2="16" y2="6" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
@@ -210,7 +210,7 @@ export function ServiceLandingPage({
 
               <Link
                 to="/zakat/kalkulator"
-                className="w-full inline-flex items-center justify-center py-2.5 px-4 rounded-full border-2 border-emerald-500 hover:border-emerald-600 hover:bg-emerald-50/50 text-emerald-600 hover:text-emerald-700 font-bold text-sm sm:text-base transition-colors"
+                className="w-full md:w-auto inline-flex items-center justify-center py-2.5 px-8 rounded-full border-2 border-primary hover:border-primary-dark hover:bg-blue-50 text-primary hover:text-primary-dark font-bold text-sm sm:text-base transition-colors shrink-0"
               >
                 Hitung sekarang
               </Link>

@@ -257,30 +257,6 @@ export function PosterCarousel({ className = '' }) {
         onTouchEnd={handleTouchEnd}
         onClickCapture={handleClickCapture}
       >
-        {/* Tombol Arrow Kiri (Prev) */}
-        <button
-          type="button"
-          onClick={handlePrev}
-          aria-label="Banner sebelumnya"
-          className="absolute left-2 sm:left-4 lg:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        {/* Tombol Arrow Kanan (Next) */}
-        <button
-          type="button"
-          onClick={handleNext}
-          aria-label="Banner berikutnya"
-          className="absolute right-2 sm:right-4 lg:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
         {/* Rel Track Banner: Selalu Terpusat Simetris di Tengah Viewport */}
         <div
           ref={trackRef}

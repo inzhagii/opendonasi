@@ -142,57 +142,81 @@ export function Footer() {
         </Container>
       </div>
 
-      {/* ===== MOBILE FOOTER RINGKAS (md:hidden) ===== */}
-      <div className="block md:hidden py-8 pb-24 px-4 text-center">
-        <Link to="/" className="inline-block mb-3" aria-label="Beranda OpenDonasi">
-          <img src={logoImg} alt="OpenDonasi" className="h-7 w-auto mx-auto object-contain" />
-        </Link>
-        <p className="text-xs text-text-secondary leading-relaxed max-w-xs mx-auto mb-4">
-          Digital Giving Infrastructure — Prototype Website Donasi.
-        </p>
+      {/* ===== MOBILE FOOTER RAPI & MINIMALIS (md:hidden) ===== */}
+      <div className="block md:hidden py-8 pb-24 px-5">
+        <div className="max-w-md mx-auto space-y-6">
+          {/* Header Brand & Tagline */}
+          <div className="flex flex-col items-center text-center">
+            <Link to="/" className="inline-block mb-2" aria-label="Beranda OpenDonasi">
+              <img src={logoImg} alt="OpenDonasi" className="h-7 w-auto object-contain" />
+            </Link>
+            <p className="text-xs text-text-secondary leading-relaxed max-w-xs">
+              Platform infrastruktur penggalangan dana digital terpercaya untuk kebaikan bersama.
+            </p>
+          </div>
 
-        {/* Navigasi Cepat Mobile */}
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-text-secondary mb-4">
-          <Link to="/program" className="hover:text-primary transition-colors">Program</Link>
-          <span aria-hidden="true" className="text-slate-300">•</span>
-          <Link to="/tentang" className="hover:text-primary transition-colors">Tentang Kami</Link>
-          <span aria-hidden="true" className="text-slate-300">•</span>
-          <Link to="/faq" className="hover:text-primary transition-colors">FAQ</Link>
-          <span aria-hidden="true" className="text-slate-300">•</span>
-          <Link to="/kontak" className="hover:text-primary transition-colors">Kontak</Link>
-        </div>
+          {/* Grid Navigasi Ringkas 2 Kolom */}
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200/80 text-xs">
+            <div>
+              <h5 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">
+                Layanan
+              </h5>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link to="/program" className="hover:text-primary transition-colors">Semua Program</Link></li>
+                <li><Link to="/zakat" className="hover:text-primary transition-colors">Zakat & Kalkulator</Link></li>
+                <li><Link to="/infaq" className="hover:text-primary transition-colors">Infaq Umat</Link></li>
+                <li><Link to="/sedekah" className="hover:text-primary transition-colors">Sedekah Rutin</Link></li>
+                <li><Link to="/wakaf" className="hover:text-primary transition-colors">Wakaf Produktif</Link></li>
+              </ul>
+            </div>
 
-        {/* Media Sosial Ringkas Mobile */}
-        <div className="flex items-center justify-center gap-2.5 mb-4">
-          {SOCIAL_MEDIA_LINKS.map((item) => (
-            <a
-              key={item.id}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group w-7 h-7 rounded-full bg-slate-100 hover:bg-primary border border-slate-200/80 hover:border-primary flex items-center justify-center transition-all duration-200 shadow-2xs hover:scale-105"
-              aria-label={item.label}
-            >
-              <span
-                className="w-3 h-3 bg-slate-600 group-hover:bg-white transition-colors block pointer-events-none"
-                style={{
-                  maskImage: `url("${item.icon}")`,
-                  WebkitMaskImage: `url("${item.icon}")`,
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskPosition: 'center',
-                  WebkitMaskPosition: 'center',
-                  maskSize: 'contain',
-                  WebkitMaskSize: 'contain',
-                }}
-                aria-hidden="true"
-              />
-            </a>
-          ))}
-        </div>
+            <div>
+              <h5 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2.5">
+                Bantuan & Info
+              </h5>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link to="/tentang" className="hover:text-primary transition-colors">Tentang Kami</Link></li>
+                <li><Link to="/faq" className="hover:text-primary transition-colors">Tanya Jawab (FAQ)</Link></li>
+                <li><Link to="/kontak" className="hover:text-primary transition-colors">Kontak Bantuan</Link></li>
+              </ul>
+            </div>
+          </div>
 
-        <div className="pt-3 border-t border-border text-[11px] text-text-secondary/75">
-          <p>© 2026 OpenDonasi. Prototype Frontend.</p>
+          {/* Media Sosial & Copyright */}
+          <div className="pt-4 border-t border-slate-200/80 flex flex-col items-center text-center space-y-3">
+            <div className="flex items-center justify-center gap-2.5">
+              {SOCIAL_MEDIA_LINKS.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group w-8 h-8 rounded-full bg-slate-100 hover:bg-primary border border-slate-200/80 hover:border-primary flex items-center justify-center transition-all duration-200 shadow-2xs hover:scale-105"
+                  aria-label={item.label}
+                >
+                  <span
+                    className="w-3.5 h-3.5 bg-slate-600 group-hover:bg-white transition-colors block pointer-events-none"
+                    style={{
+                      maskImage: `url("${item.icon}")`,
+                      WebkitMaskImage: `url("${item.icon}")`,
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskPosition: 'center',
+                      WebkitMaskPosition: 'center',
+                      maskSize: 'contain',
+                      WebkitMaskSize: 'contain',
+                    }}
+                    aria-hidden="true"
+                  />
+                </a>
+              ))}
+            </div>
+
+            <div className="text-[11px] text-slate-400 space-y-0.5">
+              <p>© 2026 OpenDonasi. Seluruh hak cipta dilindungi.</p>
+              <p className="text-[10px] text-slate-400/80">Simulasi demo prototype platform donasi digital.</p>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

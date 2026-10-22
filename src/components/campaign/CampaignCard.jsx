@@ -21,7 +21,6 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
     collectedAmount = 0,
     daysLeft,
     image,
-    isImagePoster = false,
   } = campaign;
 
   return (
@@ -30,16 +29,14 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
         to={targetRoute}
         className="flex flex-col h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-        {/* Wadah Banner: ~350px x 200px */}
-        <div className="relative w-full h-[200px] overflow-hidden bg-slate-100 shrink-0 rounded-t-2xl">
+        {/* Wadah Banner: Responsif tinggi ~140px di mobile, 180px di tablet, 200px di desktop */}
+        <div className="relative w-full h-[140px] sm:h-[180px] md:h-[200px] overflow-hidden bg-slate-100 shrink-0 rounded-t-2xl">
           {image ? (
             <img
               src={image}
               alt={title || 'Program Donasi'}
               loading="lazy"
-              className={`w-full h-full ${
-                isImagePoster ? 'object-contain bg-slate-900/5' : 'object-cover'
-              }`}
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-text-secondary text-xs">
@@ -48,11 +45,11 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
           )}
         </div>
 
-        {/* Wadah Keterangan: ~200px, pt-4 (16px), px-6 (24px), pb-6 (24px) */}
-        <div className="min-h-[200px] pt-4 px-6 pb-6 flex flex-col justify-between flex-1">
+        {/* Wadah Keterangan: Kompak di mobile (~140px), proporsional di desktop */}
+        <div className="min-h-[140px] sm:min-h-[180px] md:min-h-[200px] pt-3 sm:pt-4 px-4 sm:px-6 pb-3.5 sm:pb-6 flex flex-col justify-between flex-1">
           {/* Bagian Atas: Organizer + Verified Badge, lalu Judul Program */}
           <div className="min-w-0">
-            <div className="flex items-center gap-1.5 text-xs text-text-secondary truncate">
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-text-secondary truncate">
               <button
                 type="button"
                 onClick={(e) => {
@@ -81,40 +78,40 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
 
             <h3
               title={title}
-              className="mt-1.5 text-[15px] sm:text-base font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-primary transition-colors"
+              className="mt-1 text-sm sm:text-[15px] md:text-base font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-primary transition-colors"
             >
               {title || 'Program Kebaikan OpenDonasi'}
             </h3>
           </div>
 
           {/* Bagian Bawah: Label -> Nominal (Biru) & Sisa Hari (Biru) -> Progress Bar dengan Dot */}
-          <div className="mt-2">
+          <div className="mt-1.5 sm:mt-2">
             {/* Label Row */}
-            <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-400">
               <span>Dana terkumpul</span>
               <span>Sisa hari</span>
             </div>
 
             {/* Value Row (Nominal Biru & Sisa Hari Biru dengan Ikon Jam) */}
             <div className="mt-0.5 flex items-center justify-between gap-2">
-              <span className="text-base font-bold text-primary font-sans truncate">
+              <span className="text-sm sm:text-base font-bold text-primary font-sans truncate">
                 {formatRupiah(collectedAmount)}
               </span>
 
-              <div className="flex items-center gap-1 text-sm font-semibold text-primary shrink-0">
+              <div className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-primary shrink-0">
                 <img
                   src={timeIcon}
                   alt=""
                   aria-hidden="true"
-                  className="w-3.5 h-3.5 object-contain"
+                  className="w-3 h-3 sm:w-3.5 sm:h-3.5 object-contain"
                 />
                 <span>{typeof daysLeft === 'number' ? `${daysLeft} hari` : '∞'}</span>
               </div>
             </div>
 
             {/* Bilah Progres Bar dengan Titik Dot & Tooltip Persentase saat Hover */}
-            <div className="relative mt-2.5 pb-2">
-              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+            <div className="relative mt-2 sm:mt-2.5 pb-1 sm:pb-2">
+              <div className="w-full bg-slate-200 h-1 sm:h-1.5 rounded-full overflow-hidden">
                 <div
                   className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
                   style={{ width: `${calculatedPercentage}%` }}
@@ -123,7 +120,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
 
               {/* Titik Dot Indikator (Selalu terlihat di ujung progres bar) */}
               <div
-                className="absolute top-[3px] -translate-y-1/2 -translate-x-1/2 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
+                className="absolute top-[2px] sm:top-[3px] -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
                 style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
               />
 

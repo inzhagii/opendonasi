@@ -19,28 +19,32 @@ export function FeaturedCampaignCarousel({ className = '' }) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragDeltaX, setDragDeltaX] = useState(0);
 
+  const containerRef = useRef(null);
   const trackRef = useRef(null);
   const dragStartXRef = useRef(null);
 
   // Responsif cardWidth dan gap
-  const [dimensions, setDimensions] = useState({ cardWidth: 340, gap: 24 });
+  const [dimensions, setDimensions] = useState({ cardWidth: 340, gap: 24, isMobile: false });
+
+  const updateDimensions = useCallback(() => {
+    const width = window.innerWidth;
+    const containerW = containerRef.current ? containerRef.current.offsetWidth : width - 32;
+
+    if (width < 640) {
+      // Mobile: 1 kartu penuh seukuran kontainer, tanpa sisa kartu peek di sisi
+      setDimensions({ cardWidth: containerW, gap: 0, isMobile: true });
+    } else if (width < 1024) {
+      setDimensions({ cardWidth: 310, gap: 18, isMobile: false });
+    } else {
+      setDimensions({ cardWidth: 340, gap: 24, isMobile: false });
+    }
+  }, []);
 
   useEffect(() => {
-    const updateDimensions = () => {
-      const width = window.innerWidth;
-      if (width < 640) {
-        setDimensions({ cardWidth: 280, gap: 14 });
-      } else if (width < 1024) {
-        setDimensions({ cardWidth: 310, gap: 18 });
-      } else {
-        setDimensions({ cardWidth: 340, gap: 24 });
-      }
-    };
-
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
-  }, []);
+  }, [updateDimensions]);
 
   const stepWidth = dimensions.cardWidth + dimensions.gap;
 
@@ -185,9 +189,10 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         />
       </div>
 
-      {/* Viewport Carousel: 3 Main Card Center, 2 Peek Card di Sisi, Shadow Putih & Tombol Arrow */}
+      {/* Viewport Carousel: 3 Main Card Center, 2 Peek Card di Sisi pada Desktop; 1 Card Penuh pada Mobile */}
       <div
-        className="relative w-full h-[435px] overflow-hidden select-none"
+        ref={containerRef}
+        className="relative w-full h-[330px] sm:h-[435px] overflow-hidden select-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -197,15 +202,15 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         onTouchEnd={handleTouchEnd}
         onClickCapture={handleClickCapture}
       >
-        {/* Shadow Gradasi Putih Sisi Kiri (Menutup sebagian Peek Card Kiri) */}
+        {/* Shadow Gradasi Putih Sisi Kiri (Hanya pada tablet/desktop saat ada peek card) */}
         <div
-          className="absolute left-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none"
+          className="hidden sm:block absolute left-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none"
           aria-hidden="true"
         />
 
-        {/* Shadow Gradasi Putih Sisi Kanan (Menutup sebagian Peek Card Kanan) */}
+        {/* Shadow Gradasi Putih Sisi Kanan (Hanya pada tablet/desktop saat ada peek card) */}
         <div
-          className="absolute right-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none"
+          className="hidden sm:block absolute right-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none"
           aria-hidden="true"
         />
 
@@ -214,9 +219,9 @@ export function FeaturedCampaignCarousel({ className = '' }) {
           type="button"
           onClick={handlePrev}
           aria-label="Geser ke program sebelumnya"
-          className="absolute left-2 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+          className="absolute left-1.5 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -226,9 +231,9 @@ export function FeaturedCampaignCarousel({ className = '' }) {
           type="button"
           onClick={handleNext}
           aria-label="Geser ke program berikutnya"
-          className="absolute right-2 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+          className="absolute right-1.5 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -237,7 +242,7 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         <div
           ref={trackRef}
           onTransitionEnd={handleTransitionEnd}
-          className={`flex items-center absolute left-1/2 top-2.5 bottom-2.5 ${
+          className={`flex items-center absolute left-1/2 top-2 bottom-2 sm:top-2.5 sm:bottom-2.5 ${
             isAnimating
               ? 'transition-transform duration-[350ms] ease-out'
               : 'transition-none'
@@ -249,7 +254,7 @@ export function FeaturedCampaignCarousel({ className = '' }) {
           {visibleCards.map((item, idx) => (
             <div
               key={item.key}
-              className="shrink-0 h-[400px] transition-opacity duration-200"
+              className="shrink-0 h-[310px] sm:h-[400px] transition-opacity duration-200"
               style={{
                 width: `${dimensions.cardWidth}px`,
                 marginRight: idx === visibleCards.length - 1 ? 0 : `${dimensions.gap}px`,
@@ -259,6 +264,29 @@ export function FeaturedCampaignCarousel({ className = '' }) {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Dots Indikator Khusus Mobile */}
+      <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3">
+        {items.map((it, idx) => {
+          const isActive = idx === currentIndex;
+          return (
+            <button
+              key={it.id}
+              type="button"
+              aria-label={`Slide ${idx + 1}`}
+              onClick={() => {
+                if (isAnimating || isActive) return;
+                if (idx === (currentIndex + 1) % totalCount) handleNext();
+                else if (idx === (currentIndex - 1 + totalCount) % totalCount) handlePrev();
+                else setCurrentIndex(idx);
+              }}
+              className={`transition-all duration-300 rounded-full ${
+                isActive ? 'w-5 h-1.5 bg-primary' : 'w-1.5 h-1.5 bg-slate-200'
+              }`}
+            />
+          );
+        })}
       </div>
     </section>
   );

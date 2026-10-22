@@ -7,18 +7,18 @@ import { MobileBottomNav } from './MobileBottomNav';
 export function RootLayout({ children }) {
   const location = useLocation();
 
-  // Sembunyikan navbar utama pada Detail Program, Halaman Layanan, Form Donasi, Hasil Donasi, Profil Penggalang, dan Halaman Pencarian
+  // Sembunyikan navbar utama pada Detail Program, Form Donasi, Hasil Donasi, Profil Penggalang, dan Halaman Pencarian
+  // Catatan: Halaman Layanan (/zakat, /infaq, /sedekah, /wakaf) TETAP menampilkan navbar utama pada desktop & mobile sesuai arahan PO
   const isDetailPage = location.pathname.startsWith('/program/') && location.pathname !== '/program';
-  const isServicePage = ['/zakat', '/infaq', '/sedekah', '/wakaf'].some((p) => location.pathname === p || location.pathname.startsWith(`${p}/`));
   const isDonationFlow = location.pathname.startsWith('/donasi/') || location.pathname === '/hasil-donasi';
   const isOrganizerPage = location.pathname.startsWith('/penggalang/') || location.pathname.startsWith('/yayasan/');
   const isSearchPage = location.pathname === '/search';
 
-  const shouldHideHeader = isDetailPage || isServicePage || isDonationFlow || isOrganizerPage || isSearchPage;
+  const shouldHideHeader = isDetailPage || isDonationFlow || isOrganizerPage || isSearchPage;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-text-primary font-sans antialiased">
-      {/* Header Utama (Disembunyikan pada Detail Program & Halaman Layanan sesuai preferensi PO) */}
+      {/* Header Utama (Ditampilkan pada Beranda, Program, dan Layanan Zakat/Infaq/Sedekah/Wakaf) */}
       {!shouldHideHeader && <Header />}
 
       {/* Konten Halaman */}
