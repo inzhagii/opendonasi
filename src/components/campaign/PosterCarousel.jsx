@@ -3,7 +3,7 @@
 // Dilengkapi auto-slide setiap 5 detik ke arah kanan, drag/swipe dengan kursor/sentuhan, navigasi arrow, dan dots indikator.
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import banner1 from '../../assets/image/banner/banner1.png';
 import banner2 from '../../assets/image/banner/banner2.png';
 import banner3 from '../../assets/image/banner/banner3.png';
@@ -37,6 +37,7 @@ const POSTERS = [
 ];
 
 export function PosterCarousel({ className = '' }) {
+  const location = useLocation();
   const totalCount = POSTERS.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState('idle'); // 'idle' | 'next' | 'prev'
@@ -297,6 +298,7 @@ export function PosterCarousel({ className = '' }) {
                 {isCenter ? (
                   <Link
                     to={item.poster.link}
+                    state={{ from: location.pathname + location.search }}
                     className="block w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl sm:rounded-3xl overflow-hidden"
                   >
                     <img

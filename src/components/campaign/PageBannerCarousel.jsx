@@ -4,7 +4,7 @@
 // Didesain bersih ("cukup ada banner aja") tanpa judul teks pengantar di atasnya.
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import banner1 from '../../assets/image/banner/banner1.png';
 import banner2 from '../../assets/image/banner/banner2.png';
 import banner3 from '../../assets/image/banner/banner3.png';
@@ -38,6 +38,7 @@ const DEFAULT_BANNERS = [
 ];
 
 export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }) {
+  const location = useLocation();
   const items = banners && banners.length > 0 ? banners : DEFAULT_BANNERS;
   const totalCount = items.length;
 
@@ -292,6 +293,7 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
                 {isCenter ? (
                   <Link
                     to={item.poster.link}
+                    state={{ from: location.pathname + location.search }}
                     className="block w-full h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-2xl sm:rounded-3xl overflow-hidden"
                   >
                     <img

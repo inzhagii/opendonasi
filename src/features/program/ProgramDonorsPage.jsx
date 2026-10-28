@@ -2,7 +2,7 @@
 // Menampilkan tab pemilahan 'Terbaru', 'Dengan do\'a', dan 'Terbesar' sesuai referensi visual.
 
 import { useState, useMemo, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { useDonation } from '../../hooks/useDonation';
 import { getMergedDonors } from '../../data/campaignDonors';
@@ -19,6 +19,7 @@ function getInitials(name) {
 export function ProgramDonorsPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { donations } = useDonation();
 
   // Temukan kampanye berdasarkan slug atau id (dengan fallback aman agar tidak 404)
@@ -72,10 +73,11 @@ export function ProgramDonorsPage() {
 
   // Handler kembali ke halaman detail program
   const handleBack = () => {
-    if (window.history.length > 2) {
-      navigate(-1);
-    } else if (slug) {
-      navigate(`/program/${slug}`);
+    if (slug) {
+      navigate(`/program/${slug}`, {
+        replace: true,
+        state: { from: location.state?.from },
+      });
     } else {
       navigate('/program');
     }
@@ -293,27 +295,6 @@ export function ProgramDonorsPage() {
           </div>
         )}
       </main>
-
-      {/* Floating CTA Donasi Sekarang di bagian bawah (Desktop & Mobile) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 py-3 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-        <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <span className="text-[11px] text-slate-500 block">Dukung Program Ini</span>
-            <span className="text-xs sm:text-sm font-bold text-slate-900 truncate block">
-              {campaign.title}
-            </span>
-          </div>
-
-          <Link to={`/donasi/${campaign.slug}`} className="shrink-0">
-            <button
-              type="button"
-              className="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-hover text-white text-xs sm:text-sm font-bold transition-all shadow-md active:scale-95 cursor-pointer"
-            >
-              Donasi Sekarang
-            </button>
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }

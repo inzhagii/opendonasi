@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { PRAYERS } from '../../data/content';
 import { SectionHeading } from '../ui/SectionHeading';
 import { formatRupiah } from '../../lib/formatters';
@@ -15,6 +15,7 @@ import { formatRupiah } from '../../lib/formatters';
  * - Pesan donatur hanya ditampilkan bila ada (tidak mengarang pesan palsu bila null).
  */
 export function PrayerCarousel({ className = '' }) {
+  const location = useLocation();
   const [prayers, setPrayers] = useState(() =>
     PRAYERS.map((p) => ({
       ...p,
@@ -237,6 +238,7 @@ export function PrayerCarousel({ className = '' }) {
                     Untuk:{' '}
                     <Link
                       to={`/program/${prayer.campaignSlug}`}
+                      state={{ from: location.pathname + location.search }}
                       className="font-medium text-text-primary hover:text-primary transition-colors line-clamp-1 inline"
                     >
                       {prayer.campaignTitle}

@@ -1,7 +1,7 @@
 // Komponen Kartu Program OpenDonasi (Card Biasa Desktop & Card Horizontal Mobile)
 // Sesuai panduan visual referensi Gambar 1 (Card Biasa) & Gambar 2 (Card Horizontal).
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { formatRupiah } from '../../lib/formatters';
 import { getOrganizerSlug } from '../../data/organizers';
 import timeIcon from '../../assets/icons/icons_kategori/time.svg';
@@ -15,6 +15,7 @@ import timeIcon from '../../assets/icons/icons_kategori/time.svg';
  */
 function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     title,
     organizer,
@@ -27,6 +28,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
     <article className="group bg-white rounded-2xl border border-slate-200/90 shadow-xs hover:border-slate-300 transition-colors w-full h-full flex flex-col relative">
       <Link
         to={targetRoute}
+        state={{ from: location.pathname + location.search }}
         className="flex flex-col h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
         {/* Wadah Banner: Responsif tinggi ~140px di mobile, 180px di tablet, 200px di desktop */}
@@ -149,6 +151,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
  */
 function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     title,
     organizer,
@@ -162,6 +165,7 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
     <article className="group bg-white rounded-2xl border border-slate-200/90 p-3 sm:p-3.5 shadow-xs hover:border-slate-300 transition-colors w-full">
       <Link
         to={targetRoute}
+        state={{ from: location.pathname + location.search }}
         className="grid grid-cols-2 items-center gap-3 sm:gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary h-full"
       >
         {/* 50% Kiri: Wadah Gambar Banner (Rasio 16:9, rounded-xl) */}

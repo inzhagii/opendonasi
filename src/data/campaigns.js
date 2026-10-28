@@ -421,19 +421,188 @@ export const CAMPAIGN_UPDATES = [
   {
     id: 'upd-001',
     campaignId: 'camp-001',
-    date: '2026-03-25',
-    disbursementAmount: 35000000,
-    title: 'Pengecoran Pondasi Tahap 1 Selesai',
+    date: '2026-10-08',
+    disbursementAmount: 45000000,
+    title: 'Pencairan Dana Rp 45.000.000',
+    subtitle: 'Rencana Pencairan Dana Tahap Selanjutnya (Periode Oktober–November 2026)',
+    excerpt: 'Keberhasilan dan dampak positif dari penyaluran sebelumnya mendorong kami untuk melanjutkan program pemenuhan gizi ini ke tingkat yang lebih luas...',
     content:
-      'Alhamdulillah proses pengecoran pondasi asrama tahap awal telah selesai berkat doa dan dukungan para muhsinin. Seluruh alokasi dana tahap ini difokuskan untuk material semen, pasir, dan operasional pengerjaan di lapangan.',
+      'Keberhasilan dan dampak positif dari penyaluran sebelumnya mendorong kami untuk melanjutkan program pemenuhan gizi ini ke tingkat yang lebih luas. Pencairan dana tahap berikutnya direncanakan untuk mencukupi kebutuhan pangan 300 anak yatim dan dhuafa di berbagai panti asuhan wilayah Jabodetabek selama periode Oktober hingga November 2026.\n\nSeluruh alokasi dana akan difokuskan untuk menjaga kualitas gizi harian anak-anak penerima manfaat. Pembiayaan mencakup pengadaan bahan makanan pokok berkualitas, pemenuhan sumber protein harian (daging, ayam, telur, dan ikan), pasokan sayur serta buah segar, hingga dukungan suplemen nutrisi.\n\nSelain pengadaan bahan pangan, dana ini juga mendukung operasional pengolahan makanan secara higienis dan proses logistik pendistribusian langsung ke panti-panti asuhan sasaran. Langkah ini diambil untuk memastikan setiap donasi terkonversi menjadi asupan bergizi yang menunjang kesehatan dan tumbuh kembang 300 anak secara berkelanjutan.',
+    implementationPlan: [
+      { label: 'Periode Kebutuhan', value: 'Oktober – November 2026' },
+      { label: 'Target Penerima', value: '300 Anak Yatim & Dhuafa' },
+      { label: 'Cakupan Wilayah', value: 'Panti Asuhan se-Jabodetabek dan beberapa kota lainnya' },
+      { label: 'Fokus Penggunaan Dana', value: 'Bahan pokok, pasokan protein & nutrisi segar, operasional dapur, serta logistik distribusi' },
+    ],
   },
   {
     id: 'upd-002',
-    campaignId: 'camp-002',
-    date: '2026-04-02',
-    disbursementAmount: 45000000,
-    title: 'Penyaluran Paket Dapur Umum 500 Porsi',
+    campaignId: 'camp-001',
+    date: '2026-10-08',
+    disbursementAmount: null,
+    title: 'Laporan Implementasi Program Gerakan Sedekah Makan',
+    subtitle: 'Penyaluran Makanan Bergizi ke Panti Asuhan Sasaran',
+    excerpt: 'Bantuan pangan harian hasil donasi Anda telah selesai disalurkan ke beberapa panti asuhan penerima manfaat. Kehadiran program ini memberikan kepastian asupan nutrisi yang sangat dibutuhkan oleh...',
     content:
-      'Relawan telah membagikan 500 paket makanan hangat untuk pengungsi di titik kumpul posko barat. Keberhasilan penyaluran ini mendorong kami melanjutkan bantuan pemenuhan nutrisi dan logistik pengungsian.',
+      'Bantuan pangan harian hasil donasi Anda telah selesai disalurkan ke beberapa panti asuhan penerima manfaat. Kehadiran program ini memberikan kepastian asupan nutrisi yang sangat dibutuhkan oleh adik-adik santri dan yatim di panti asuhan.\n\nAlhamdulillah tim relawan telah menyalurkan paket makanan siap santap higienis beserta sembako pokok ke panti asuhan binaan. Senyum kebahagiaan mereka menjadi wujud nyata amanah yang Anda titipkan melalui OpenDonasi.',
+    implementationPlan: [
+      { label: 'Jumlah Penerima', value: '250 Santri dan Anak Panti' },
+      { label: 'Lokasi Penyaluran', value: 'Bogor & Depok' },
+      { label: 'Waktu Pelaksanaan', value: '08 Oktober 2026' },
+    ],
+  },
+  {
+    id: 'upd-003',
+    campaignId: 'camp-001',
+    date: '2026-08-26',
+    disbursementAmount: 13800000,
+    title: 'Pencairan Dana Rp 13.800.000',
+    subtitle: 'Pencairan Dana Tahap Awal & Operasional Lapangan',
+    excerpt: 'Melihat dampak positif dari penyaluran sebelumnya, kami merencanakan pencairan dana tahap berikutnya yang akan dilaksanakan pada September 2026. Program ini ditargetkan...',
+    content:
+      'Melihat dampak positif dari penyaluran sebelumnya, kami merencanakan pencairan dana tahap berikutnya yang akan dilaksanakan pada September 2026. Program ini ditargetkan untuk menambah kapasitas distribusi logistik makanan ke daerah pelosok yang sulit terjangkau.\n\nDana dialokasikan untuk armada logistik pengantaran, paket nutrisi tambahan, serta pengadaan bahan makanan pokok beras dan minyak kemasan bermutu baik.',
+    implementationPlan: [
+      { label: 'Periode Kebutuhan', value: 'September 2026' },
+      { label: 'Target Penerima', value: '150 Anak Yatim dan Dhuafa' },
+      { label: 'Fokus Penggunaan Dana', value: 'Bahan pokok dapur umum dan armada distribusi' },
+    ],
+  },
+  {
+    id: 'upd-004',
+    campaignId: 'camp-001',
+    date: '2026-08-26',
+    disbursementAmount: null,
+    title: 'Laporan Implementasi Program Gerakan Sedekah Makan',
+    subtitle: 'Distribusi Paket Nutrisi Sehat Bulan Agustus',
+    excerpt: 'Berkat kedermawanan Anda, bantuan makanan harian telah resmi disalurkan ke Panti Asuhan dan membawa perubahan nyata bagi adik-adik di sana....',
+    content:
+      'Berkat kedermawanan Anda, bantuan makanan harian telah resmi disalurkan ke Panti Asuhan dan membawa perubahan nyata bagi adik-adik di sana. Setiap porsi disiapkan dengan standar gizi seimbang berisi karbohidrat, protein hewani, sayur segar, dan buah.',
+    implementationPlan: [
+      { label: 'Jumlah Penerima', value: '180 Anak Asuh' },
+      { label: 'Status Penyaluran', value: 'Tersalurkan 100%' },
+    ],
+  },
+  {
+    id: 'upd-005',
+    campaignId: 'camp-001',
+    date: '2025-07-29',
+    disbursementAmount: 918988,
+    title: 'Pencairan Dana Rp 918.988',
+    subtitle: 'Inisiasi Program & Pengadaan Sarana Tahap Pertama',
+    excerpt: 'Donasi yang terkumpul dalam program Gerakan Sedekah Makan untuk Anak Yatim dan Dhuafa akan digunakan untuk pembelian bahan pokok...',
+    content:
+      'Donasi yang terkumpul dalam program Gerakan Sedekah Makan untuk Anak Yatim dan Dhuafa akan digunakan untuk pembelian bahan pokok awal seperti beras, telur, dan minyak goreng untuk posko dapur umum perintis.',
+    implementationPlan: [
+      { label: 'Periode Kebutuhan', value: 'Juli – Agustus 2025' },
+      { label: 'Target Penerima', value: '50 Anak Asuh Perintis' },
+      { label: 'Fokus Penggunaan Dana', value: 'Bahan pokok dapur umum darurat' },
+    ],
   },
 ];
+
+// Helper untuk mengambil berita program secara aman dengan fallback lengkap
+export function getCampaignUpdates(campaignId) {
+  const directUpdates = CAMPAIGN_UPDATES.filter((u) => u.campaignId === campaignId);
+  if (directUpdates.length > 0) {
+    return directUpdates;
+  }
+  // Fallback seragam untuk program lain agar halaman berita tetap kaya dan realistis
+  return [
+    {
+      id: `upd-${campaignId}-1`,
+      campaignId,
+      date: '2026-10-08',
+      disbursementAmount: 45000000,
+      title: 'Pencairan Dana Rp 45.000.000',
+      subtitle: 'Rencana Pencairan Dana Tahap Selanjutnya (Periode Oktober–November 2026)',
+      excerpt: 'Keberhasilan dan dampak positif dari penyaluran sebelumnya mendorong kami untuk melanjutkan program ke tingkat yang lebih luas...',
+      content:
+        'Keberhasilan dan dampak positif dari penyaluran sebelumnya mendorong kami untuk melanjutkan program pemenuhan amanah ini ke tingkat yang lebih luas. Pencairan dana tahap berikutnya direncanakan untuk mencukupi kebutuhan penerima manfaat di wilayah target selama periode berjalan.\n\nSeluruh alokasi dana akan difokuskan secara transparan untuk pengadaan sarana, bantuan langsung, dan operasional tim di lapangan.',
+      implementationPlan: [
+        { label: 'Periode Kebutuhan', value: 'Oktober – November 2026' },
+        { label: 'Target Penerima', value: 'Ratusan Penerima Manfaat' },
+        { label: 'Cakupan Wilayah', value: 'Wilayah Binaan Mitra OpenDonasi' },
+        { label: 'Fokus Penggunaan Dana', value: 'Pengadaan sarana, bahan pokok, dan logistik distribusi' },
+      ],
+    },
+    {
+      id: `upd-${campaignId}-2`,
+      campaignId,
+      date: '2026-10-08',
+      disbursementAmount: null,
+      title: 'Laporan Implementasi Program Penyaluran Manfaat',
+      subtitle: 'Distribusi Bantuan ke Lokasi Sasaran',
+      excerpt: 'Bantuan hasil donasi Anda telah selesai disalurkan kepada penerima manfaat secara tepat sasaran. Kehadiran program ini memberikan harapan nyata...',
+      content:
+        'Bantuan hasil donasi Anda telah selesai disalurkan kepada penerima manfaat secara tepat sasaran. Kehadiran program ini memberikan kepastian sarana dan bantuan yang sangat dibutuhkan oleh warga binaan.\n\nAlhamdulillah tim relawan di lapangan telah menyelesaikan proses serah terima bantuan dengan tertib dan terdokumentasi.',
+      implementationPlan: [
+        { label: 'Jumlah Penerima', value: 'Warga dan Santri Binaan' },
+        { label: 'Status', value: 'Tersalurkan 100%' },
+      ],
+    },
+    {
+      id: `upd-${campaignId}-3`,
+      campaignId,
+      date: '2026-08-26',
+      disbursementAmount: 13800000,
+      title: 'Pencairan Dana Rp 13.800.000',
+      subtitle: 'Pencairan Dana Tahap Awal & Operasional Lapangan',
+      excerpt: 'Melihat dampak positif dari penyaluran sebelumnya, kami merencanakan pencairan dana tahap berikutnya untuk memperluas jangkauan...',
+      content:
+        'Pencairan dana tahap awal sebesar Rp 13.800.000 dialokasikan untuk biaya persiapan teknis, survei lokasi sasaran, pengadaan material awal, dan akomodasi armada relawan.',
+      implementationPlan: [
+        { label: 'Periode Kebutuhan', value: 'Agustus – September 2026' },
+        { label: 'Fokus Penggunaan Dana', value: 'Pengadaan material awal dan operasional lapangan' },
+      ],
+    },
+    {
+      id: `upd-${campaignId}-4`,
+      campaignId,
+      date: '2026-08-26',
+      disbursementAmount: null,
+      title: 'Laporan Implementasi dan Verifikasi Lapangan',
+      subtitle: 'Monitoring & Evaluasi Penyaluran',
+      excerpt: 'Berkat kedermawanan Anda, bantuan telah resmi disalurkan dan membawa perubahan nyata bagi saudara-saudara kita di sana....',
+      content:
+        'Berkat kedermawanan Anda, bantuan telah resmi disalurkan dan membawa perubahan nyata bagi saudara-saudara kita di sana. Dokumentasi dan laporan pertanggungjawaban telah diverifikasi oleh tim verifikasi OpenDonasi.',
+      implementationPlan: [
+        { label: 'Tim Lapangan', value: 'Relawan Mitra Resmi' },
+        { label: 'Status', value: 'Terverifikasi' },
+      ],
+    },
+    {
+      id: `upd-${campaignId}-5`,
+      campaignId,
+      date: '2025-07-29',
+      disbursementAmount: 918988,
+      title: 'Pencairan Dana Rp 918.988',
+      subtitle: 'Inisiasi Program & Pengadaan Sarana Tahap Pertama',
+      excerpt: 'Donasi yang terkumpul pada program ini digunakan untuk pembelian perlengkapan perintis...',
+      content:
+        'Donasi tahap pertama digunakan untuk pengadaan sarana dasar serta konsumsi kegiatan pembukaan program bersama tokoh masyarakat setempat.',
+      implementationPlan: [
+        { label: 'Periode Kebutuhan', value: 'Juli – Agustus 2025' },
+        { label: 'Fokus Penggunaan Dana', value: 'Sarana dasar dan inisiasi lapangan' },
+      ],
+    },
+  ];
+}
+
+// Helper untuk mengambil cerita panjang program (Tentang Program)
+export function getCampaignStory(campaign) {
+  if (!campaign) return null;
+  return {
+    arabicGreeting: 'السَّلاَمُ عَلَيْكُمْ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ',
+    bismillah: 'Bismillahirrahmanirrahim.',
+    paragraphs: [
+      `${campaign.description || 'Mari bersama-sama kita dukung saudara-saudara kita yang membutuhkan melalui program kebaikan ini.'} Kehadiran sarana yang memadai sangat dinantikan oleh mereka yang berada di pelosok demi mewujudkan masa depan yang lebih baik.`,
+      `Setiap hari, mereka harus berjuang dengan berbagai keterbatasan fasilitas dan akses. Meskipun dalam kondisi serba terbatas, semangat belajar, beribadah, dan bertahan hidup tak pernah padam di benak adik-adik dan warga binaan.`,
+      `Alhamdulillah, seiring berjalannya waktu dan keterlibatan para muhsinin melalui OpenDonasi, secercah harapan mulai merekah. Bantuan yang tersalurkan membuktikan bahwa kepedulian kita mampu menghadirkan perubahan nyata dan memulihkan senyum mereka.`,
+      `Mari sahabat, kita bersama-sama menyatukan langkah kebaikan. Uluran tangan terbaik dari Anda akan menjadi amal jariyah yang pahalanya terus mengalir tanpa henti, membawa berkah untuk kehidupan dunia dan akhirat.`,
+    ],
+    documentationImages: [
+      img2,
+      img3,
+    ],
+  };
+}

@@ -1,51 +1,321 @@
 // Halaman formulir donasi OpenDonasi (/donasi/:slug).
+// Alur bertahap (Multi-step):
+// 1. Pilih Nominal Donasi
+// 2. Pilih Metode Pembayaran
+// 3. Isi Formulir Donatur & Konfirmasi Pembayaran
 
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
-import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
-import { formatRupiah } from '../../lib/formatters';
+import { formatRupiah, formatNumber } from '../../lib/formatters';
 import { useDonation } from '../../hooks/useDonation';
-import { getOrganizerSlug } from '../../data/organizers';
 
-const PRESET_AMOUNTS = [10000, 25000, 50000, 100000];
+// Preset nominal donasi (Sesuai Referensi Gambar 1)
+const PRESET_AMOUNTS = [50000, 100000, 250000, 500000, 1000000, 5000000];
 const MIN_AMOUNT = 10000;
+
+// Daftar metode pembayaran (Sesuai Referensi Gambar 2)
+const PAYMENT_CATEGORIES = [
+  {
+    id: 'instant',
+    title: 'Pembayaran Instan (Cepat & Mudah)',
+    methods: [
+      {
+        id: 'saku_kebaikan',
+        name: 'Saku Kebaikan',
+        category: 'instant',
+        subtitle: 'Diperlukan login ke akunmu',
+        iconType: 'saku',
+      },
+      {
+        id: 'gopay',
+        name: 'GoPay',
+        category: 'instant',
+        iconType: 'gopay',
+      },
+      {
+        id: 'ovo',
+        name: 'OVO',
+        category: 'instant',
+        iconType: 'ovo',
+      },
+      {
+        id: 'dana',
+        name: 'Dana',
+        category: 'instant',
+        iconType: 'dana',
+      },
+      {
+        id: 'shopeepay',
+        name: 'ShopeePay',
+        category: 'instant',
+        iconType: 'shopeepay',
+      },
+      {
+        id: 'qris',
+        name: 'QRIS',
+        category: 'instant',
+        iconType: 'qris',
+      },
+    ],
+  },
+  {
+    id: 'va',
+    title: 'Virtual Account (Transaksi diverifikasi otomatis)',
+    methods: [
+      {
+        id: 'maybank_va',
+        name: 'Maybank Syariah Virtual Account',
+        category: 'va',
+        iconType: 'maybank',
+      },
+      {
+        id: 'mandiri_va',
+        name: 'Mandiri Virtual Account',
+        category: 'va',
+        iconType: 'mandiri',
+      },
+      {
+        id: 'bri_va',
+        name: 'BRI Virtual Account',
+        category: 'va',
+        iconType: 'bri',
+      },
+      {
+        id: 'bni_va',
+        name: 'BNI Virtual Account',
+        category: 'va',
+        iconType: 'bni',
+      },
+      {
+        id: 'cimb_va',
+        name: 'CIMB Virtual Account',
+        category: 'va',
+        iconType: 'cimb',
+      },
+      {
+        id: 'permata_va',
+        name: 'Permata Virtual Account',
+        category: 'va',
+        iconType: 'permata',
+      },
+      {
+        id: 'danamon_va',
+        name: 'Danamon Virtual Account',
+        category: 'va',
+        iconType: 'danamon',
+      },
+      {
+        id: 'bsi_va',
+        name: 'BSI Virtual Account',
+        category: 'va',
+        iconType: 'bsi',
+      },
+      {
+        id: 'bjb_va',
+        name: 'BJB Virtual Account',
+        category: 'va',
+        iconType: 'bjb',
+      },
+      {
+        id: 'bca_va',
+        name: 'BCA Virtual Account',
+        category: 'va',
+        iconType: 'bca',
+      },
+    ],
+  },
+];
+
+// Komponen Icon/Logo Metode Pembayaran Khas Brand (Ukuran 16:9 Persegi Panjang)
+function PaymentMethodIcon({ type, className = '' }) {
+  const baseBox = `w-[54px] aspect-[16/9] rounded-md shrink-0 flex items-center justify-center shadow-2xs border select-none overflow-hidden ${className}`;
+
+  switch (type) {
+    case 'saku':
+      return (
+        <div className={`${baseBox} bg-amber-500 border-amber-600/20 text-white font-black text-[10px] tracking-wider`}>
+          <span>SAKU</span>
+        </div>
+      );
+    case 'gopay':
+      return (
+        <div className={`${baseBox} bg-[#00AED6] border-[#0095b8]/20 text-white font-bold text-[11px] tracking-tight`}>
+          <span>gopay</span>
+        </div>
+      );
+    case 'ovo':
+      return (
+        <div className={`${baseBox} bg-[#4C2A86] border-[#3e226d]/20 text-white font-black text-[11px] tracking-wider`}>
+          <span>OVO</span>
+        </div>
+      );
+    case 'dana':
+      return (
+        <div className={`${baseBox} bg-[#118EEA] border-[#0e7bcc]/20 text-white font-black text-[11px] tracking-wider`}>
+          <span>DANA</span>
+        </div>
+      );
+    case 'shopeepay':
+      return (
+        <div className={`${baseBox} bg-[#EE4D2D] border-[#d43f21]/20 text-white font-bold text-[9.5px] tracking-tight`}>
+          <span>Shopee</span>
+        </div>
+      );
+    case 'qris':
+      return (
+        <div className={`${baseBox} bg-slate-900 border-slate-950 text-white font-black text-[10.5px] tracking-widest`}>
+          <span>QRIS</span>
+        </div>
+      );
+    case 'bca':
+      return (
+        <div className={`${baseBox} bg-[#005EAA] border-[#004e8d]/20 text-white font-black text-[11px] tracking-wider`}>
+          <span>BCA</span>
+        </div>
+      );
+    case 'mandiri':
+      return (
+        <div className={`${baseBox} bg-[#003D79] border-[#002f5e]/20 text-amber-400 font-extrabold text-[9.5px] tracking-tight`}>
+          <span>mandiri</span>
+        </div>
+      );
+    case 'bri':
+      return (
+        <div className={`${baseBox} bg-[#00529C] border-[#004482]/20 text-white font-black text-[10.5px] tracking-wider`}>
+          <span>BRI</span>
+        </div>
+      );
+    case 'bni':
+      return (
+        <div className={`${baseBox} bg-[#F15A24] border-[#d64a18]/20 text-white font-black text-[10.5px] tracking-wider`}>
+          <span>BNI</span>
+        </div>
+      );
+    case 'bsi':
+      return (
+        <div className={`${baseBox} bg-[#00A39D] border-[#008782]/20 text-white font-black text-[10.5px] tracking-wider`}>
+          <span>BSI</span>
+        </div>
+      );
+    case 'cimb':
+      return (
+        <div className={`${baseBox} bg-[#7E0000] border-[#660000]/20 text-white font-black text-[9.5px] tracking-tight`}>
+          <span>CIMB</span>
+        </div>
+      );
+    case 'permata':
+      return (
+        <div className={`${baseBox} bg-[#008542] border-[#006e37]/20 text-white font-bold text-[9px] tracking-tight`}>
+          <span>Permata</span>
+        </div>
+      );
+    case 'danamon':
+      return (
+        <div className={`${baseBox} bg-[#F37024] border-[#d85e17]/20 text-white font-bold text-[9px] tracking-tight`}>
+          <span>Danamon</span>
+        </div>
+      );
+    case 'maybank':
+      return (
+        <div className={`${baseBox} bg-[#FFCE00] border-amber-400/30 text-slate-900 font-black text-[9px] tracking-tight`}>
+          <span>Maybank</span>
+        </div>
+      );
+    case 'bjb':
+      return (
+        <div className={`${baseBox} bg-[#0B4B88] border-[#093c6d]/20 text-white font-bold text-[10px] tracking-tight`}>
+          <span>bjb</span>
+        </div>
+      );
+    default:
+      return (
+        <div className={`${baseBox} bg-slate-100 border-slate-200 text-slate-700 font-bold text-[10px]`}>
+          <span>PAY</span>
+        </div>
+      );
+  }
+}
+
+// Komponen Ringkas Banner & Judul Program di Bagian Atas Setiap Tahap
+// (Tanpa keterangan 'lihat detail lengkap program nya' sesuai instruksi user)
+function ProgramHeaderBanner({ campaign }) {
+  if (!campaign) return null;
+  return (
+    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 mb-5">
+      <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200/60 aspect-[16/9]">
+        {campaign.image ? (
+          <img
+            src={campaign.image}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-bold">
+            OD
+          </div>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+          Program Kebaikan
+        </span>
+        <h2 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+          {campaign.title}
+        </h2>
+      </div>
+    </div>
+  );
+}
 
 export function DonationFormPage() {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addDonation, currentUser } = useDonation();
 
-  // Cari data kampanye berdasarkan slug
+  // Cari data kampanye berdasarkan parameter slug
   const campaign = useMemo(() => {
-    return CAMPAIGNS.find((c) => c.slug === slug);
+    return CAMPAIGNS.find((c) => c.slug === slug || c.id === slug) || CAMPAIGNS[0];
   }, [slug]);
 
-  // Alur langkah: 'form' (pengisian) | 'confirm' (pratinjau ringkasan)
-  const [step, setStep] = useState('form');
+  // Handler kembali ke detail program tanpa membuat duplikasi riwayat browser
+  const handleBackToProgram = () => {
+    navigate(`/program/${campaign.slug}`, {
+      replace: true,
+      state: { from: location.state?.from },
+    });
+  };
 
-  // Baca nominal awal dari query parameter (misal dari kalkulator zakat)
+  // Alur langkah: 'amount' (Tahap 1) | 'payment' (Tahap 2) | 'form' (Tahap 3)
+  const [step, setStep] = useState('amount');
+
+  // Baca nominal awal jika ada dari query params (misal dari kalkulator zakat)
   const initialAmount = useMemo(() => {
     const qAmount = searchParams.get('amount');
     if (qAmount) {
       const cleanNum = parseInt(qAmount.replace(/\D/g, ''), 10);
       if (cleanNum && cleanNum >= 1000) {
-        return String(cleanNum);
+        return cleanNum;
       }
     }
-    return '50000';
+    return 50000;
   }, [searchParams]);
 
-  // State formulir
+  // State Formulir
   const [selectedPreset, setSelectedPreset] = useState(() => {
-    const num = parseInt(initialAmount, 10);
-    return PRESET_AMOUNTS.includes(num) ? num : null;
+    return PRESET_AMOUNTS.includes(initialAmount) ? initialAmount : 50000;
   });
-  const [nominalInput, setNominalInput] = useState(initialAmount);
+  const [nominalInput, setNominalInput] = useState(String(initialAmount));
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(() => {
+    // Default terpilih: QRIS (paling populer & instan)
+    return PAYMENT_CATEGORIES[0].methods[5];
+  });
+
   const [donorName, setDonorName] = useState(currentUser?.name || '');
+  const [donorPhone, setDonorPhone] = useState('');
   const [donorEmail, setDonorEmail] = useState(currentUser?.email || '');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [donorPrayer, setDonorPrayer] = useState('');
@@ -55,12 +325,12 @@ export function DonationFormPage() {
   // Set document title untuk SEO
   useEffect(() => {
     if (campaign) {
-      document.title = `Donasi untuk ${campaign.title} — OpenDonasi`;
+      document.title = `Donasi: ${campaign.title} — OpenDonasi`;
     } else {
-      document.title = 'Program Donasi Tidak Ditemukan — OpenDonasi';
+      document.title = 'Formulir Donasi — OpenDonasi';
     }
     window.scrollTo(0, 0);
-  }, [campaign]);
+  }, [campaign, step]);
 
   // Handler pemilihan nominal preset
   const handleSelectPreset = (amount) => {
@@ -88,54 +358,51 @@ export function DonationFormPage() {
     }
   };
 
-  // Validasi formulir donasi
-  const validateForm = () => {
+  // Validasi nominal pada Step 1
+  const handleProceedToPayment = () => {
+    const amount = parseInt(nominalInput, 10);
+    if (!nominalInput || isNaN(amount) || amount < MIN_AMOUNT) {
+      setErrors({ nominal: `Nominal donasi minimal ${formatRupiah(MIN_AMOUNT)}` });
+      return;
+    }
+    setErrors({});
+    setStep('payment');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handler pemilihan metode pembayaran pada Step 2 -> langsung menuju Step 3
+  const handleSelectPaymentMethod = (method) => {
+    setSelectedPaymentMethod(method);
+    setStep('form');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Validasi data donatur pada Step 3 & Submit Simulasi Donasi
+  const handleSubmitDonation = (e) => {
+    e.preventDefault();
+    if (isSubmitting || !campaign) return;
+
     const errs = {};
     const amount = parseInt(nominalInput, 10);
 
-    if (!nominalInput || isNaN(amount)) {
-      errs.nominal = 'Nominal donasi wajib diisi';
-    } else if (amount < MIN_AMOUNT) {
+    if (!nominalInput || isNaN(amount) || amount < MIN_AMOUNT) {
       errs.nominal = `Nominal donasi minimal ${formatRupiah(MIN_AMOUNT)}`;
     }
 
     if (!donorName.trim()) {
-      errs.name = 'Nama donatur wajib diisi';
-    } else if (donorName.trim().length < 2) {
-      errs.name = 'Nama donatur minimal 2 karakter';
+      errs.name = 'Nama lengkap wajib diisi';
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!donorEmail.trim()) {
-      errs.email = 'Alamat email wajib diisi';
-    } else if (!emailPattern.test(donorEmail.trim())) {
-      errs.email = 'Format alamat email tidak valid';
+    if (!donorPhone.trim()) {
+      errs.phone = 'Nomor telepon wajib diisi';
     }
 
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
-  // Handler lanjut ke ringkasan konfirmasi
-  const handleProceedToConfirm = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setStep('confirm');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      return;
     }
-  };
-
-  // Handler kembali mengubah formulir
-  const handleBackToForm = () => {
-    setStep('form');
-  };
-
-  // Handler konfirmasi simulasi transaksi
-  const handleConfirmSimulation = () => {
-    if (isSubmitting || !campaign) return;
 
     setIsSubmitting(true);
-    const amount = parseInt(nominalInput, 10);
 
     const transaction = {
       transactionId: `OD-${Math.floor(100000 + Math.random() * 900000)}`,
@@ -152,430 +419,462 @@ export function DonationFormPage() {
       isAnonymous,
       donorName: isAnonymous ? 'Hamba Allah' : donorName.trim(),
       actualName: donorName.trim(),
+      donorPhone: donorPhone.trim(),
       donorEmail: donorEmail.trim(),
       doa: donorPrayer.trim(),
-      paymentMethod: 'Simulasi Frontend',
+      paymentMethod: selectedPaymentMethod?.name || 'QRIS',
+      paymentCategory: selectedPaymentMethod?.category || 'instant',
     };
 
     try {
-      // Simpan di konteks donasi lokal dan sessionStorage transaksi terbaru
       addDonation(transaction);
       sessionStorage.setItem('opendonasi_latest_transaction', JSON.stringify(transaction));
     } catch {
-      // Fallback aman jika storage gagal
+      // Fallback aman jika storage lokal terkendala
     }
 
-    // Arahkan ke halaman hasil donasi
+    // Arahkan ke halaman hasil simulasi transaksi
     navigate('/hasil-donasi', { replace: true });
   };
 
-  // Fallback jika kampanye tidak ditemukan
   if (!campaign) {
     return (
-      <div className="w-full py-12 md:py-20">
-        <Container>
-          <div className="max-w-md mx-auto text-center bg-white rounded-2xl border border-border p-8 shadow-xs">
-            <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-text-secondary mb-4">
-              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-            </div>
-            <h1 className="text-xl font-bold text-text-primary">Program Tidak Ditemukan</h1>
-            <p className="text-sm text-text-secondary mt-2 leading-relaxed">
-              Program donasi yang ingin Anda dukung tidak tersedia atau tautan tidak valid.
-            </p>
-            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/program" className="w-full sm:w-auto">
-                <Button variant="primary" size="md" isFullWidth>
-                  Lihat Semua Program
-                </Button>
-              </Link>
-              <Link to="/" className="w-full sm:w-auto">
-                <Button variant="outline" size="md" isFullWidth>
-                  Kembali ke Beranda
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </Container>
+      <div className="w-full min-h-screen py-16 flex items-center justify-center bg-white px-4">
+        <div className="max-w-md w-full text-center bg-white rounded-2xl border border-slate-200 p-8 shadow-xs">
+          <h1 className="text-lg font-bold text-slate-900">Program Tidak Ditemukan</h1>
+          <p className="text-xs text-slate-500 mt-2">
+            Program yang ingin Anda dukung tidak tersedia atau tautan telah berpindah.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/program')}
+            className="mt-5 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-semibold"
+          >
+            Lihat Program Lain
+          </button>
+        </div>
       </div>
     );
   }
 
-  const currentAmount = parseInt(nominalInput, 10) || 0;
-
   return (
-    <div className="w-full py-6 md:py-10">
-      <Container>
-        {/* Tombol Kembali Sederhana */}
-        <div className="mb-6">
-          <Link
-            to={`/program/${campaign.slug}`}
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-600 hover:text-primary transition-colors group"
-          >
-            <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span>Kembali ke Detail Program</span>
-          </Link>
-        </div>
-
-        {/* Layout Utama: Desktop Dua Kolom, Mobile Satu Kolom */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
-          {/* KOLOM KIRI: Informasi Ringkas Kampanye */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white rounded-2xl border border-border p-4 sm:p-5 shadow-xs space-y-4">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary block">
-                Program yang Didukung
-              </span>
-
-              {/* Thumbnail Kampanye 16:9 */}
-              <div className="relative overflow-hidden bg-slate-100 rounded-xl aspect-[16/9] w-full border border-slate-100">
-                {campaign.image ? (
-                  <img
-                    src={campaign.image}
-                    alt={campaign.title}
-                    className={`w-full h-full ${
-                      campaign.isImagePoster ? 'object-contain bg-slate-900/5' : 'object-cover'
-                    }`}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-text-secondary text-xs">
-                    OpenDonasi
-                  </div>
-                )}
-              </div>
-
-              {/* Judul & Penggalang */}
-              <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-                  {campaign.title}
-                </h2>
-                <p className="mt-1.5 text-xs text-text-secondary flex items-center gap-1.5">
-                  <Link
-                    to={`/penggalang/${getOrganizerSlug(campaign.organizer?.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-primary hover:underline transition-colors font-medium inline-flex items-center gap-1"
-                    title={`Lihat profil ${campaign.organizer?.name || 'yayasan mitra'} (tab baru)`}
-                  >
-                    <span>{campaign.organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
-                    <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  </Link>
-                </p>
-              </div>
-
-              {/* Deskripsi Singkat */}
-              <p className="text-xs text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                {campaign.description}
-              </p>
-
-              {/* Link Kembali ke Detail */}
-              <div className="pt-2">
-                <Link
-                  to={`/program/${campaign.slug}`}
-                  className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1"
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <span>Lihat Detail Lengkap Program</span>
-                </Link>
-              </div>
+    <div className="w-full min-h-screen bg-slate-50/50 py-4 sm:py-8">
+      <div className="max-w-xl mx-auto px-4">
+        {/* ============================================================== */}
+        {/* TAHAP 1: PILIH NOMINAL DONASI (Sesuai Referensi Gambar 1)      */}
+        {/* ============================================================== */}
+        {step === 'amount' && (
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5">
+            {/* Navigasi Atas: Kembali ke Penggalangan */}
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={handleBackToProgram}
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary transition-colors cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Kembali ke penggalangan</span>
+              </button>
             </div>
 
-            {/* Banner Penjelasan Simulasi Demo */}
-            <div className="bg-blue-50/70 border border-blue-200/70 rounded-2xl p-4 text-xs text-slate-700 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold text-primary">
-                <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Simulasi Donasi Demo</span>
+            {/* Banner & Judul Program Ringkas */}
+            <ProgramHeaderBanner campaign={campaign} />
+
+            {/* Judul Seksi */}
+            <h1 className="text-sm sm:text-base font-bold text-slate-900">
+              Pilih Nominal Donasi
+            </h1>
+
+            {/* List Pilihan Nominal Donasi (Sesuai Gambar 1: Vertikal Stack) */}
+            <div className="space-y-2.5">
+              {PRESET_AMOUNTS.map((amt) => {
+                const isSelected = selectedPreset === amt;
+                return (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => handleSelectPreset(amt)}
+                    className={`w-full flex items-center justify-between p-3.5 sm:p-4 rounded-xl border transition-all cursor-pointer text-left ${
+                      isSelected
+                        ? 'bg-primary text-white border-primary shadow-xs'
+                        : 'bg-white text-slate-800 border-slate-200/90 hover:border-primary/60 hover:bg-slate-50/70'
+                    }`}
+                  >
+                    <span className="font-bold text-xs sm:text-sm tracking-tight">
+                      {formatRupiah(amt)}
+                    </span>
+                    <svg
+                      className={`w-4 h-4 transition-transform ${
+                        isSelected ? 'text-white translate-x-0.5' : 'text-slate-400'
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Atau Masukkan Nominal Manual */}
+            <div className="pt-2 space-y-1.5">
+              <label htmlFor="custom-nominal" className="text-xs sm:text-sm text-slate-600 block">
+                Atau masukkan <strong className="text-slate-800 font-semibold">nominal terbaik</strong> Anda
+              </label>
+
+              <div
+                className={`flex items-center justify-between bg-white rounded-xl border px-4 py-3 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all ${
+                  errors.nominal ? 'border-red-400 bg-red-50/20' : 'border-slate-200'
+                }`}
+              >
+                <span className="font-bold text-slate-900 text-sm sm:text-base mr-2">
+                  Rp
+                </span>
+                <input
+                  id="custom-nominal"
+                  type="text"
+                  inputMode="numeric"
+                  value={nominalInput ? formatNumber(parseInt(nominalInput, 10) || 0) : ''}
+                  onChange={handleNominalChange}
+                  placeholder="0"
+                  className="w-full text-right font-bold text-slate-900 text-sm sm:text-base bg-transparent outline-none placeholder:text-slate-300"
+                />
               </div>
-              <p className="text-[11px] leading-relaxed text-slate-600">
-                Alur ini merupakan pengujian frontend prototipe. Tidak ada pembayaran uang nyata atau integrasi gateway pembayaran.
-              </p>
+
+              {errors.nominal && (
+                <p className="text-[11px] text-red-500 font-medium">
+                  {errors.nominal}
+                </p>
+              )}
+            </div>
+
+            {/* Tombol Lanjutkan Pembayaran */}
+            <div className="pt-4">
+              <Button
+                variant="primary"
+                size="lg"
+                isFullWidth
+                onClick={handleProceedToPayment}
+                className="font-bold shadow-xs py-3 text-xs sm:text-sm"
+              >
+                Lanjutkan Pembayaran
+              </Button>
             </div>
           </div>
+        )}
 
-          {/* KOLOM KANAN: Formulir Donasi / Konfirmasi */}
-          <div className="lg:col-span-7">
-            {step === 'form' ? (
-              /* LANGKAH 1: Pengisian Formulir */
-              <form onSubmit={handleProceedToConfirm} className="bg-white rounded-2xl border border-border p-5 sm:p-7 shadow-xs space-y-6">
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
-                    Formulir Donasi
-                  </h1>
-                  <p className="text-xs sm:text-sm text-text-secondary mt-1">
-                    Tentukan nominal donasi dan lengkapi data donatur Anda.
-                  </p>
-                </div>
+        {/* ============================================================== */}
+        {/* TAHAP 2: PILIH METODE PEMBAYARAN (Sesuai Referensi Gambar 2)   */}
+        {/* ============================================================== */}
+        {step === 'payment' && (
+          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5">
+            {/* Navigasi Atas: Tombol Back (<) & Judul */}
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={() => setStep('amount')}
+                className="p-1 -ml-1 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+                aria-label="Kembali ke pilih nominal"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h1 className="text-sm sm:text-base font-bold text-slate-900">
+                Pilih metode pembayaran
+              </h1>
+            </div>
 
-                {/* 1. Pilihan Nominal Preset */}
-                <div className="space-y-2.5">
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Pilih Nominal Donasi
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                    {PRESET_AMOUNTS.map((amt) => {
-                      const isSelected = selectedPreset === amt;
+            {/* Banner & Judul Program Ringkas */}
+            <ProgramHeaderBanner campaign={campaign} />
+
+            {/* Daftar Kategori & Metode Pembayaran */}
+            <div className="space-y-6">
+              {PAYMENT_CATEGORIES.map((category) => (
+                <div key={category.id} className="space-y-2.5">
+                  <h2 className="text-xs sm:text-sm font-bold text-slate-900">
+                    {category.title}
+                  </h2>
+
+                  <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 overflow-hidden bg-white">
+                    {category.methods.map((method) => {
+                      const isSelected = selectedPaymentMethod?.id === method.id;
                       return (
                         <button
-                          key={amt}
+                          key={method.id}
                           type="button"
-                          onClick={() => handleSelectPreset(amt)}
-                          className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border transition-all ${
-                            isSelected
-                              ? 'bg-primary text-white border-primary shadow-xs'
-                              : 'bg-white text-slate-700 border-border hover:border-primary/40 hover:bg-slate-50'
+                          onClick={() => handleSelectPaymentMethod(method)}
+                          className={`w-full p-3.5 flex items-center justify-between gap-3 text-left transition-colors cursor-pointer hover:bg-slate-50/80 ${
+                            isSelected ? 'bg-blue-50/40' : ''
                           }`}
                         >
-                          {formatRupiah(amt)}
+                          <div className="flex items-center gap-3 min-w-0">
+                            <PaymentMethodIcon type={method.iconType} />
+                            <div className="min-w-0">
+                              <span className="text-xs sm:text-sm font-semibold text-slate-800 block truncate">
+                                {method.name}
+                              </span>
+                              {method.subtitle && (
+                                <span className="text-[10px] sm:text-[11px] text-amber-600 block mt-0.5">
+                                  {method.subtitle}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="shrink-0 text-slate-400">
+                            {isSelected ? (
+                              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            )}
+                          </div>
                         </button>
                       );
                     })}
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                {/* 2. Input Nominal Sendiri */}
-                <div className="space-y-1.5">
-                  <label htmlFor="nominal-manual" className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Atau Masukkan Nominal Lain (Rp)
-                  </label>
-                  <div className="relative rounded-xl">
-                    <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center font-bold text-sm text-slate-500 pointer-events-none">
-                      Rp
-                    </span>
-                    <input
-                      id="nominal-manual"
-                      type="text"
-                      inputMode="numeric"
-                      value={nominalInput ? parseInt(nominalInput, 10).toLocaleString('id-ID') : ''}
-                      onChange={handleNominalChange}
-                      placeholder="Contoh: 50.000"
-                      className={`w-full pl-10 pr-4 py-2.5 text-sm sm:text-base font-bold text-slate-900 rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-primary ${
-                        errors.nominal ? 'border-error focus:ring-error' : 'border-border'
-                      }`}
-                    />
-                  </div>
-                  {errors.nominal ? (
-                    <p className="text-xs text-error mt-1">{errors.nominal}</p>
-                  ) : (
-                    <p className="text-[11px] text-text-secondary mt-1">
-                      Minimal donasi {formatRupiah(MIN_AMOUNT)} (simulasi)
-                    </p>
-                  )}
+        {/* ============================================================== */}
+        {/* TAHAP 3: ISI FORMULIR DONATUR (Sesuai Referensi Gambar 3)       */}
+        {/* ============================================================== */}
+        {step === 'form' && (
+          <form
+            onSubmit={handleSubmitDonation}
+            className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5"
+          >
+            {/* Navigasi Atas: Tombol Back (<) & Judul Program */}
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={() => setStep('payment')}
+                className="p-1 -ml-1 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+                aria-label="Kembali ke pilih metode pembayaran"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h1 className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                {campaign.title}
+              </h1>
+            </div>
+
+            {/* Banner & Judul Program Ringkas */}
+            <ProgramHeaderBanner campaign={campaign} />
+
+            {/* Ringkasan Nominal & Metode Pembayaran Terpilih */}
+            <div className="space-y-3.5">
+              {/* Nominal Terpilih */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+                  <span>Nominal Donasi</span>
+                  <button
+                    type="button"
+                    onClick={() => setStep('amount')}
+                    className="text-primary hover:underline font-semibold cursor-pointer"
+                  >
+                    Ubah
+                  </button>
                 </div>
-
-                {/* 3. Data Donatur */}
-                <div className="space-y-4 pt-2 border-t border-slate-100">
-                  <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Informasi Donatur
+                <div className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between">
+                  <span className="font-bold text-slate-900 text-sm">Rp</span>
+                  <span className="font-extrabold text-slate-900 text-base sm:text-lg">
+                    {formatNumber(parseInt(nominalInput, 10) || 0)}
                   </span>
-
-                  {/* Nama Lengkap */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="donor-name" className="block text-xs font-medium text-slate-700">
-                      Nama Lengkap <span className="text-error">*</span>
-                    </label>
-                    <input
-                      id="donor-name"
-                      type="text"
-                      value={donorName}
-                      onChange={(e) => {
-                        setDonorName(e.target.value);
-                        if (errors.name) setErrors((prev) => ({ ...prev, name: null }));
-                      }}
-                      placeholder="Masukkan nama Anda..."
-                      className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-primary ${
-                        errors.name ? 'border-error focus:ring-error' : 'border-border'
-                      }`}
-                    />
-                    {errors.name && <p className="text-xs text-error mt-1">{errors.name}</p>}
-                  </div>
-
-                  {/* Opsi Donasi Anonim */}
-                  <label className="flex items-center gap-2.5 cursor-pointer text-xs sm:text-sm text-slate-700 select-none">
-                    <input
-                      type="checkbox"
-                      checked={isAnonymous}
-                      onChange={(e) => setIsAnonymous(e.target.checked)}
-                      className="w-4 h-4 text-primary focus:ring-primary rounded border-slate-300"
-                    />
-                    <span>Sembunyikan nama saya (Tampilkan sebagai <strong>Hamba Allah</strong>)</span>
-                  </label>
-
-                  {/* Email Donatur */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="donor-email" className="block text-xs font-medium text-slate-700">
-                      Alamat Email <span className="text-error">*</span>
-                    </label>
-                    <input
-                      id="donor-email"
-                      type="email"
-                      value={donorEmail}
-                      onChange={(e) => {
-                        setDonorEmail(e.target.value);
-                        if (errors.email) setErrors((prev) => ({ ...prev, email: null }));
-                      }}
-                      placeholder="nama@email.com"
-                      className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-primary ${
-                        errors.email ? 'border-error focus:ring-error' : 'border-border'
-                      }`}
-                    />
-                    {errors.email ? (
-                      <p className="text-xs text-error mt-1">{errors.email}</p>
-                    ) : (
-                      <p className="text-[11px] text-text-secondary mt-1">
-                        Kabar penyaluran simulasi akan diasosiasikan dengan email ini.
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Doa / Pesan Dukungan */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="donor-prayer" className="block text-xs font-medium text-slate-700">
-                      Doa atau Pesan Dukungan <span className="text-text-secondary">(Opsional)</span>
-                    </label>
-                    <textarea
-                      id="donor-prayer"
-                      rows={3}
-                      value={donorPrayer}
-                      onChange={(e) => setDonorPrayer(e.target.value)}
-                      maxLength={250}
-                      placeholder="Tuliskan doa atau pesan kebaikan untuk penerima manfaat..."
-                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
-                    />
-                    <div className="text-right text-[10px] text-text-secondary">
-                      {donorPrayer.length}/250 karakter
-                    </div>
-                  </div>
-                </div>
-
-                {/* 4. Ringkasan Donasi */}
-                <div className="bg-slate-50/80 rounded-xl p-4 border border-slate-200/80 space-y-2 text-xs sm:text-sm">
-                  <div className="flex items-center justify-between text-slate-600">
-                    <span>Nominal Donasi</span>
-                    <strong className="text-slate-800">{formatRupiah(currentAmount)}</strong>
-                  </div>
-                  <div className="flex items-center justify-between text-slate-600">
-                    <span>Biaya Layanan Platform</span>
-                    <span className="text-emerald-700 font-semibold">Rp0 (Demo)</span>
-                  </div>
-                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-sm sm:text-base font-bold text-slate-900">
-                    <span>Total Donasi</span>
-                    <span className="text-primary">{formatRupiah(currentAmount)}</span>
-                  </div>
-                </div>
-
-                {/* Tombol Lanjutkan */}
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  isFullWidth
-                  className="font-bold shadow-xs"
-                >
-                  Lanjutkan ke Konfirmasi
-                </Button>
-              </form>
-            ) : (
-              /* LANGKAH 2: Ringkasan & Konfirmasi */
-              <div className="bg-white rounded-2xl border border-border p-5 sm:p-7 shadow-xs space-y-6">
-                <div>
-                  <Badge variant="primary" size="sm" className="mb-2">
-                    Langkah Konfirmasi
-                  </Badge>
-                  <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
-                    Tinjau Ringkasan Donasi
-                  </h1>
-                  <p className="text-xs sm:text-sm text-text-secondary mt-1">
-                    Pastikan rincian donasi simulasi Anda telah sesuai sebelum mengonfirmasi.
-                  </p>
-                </div>
-
-                {/* Rincian Transaksi */}
-                <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden text-xs sm:text-sm">
-                  <div className="p-3.5 bg-slate-50/80 flex items-center justify-between">
-                    <span className="text-text-secondary">Program Donasi</span>
-                    <strong className="text-slate-900 max-w-xs text-right truncate">
-                      {campaign.title}
-                    </strong>
-                  </div>
-                  <div className="p-3.5 flex items-center justify-between">
-                    <span className="text-text-secondary">Nominal Donasi</span>
-                    <strong className="text-base text-primary font-bold">
-                      {formatRupiah(currentAmount)}
-                    </strong>
-                  </div>
-                  <div className="p-3.5 flex items-center justify-between">
-                    <span className="text-text-secondary">Nama Donatur</span>
-                    <strong className="text-slate-900">
-                      {isAnonymous ? 'Hamba Allah (Anonim)' : donorName}
-                    </strong>
-                  </div>
-                  <div className="p-3.5 flex items-center justify-between">
-                    <span className="text-text-secondary">Email</span>
-                    <span className="text-slate-800">{donorEmail}</span>
-                  </div>
-                  {donorPrayer && (
-                    <div className="p-3.5 space-y-1">
-                      <span className="text-text-secondary block">Doa / Pesan Kebaikan:</span>
-                      <p className="italic text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                        "{donorPrayer}"
-                      </p>
-                    </div>
-                  )}
-                  <div className="p-3.5 bg-slate-50/80 flex items-center justify-between">
-                    <span className="text-text-secondary">Metode Pembayaran</span>
-                    <span className="font-semibold text-slate-700">Simulasi Tanpa Bayar (Demo)</span>
-                  </div>
-                </div>
-
-                {/* Alert Penjelasan Simulasi */}
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 space-y-1">
-                  <div className="font-bold flex items-center gap-1.5">
-                    <svg className="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span>Konfirmasi Transaksi Demo</span>
-                  </div>
-                  <p className="text-[11px] text-amber-800 leading-relaxed">
-                    Menekan tombol konfirmasi akan menerbitkan satu record simulasi donasi untuk menguji tampilan bukti transaksi dan riwayat donatur demo.
-                  </p>
-                </div>
-
-                {/* Tombol Aksi Konfirmasi & Kembali */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    onClick={handleBackToForm}
-                    disabled={isSubmitting}
-                    className="sm:w-1/3"
-                  >
-                    Ubah Data
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    size="lg"
-                    onClick={handleConfirmSimulation}
-                    disabled={isSubmitting}
-                    className="sm:w-2/3 font-bold shadow-xs"
-                  >
-                    {isSubmitting ? 'Memproses Simulasi...' : 'Konfirmasi Simulasi Donasi'}
-                  </Button>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      </Container>
+
+              {/* Metode Pembayaran Terpilih */}
+              <div className="space-y-1">
+                <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
+                  <span>Pilih metode pembayaran</span>
+                </div>
+                <div className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <PaymentMethodIcon type={selectedPaymentMethod?.iconType} />
+                    <span className="text-xs sm:text-sm font-bold text-slate-800 truncate">
+                      {selectedPaymentMethod?.name || 'QRIS'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStep('payment')}
+                    className="text-xs font-semibold text-primary hover:underline cursor-pointer shrink-0"
+                  >
+                    Pilih
+                  </button>
+                </div>
+              </div>
+
+              {/* Catatan Transparansi Alokasi Layanan */}
+              <p className="text-[11px] text-slate-500 leading-relaxed pt-0.5">
+                Sebagian kecil dari donasi Anda (maks. 5%) dialokasikan sebagai Dana Operasional & Keberlanjutan Layanan untuk mendukung operasional layanan dan keberlanjutan program kebaikan.{' '}
+                <span className="text-primary hover:underline cursor-pointer font-medium">
+                  Baca Selengkapnya
+                </span>
+              </p>
+            </div>
+
+            {/* DIVIDER SECTION */}
+            <div className="border-t border-slate-100 -mx-5 sm:-mx-6 my-4" />
+
+            {/* Informasi Donatur */}
+            <div className="space-y-3.5">
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-slate-900">
+                  Informasi donatur
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Silahkan lengkapi data berikut
+                </p>
+              </div>
+
+              {/* Input Nama Lengkap */}
+              <div className="space-y-1">
+                <label htmlFor="donor-name" className="text-xs text-slate-700 font-medium block">
+                  Nama Lengkap <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="donor-name"
+                  type="text"
+                  value={donorName}
+                  onChange={(e) => {
+                    setDonorName(e.target.value);
+                    if (errors.name) setErrors((prev) => ({ ...prev, name: null }));
+                  }}
+                  placeholder="Nama Lengkap"
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm outline-none transition-all ${
+                    errors.name
+                      ? 'border-red-400 bg-red-50/20 focus:border-red-500'
+                      : 'border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20'
+                  }`}
+                />
+                {errors.name && (
+                  <p className="text-[11px] text-red-500 font-medium">
+                    {errors.name}
+                  </p>
+                )}
+              </div>
+
+              {/* Input Nomor Telepon */}
+              <div className="space-y-1">
+                <label htmlFor="donor-phone" className="text-xs text-slate-700 font-medium block">
+                  Nomor Telepon <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="donor-phone"
+                  type="tel"
+                  value={donorPhone}
+                  onChange={(e) => {
+                    setDonorPhone(e.target.value);
+                    if (errors.phone) setErrors((prev) => ({ ...prev, phone: null }));
+                  }}
+                  placeholder="Nomor Telepon (WhatsApp)"
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm outline-none transition-all ${
+                    errors.phone
+                      ? 'border-red-400 bg-red-50/20 focus:border-red-500'
+                      : 'border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20'
+                  }`}
+                />
+                {errors.phone && (
+                  <p className="text-[11px] text-red-500 font-medium">
+                    {errors.phone}
+                  </p>
+                )}
+              </div>
+
+              {/* Input Email (Opsional) */}
+              <div className="space-y-1">
+                <label htmlFor="donor-email" className="text-xs text-slate-700 font-medium block">
+                  Alamat Email <span className="text-slate-400 font-normal">(Opsional)</span>
+                </label>
+                <input
+                  id="donor-email"
+                  type="email"
+                  value={donorEmail}
+                  onChange={(e) => setDonorEmail(e.target.value)}
+                  placeholder="Alamat Email"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs sm:text-sm outline-none transition-all"
+                />
+              </div>
+
+              {/* Textarea Doa & Pesan */}
+              <div className="space-y-1">
+                <label htmlFor="donor-prayer" className="text-xs text-slate-700 font-medium block">
+                  Tulis pesan dan do'a
+                </label>
+                <textarea
+                  id="donor-prayer"
+                  rows={3}
+                  value={donorPrayer}
+                  onChange={(e) => setDonorPrayer(e.target.value)}
+                  placeholder="Tulis pesan dan do'a untuk pribadi atau penerima manfaat"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs sm:text-sm outline-none transition-all resize-none"
+                />
+              </div>
+
+              {/* Toggle Sembunyikan Nama (Hamba Allah) */}
+              <div className="pt-2 flex items-center gap-3 cursor-pointer select-none">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={isAnonymous}
+                  onClick={() => setIsAnonymous(!isAnonymous)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    isAnonymous ? 'bg-primary' : 'bg-slate-200'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                      isAnonymous ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+                <div onClick={() => setIsAnonymous(!isAnonymous)}>
+                  <span className="text-xs font-semibold text-slate-800 block">
+                    Sembunyikan nama saya
+                  </span>
+                  <span className="text-[11px] text-slate-400 italic block">
+                    (Hamba Allah)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tombol Lanjutkan Pembayaran */}
+            <div className="pt-4 space-y-2">
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                isFullWidth
+                disabled={isSubmitting}
+                className="font-bold shadow-xs py-3 text-xs sm:text-sm"
+              >
+                {isSubmitting ? 'Memproses Simulasi...' : 'Lanjutkan Pembayaran'}
+              </Button>
+
+              <p className="text-[10px] text-slate-400 text-center">
+                Simulasi Donasi Demo OpenDonasi — Tidak ada transaksi pembayaran uang nyata
+              </p>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }

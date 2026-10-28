@@ -4,11 +4,12 @@
 // Bebas dari navbar utama saat berada di halaman ini.
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { CampaignCard } from '../../components/campaign/CampaignCard';
 import { Button } from '../../components/ui/Button';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { filterCampaigns } from '../../lib/campaignFilters';
+import { isInternalProgramFlow } from '../../lib/navigation';
 
 const POPULAR_SEARCH_TAGS = [
   'Beramal Quran',
@@ -23,6 +24,7 @@ const POPULAR_SEARCH_TAGS = [
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const searchInputRef = useRef(null);
 
   const queryParam = searchParams.get('q') || '';
@@ -48,10 +50,12 @@ export function SearchPage() {
 
   // Handler tombol kembali
   const handleBack = () => {
-    if (window.history.length > 2) {
+    if (location.state?.from && !isInternalProgramFlow(location.state.from)) {
+      navigate(location.state.from);
+    } else if (window.history.length > 2) {
       navigate(-1);
     } else {
-      navigate('/');
+      navigate('/program');
     }
   };
 
@@ -193,6 +197,7 @@ export function SearchPage() {
                   <Link
                     key={camp.id}
                     to={`/program/${camp.slug}`}
+                    state={{ from: location.pathname + location.search }}
                     className="flex items-center gap-3.5 py-3 sm:py-3.5 px-2 -mx-2 rounded-2xl hover:bg-slate-50 transition-colors group cursor-pointer"
                   >
                     {/* Thumbnail Poster Program */}

@@ -1,11 +1,17 @@
-// Komponen Pembungkus Layout Utama (RootLayout) OpenDonasi.
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { MobileBottomNav } from './MobileBottomNav';
+import { recordSourcePage } from '../../lib/navigation';
 
 export function RootLayout({ children }) {
   const location = useLocation();
+
+  // Rekam halaman asal yang dikunjungi sebelum masuk alur detail program
+  useEffect(() => {
+    recordSourcePage(location);
+  }, [location]);
 
   // Sembunyikan navbar utama pada Detail Program, Form Donasi, Hasil Donasi, Profil Penggalang, dan Halaman Pencarian
   // Catatan: Halaman Layanan (/zakat, /infaq, /sedekah, /wakaf) TETAP menampilkan navbar utama pada desktop & mobile sesuai arahan PO
@@ -15,6 +21,8 @@ export function RootLayout({ children }) {
   const isSearchPage = location.pathname === '/search';
 
   const shouldHideHeader = isDetailPage || isDonationFlow || isOrganizerPage || isSearchPage;
+  // Hapus footer pada detail program dan sub-halamannya (tentang, berita, donatur) serta formulir donasi
+  const shouldHideFooter = isDetailPage || isDonationFlow;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-text-primary font-sans antialiased">
@@ -27,7 +35,7 @@ export function RootLayout({ children }) {
       </main>
 
       {/* Footer Desktop & Mobile */}
-      <Footer />
+      {!shouldHideFooter && <Footer />}
 
       {/* Bottom Navigation Tetap Khusus Mobile */}
       <MobileBottomNav />

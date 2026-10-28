@@ -2,7 +2,7 @@
 // Karakteristik desain OpenDonasi: font Inter, biru utama #2E7DFA, latar putih & netral lembut, responsif desktop & mobile.
 
 import { useState, useMemo, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Container } from '../../components/ui/Container';
 import { CampaignCard } from '../../components/campaign/CampaignCard';
 import { CAMPAIGNS } from '../../data/campaigns';
@@ -13,6 +13,7 @@ import iconIg from '../../assets/icons/icons_footer/instagram.svg';
 export function OrganizerProfilePage() {
   const { organizerId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Ambil data yayasan berdasarkan id/slug dari URL
@@ -32,7 +33,9 @@ export function OrganizerProfilePage() {
 
   // Handler tombol kembali
   const handleBack = () => {
-    if (window.history.length > 2) {
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else if (window.history.length > 2) {
       navigate(-1);
     } else {
       navigate('/program');
