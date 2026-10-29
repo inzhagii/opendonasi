@@ -49,6 +49,7 @@ export function PosterCarousel({ className = '' }) {
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const dragStartXRef = useRef(null);
+  const rafRef = useRef(null);
 
   // Responsif bannerWidth, bannerHeight, dan gap
   const [dimensions, setDimensions] = useState({
@@ -154,11 +155,15 @@ export function PosterCarousel({ className = '' }) {
   const handleMouseMove = (e) => {
     if (!isDragging || dragStartXRef.current === null) return;
     const delta = e.clientX - dragStartXRef.current;
-    setDragDeltaX(delta);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setDragDeltaX(delta);
+    });
   };
 
   const handleMouseUp = () => {
     if (!isDragging) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setIsDragging(false);
     setIsPaused(false);
     if (dragDeltaX < -40) {
@@ -189,11 +194,15 @@ export function PosterCarousel({ className = '' }) {
   const handleTouchMove = (e) => {
     if (!isDragging || dragStartXRef.current === null) return;
     const delta = e.touches[0].clientX - dragStartXRef.current;
-    setDragDeltaX(delta);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setDragDeltaX(delta);
+    });
   };
 
   const handleTouchEnd = () => {
     if (!isDragging) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setIsDragging(false);
     setTimeout(() => setIsPaused(false), 2000);
     if (dragDeltaX < -40) {
@@ -236,11 +245,14 @@ export function PosterCarousel({ className = '' }) {
 
   return (
     <section aria-labelledby="poster-title" className={`w-full ${className}`}>
-      {/* Judul Seksi (Kiri di Mobile, Center di Desktop) */}
-      <div className="mb-4 sm:mb-6 text-left sm:text-center">
-        <h2 id="poster-title" className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 tracking-tight leading-tight">
+      {/* Judul Seksi Terpusat Sesuai Gambar Referensi */}
+      <div className="mb-6 md:mb-8 text-center max-w-2xl mx-auto">
+        <h2 id="poster-title" className="text-2xl sm:text-3xl md:text-[32px] font-bold text-slate-900 tracking-tight leading-tight">
           Yang Baru di OpenDonasi
         </h2>
+        <p className="mt-2.5 sm:mt-3 text-sm sm:text-base text-slate-500 leading-relaxed max-w-xl mx-auto font-normal">
+          Kabar terbaru seputar program kebaikan, inovasi kemanusiaan, dan kegiatan sosial terkini.
+        </p>
       </div>
 
       {/* Viewport Carousel: 1 Main Banner di Tengah, 2 Peek Banner di Kiri & Kanan */}
@@ -269,6 +281,7 @@ export function PosterCarousel({ className = '' }) {
           } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           style={{
             transform: `translateX(calc(-50% + ${currentTranslate}px))`,
+            willChange: 'transform',
           }}
         >
           {visibleBanners.map((item, idx) => {

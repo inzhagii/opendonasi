@@ -22,6 +22,7 @@ export function FeaturedCampaignCarousel({ className = '' }) {
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const dragStartXRef = useRef(null);
+  const rafRef = useRef(null);
 
   // Responsif cardWidth dan gap
   const [dimensions, setDimensions] = useState({ cardWidth: 340, gap: 24, isMobile: false });
@@ -31,8 +32,11 @@ export function FeaturedCampaignCarousel({ className = '' }) {
     const containerW = containerRef.current ? containerRef.current.offsetWidth : width - 32;
 
     if (width < 640) {
-      // Mobile: 1 kartu penuh seukuran kontainer, tanpa sisa kartu peek di sisi
-      setDimensions({ cardWidth: containerW, gap: 0, isMobile: true });
+      // Mobile: 1 main card di tengah (~78% layar), 2 peek card di kiri dan kanan (~28-32px terlihat)
+      // Ukuran card proporsional Card Biasa desktop (~285px - 325px)
+      const mobileCardW = Math.max(280, Math.min(330, Math.round(width * 0.78)));
+      const mobileGap = width < 380 ? 12 : 16;
+      setDimensions({ cardWidth: mobileCardW, gap: mobileGap, isMobile: true });
     } else if (width < 1024) {
       setDimensions({ cardWidth: 310, gap: 18, isMobile: false });
     } else {
@@ -101,11 +105,15 @@ export function FeaturedCampaignCarousel({ className = '' }) {
   const handleMouseMove = (e) => {
     if (!isDragging || dragStartXRef.current === null) return;
     const delta = e.clientX - dragStartXRef.current;
-    setDragDeltaX(delta);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setDragDeltaX(delta);
+    });
   };
 
   const handleMouseUp = () => {
     if (!isDragging) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setIsDragging(false);
     if (dragDeltaX < -40) {
       handleNext();
@@ -133,11 +141,15 @@ export function FeaturedCampaignCarousel({ className = '' }) {
   const handleTouchMove = (e) => {
     if (!isDragging || dragStartXRef.current === null) return;
     const delta = e.touches[0].clientX - dragStartXRef.current;
-    setDragDeltaX(delta);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setDragDeltaX(delta);
+    });
   };
 
   const handleTouchEnd = () => {
     if (!isDragging) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setIsDragging(false);
     if (dragDeltaX < -40) {
       handleNext();
@@ -166,9 +178,13 @@ export function FeaturedCampaignCarousel({ className = '' }) {
     currentTranslate = stepWidth;
   }
 
-  // 7 slot kartu yang selalu berputar tanpa henti:
-  // Offset: [-2, -1 (Peek Kiri), 0 (Main 1), 1 (Main 2 Center), 2 (Main 3), 3 (Peek Kanan), 4]
-  const offsets = [-2, -1, 0, 1, 2, 3, 4];
+  // Susunan slot kartu:
+  // Mobile: 1 main card di tengah (offset 0), 2 peek card di kiri (offset -1) & kanan (offset 1), plus buffer (-3, -2, 2, 3)
+  // Desktop: 3 main card di tengah (offset 0, 1, 2), 2 peek card di kiri (offset -1) & kanan (offset 3), plus buffer (-2, 4)
+  const offsets = dimensions.isMobile
+    ? [-3, -2, -1, 0, 1, 2, 3]
+    : [-2, -1, 0, 1, 2, 3, 4];
+
   const visibleCards = offsets.map((offset) => {
     const index = (currentIndex + offset + totalCount * 10) % totalCount;
     return {
@@ -189,10 +205,10 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         />
       </div>
 
-      {/* Viewport Carousel: 3 Main Card Center, 2 Peek Card di Sisi pada Desktop; 1 Card Penuh pada Mobile */}
+      {/* Viewport Carousel: 1 Main Card & 2 Peek Card pada Mobile; 3 Main Card & 2 Peek Card pada Desktop */}
       <div
         ref={containerRef}
-        className="relative w-full h-[330px] sm:h-[435px] overflow-hidden select-none"
+        className="relative w-full -mx-4 sm:mx-0 h-[375px] sm:h-[435px] overflow-hidden select-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -202,38 +218,38 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         onTouchEnd={handleTouchEnd}
         onClickCapture={handleClickCapture}
       >
-        {/* Shadow Gradasi Putih Sisi Kiri (Hanya pada tablet/desktop saat ada peek card) */}
+        {/* Shadow Gradasi Putih Sisi Kiri (Aktif di mobile dan desktop) */}
         <div
-          className="hidden sm:block absolute left-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none"
+          className="absolute left-0 top-0 bottom-0 w-12 sm:w-28 md:w-40 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none"
           aria-hidden="true"
         />
 
-        {/* Shadow Gradasi Putih Sisi Kanan (Hanya pada tablet/desktop saat ada peek card) */}
+        {/* Shadow Gradasi Putih Sisi Kanan (Aktif di mobile dan desktop) */}
         <div
-          className="hidden sm:block absolute right-0 top-0 bottom-0 w-20 sm:w-28 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none"
+          className="absolute right-0 top-0 bottom-0 w-12 sm:w-28 md:w-40 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none"
           aria-hidden="true"
         />
 
-        {/* Tombol Panah Kiri (Arrow Prev) */}
+        {/* Tombol Panah Kiri (Arrow Prev) - Ukuran sama w-11 h-11 di mobile dan desktop */}
         <button
           type="button"
           onClick={handlePrev}
           aria-label="Geser ke program sebelumnya"
-          className="absolute left-1.5 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+          className="absolute left-2 sm:left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
         >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        {/* Tombol Panah Kanan (Arrow Next) */}
+        {/* Tombol Panah Kanan (Arrow Next) - Ukuran sama w-11 h-11 di mobile dan desktop */}
         <button
           type="button"
           onClick={handleNext}
           aria-label="Geser ke program berikutnya"
-          className="absolute right-1.5 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+          className="absolute right-2 sm:right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 shadow-md flex items-center justify-center text-slate-700 hover:text-primary transition-all active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
         >
-          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -242,51 +258,50 @@ export function FeaturedCampaignCarousel({ className = '' }) {
         <div
           ref={trackRef}
           onTransitionEnd={handleTransitionEnd}
-          className={`flex items-center absolute left-1/2 top-2 bottom-2 sm:top-2.5 sm:bottom-2.5 ${
+          className={`flex items-center absolute left-1/2 top-2.5 bottom-2.5 ${
             isAnimating
               ? 'transition-transform duration-[350ms] ease-out'
               : 'transition-none'
           } ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           style={{
             transform: `translateX(calc(-50% + ${currentTranslate}px))`,
+            willChange: 'transform',
           }}
         >
-          {visibleCards.map((item, idx) => (
-            <div
-              key={item.key}
-              className="shrink-0 h-[310px] sm:h-[400px] transition-opacity duration-200"
-              style={{
-                width: `${dimensions.cardWidth}px`,
-                marginRight: idx === visibleCards.length - 1 ? 0 : `${dimensions.gap}px`,
-              }}
-            >
-              <CampaignCard campaign={item.campaign} variant="vertical" className="h-full" />
-            </div>
-          ))}
-        </div>
-      </div>
+          {visibleCards.map((item, idx) => {
+            const isCenter = dimensions.isMobile
+              ? item.offset === 0
+              : item.offset >= 0 && item.offset <= 2;
+            const isPeekLeft = item.offset === -1;
+            const isPeekRight = dimensions.isMobile ? item.offset === 1 : item.offset === 3;
 
-      {/* Dots Indikator Khusus Mobile */}
-      <div className="flex sm:hidden items-center justify-center gap-1.5 mt-3">
-        {items.map((it, idx) => {
-          const isActive = idx === currentIndex;
-          return (
-            <button
-              key={it.id}
-              type="button"
-              aria-label={`Slide ${idx + 1}`}
-              onClick={() => {
-                if (isAnimating || isActive) return;
-                if (idx === (currentIndex + 1) % totalCount) handleNext();
-                else if (idx === (currentIndex - 1 + totalCount) % totalCount) handlePrev();
-                else setCurrentIndex(idx);
-              }}
-              className={`transition-all duration-300 rounded-full ${
-                isActive ? 'w-5 h-1.5 bg-primary' : 'w-1.5 h-1.5 bg-slate-200'
-              }`}
-            />
-          );
-        })}
+            return (
+              <div
+                key={item.key}
+                onClick={() => {
+                  if (Math.abs(dragDeltaX) > 8) return;
+                  if (isPeekLeft) handlePrev();
+                  else if (isPeekRight) handleNext();
+                }}
+                className={`shrink-0 h-[345px] sm:h-[395px] transition-all duration-300 rounded-2xl ${
+                  isCenter
+                    ? 'z-10 shadow-lg shadow-slate-200/90 opacity-100 scale-100'
+                    : 'opacity-75 sm:opacity-85 hover:opacity-100 cursor-pointer shadow-xs'
+                }`}
+                style={{
+                  width: `${dimensions.cardWidth}px`,
+                  marginRight: idx === visibleCards.length - 1 ? 0 : `${dimensions.gap}px`,
+                }}
+              >
+                <CampaignCard
+                  campaign={item.campaign}
+                  variant="vertical"
+                  className="h-full"
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

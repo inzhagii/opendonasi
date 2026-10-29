@@ -59,12 +59,17 @@ export function QuickServiceBar({ className = '' }) {
   return (
     <section aria-labelledby="quick-service-title" className={`w-full ${className}`}>
       {/* Judul Akses Cepat */}
-      <h2
-        id="quick-service-title"
-        className="text-2xl sm:text-3xl md:text-[32px] font-extrabold text-slate-900 text-left sm:text-center tracking-tight leading-tight mb-6 sm:mb-8"
-      >
-        Mau berbuat baik apa hari ini
-      </h2>
+      <div className="mb-6 sm:mb-8 text-center max-w-2xl mx-auto">
+        <h2
+          id="quick-service-title"
+          className="text-2xl sm:text-3xl md:text-[32px] font-bold text-slate-900 tracking-tight leading-tight"
+        >
+          Mau berbuat baik apa hari ini?
+        </h2>
+        <p className="mt-2.5 sm:mt-3 text-sm sm:text-base text-slate-500 leading-relaxed font-normal">
+          Pilih salah satu layanan donasi dan kebaikan sesuai dengan niat Anda.
+        </p>
+      </div>
 
       {/* Kontainer Carousel Horizontal: Draggable dengan kursor, tanpa indikator dots/arrows */}
       <div className="w-full relative">

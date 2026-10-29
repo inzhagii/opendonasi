@@ -33,7 +33,6 @@ export function PrayerCarousel({ className = '' }) {
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
   const isDraggingRef = useRef(false);
-  const [isDragged, setIsDragged] = useState(false);
 
   // Toggle interaksi lokal Aamiin
   const handleToggleAmin = (prayerId) => {
@@ -52,19 +51,6 @@ export function PrayerCarousel({ className = '' }) {
         return item;
       })
     );
-  };
-
-  // Navigasi Panah Manual (Geser Kiri & Kanan)
-  const handleScrollLeft = () => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    el.scrollBy({ left: -320, behavior: 'smooth' });
-  };
-
-  const handleScrollRight = () => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    el.scrollBy({ left: 320, behavior: 'smooth' });
   };
 
   // Autoplay lambat geser carousel secara berkala
@@ -98,7 +84,6 @@ export function PrayerCarousel({ className = '' }) {
     setIsMouseDown(true);
     setIsPaused(true);
     isDraggingRef.current = false;
-    setIsDragged(false);
     startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
     scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
   };
@@ -107,10 +92,9 @@ export function PrayerCarousel({ className = '' }) {
     if (!isMouseDown || !scrollContainerRef.current) return;
     e.preventDefault();
     const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.35; // Pengali sensitivitas geser kursor
-    if (Math.abs(walk) > 5) {
+    const walk = (x - startXRef.current) * 1.25;
+    if (Math.abs(walk) > 4) {
       isDraggingRef.current = true;
-      setIsDragged(true);
     }
     scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
   };
@@ -119,23 +103,21 @@ export function PrayerCarousel({ className = '' }) {
     setIsMouseDown(false);
     setTimeout(() => {
       isDraggingRef.current = false;
-      setIsDragged(false);
       setIsPaused(false);
-    }, 60);
+    }, 50);
   };
 
   const handleMouseLeave = () => {
     if (isMouseDown) {
       setIsMouseDown(false);
       isDraggingRef.current = false;
-      setIsDragged(false);
     }
     setIsPaused(false);
   };
 
   // Cegah trigger klik link atau tombol aamiin saat sengaja menggeser kursor
   const handleClickCapture = (e) => {
-    if (isDraggingRef.current || isDragged) {
+    if (isDraggingRef.current) {
       e.preventDefault();
       e.stopPropagation();
     }
@@ -152,36 +134,12 @@ export function PrayerCarousel({ className = '' }) {
         />
       </div>
 
-      {/* Rel Carousel Satu Baris dengan Dukungan Geser Manual Kursor & Navigasi Panah Sisi */}
+      {/* Rel Carousel Satu Baris dengan Dukungan Geser Manual Kursor yang Sangat Mulus */}
       <div
-        className="relative group/carousel"
+        className="relative"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Tombol Arrow Kiri (Prev) */}
-        <button
-          type="button"
-          onClick={handleScrollLeft}
-          aria-label="Geser doa ke kiri"
-          className="hidden sm:flex absolute -left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 hover:border-primary hover:text-primary text-slate-700 shadow-md items-center justify-center transition-all active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        {/* Tombol Arrow Kanan (Next) */}
-        <button
-          type="button"
-          onClick={handleScrollRight}
-          aria-label="Geser doa ke kanan"
-          className="hidden sm:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/95 hover:bg-white border border-slate-200/90 hover:border-primary hover:text-primary text-slate-700 shadow-md items-center justify-center transition-all active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
         <div
           ref={scrollContainerRef}
           onMouseDown={handleMouseDown}
@@ -189,9 +147,13 @@ export function PrayerCarousel({ className = '' }) {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
           onClickCapture={handleClickCapture}
-          className={`flex gap-4 sm:gap-6 overflow-x-auto snap-x scrollbar-none pb-4 pt-1 px-1 -mx-1 select-none ${
+          className={`flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none pb-4 pt-1 px-1 -mx-1 select-none ${
             isMouseDown ? 'cursor-grabbing' : 'cursor-grab'
           }`}
+          style={{
+            scrollBehavior: isMouseDown ? 'auto' : 'smooth',
+            WebkitOverflowScrolling: 'touch',
+          }}
         >
           {prayers.map((prayer) => {
             const initials = prayer.donorName
@@ -206,7 +168,7 @@ export function PrayerCarousel({ className = '' }) {
             return (
               <div
                 key={prayer.id}
-                className="shrink-0 snap-start w-[280px] sm:w-[320px] md:w-[340px] bg-white rounded-card border border-border p-4 md:p-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow"
+                className="shrink-0 w-[280px] sm:w-[320px] md:w-[340px] bg-white rounded-card border border-border p-4 md:p-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow"
               >
                 <div>
                   {/* Header Donatur: Avatar Bulat + Nama + Waktu */}

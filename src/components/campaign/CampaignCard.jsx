@@ -31,8 +31,8 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
         state={{ from: location.pathname + location.search }}
         className="flex flex-col h-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-        {/* Wadah Banner: Responsif tinggi ~140px di mobile, 180px di tablet, 200px di desktop */}
-        <div className="relative w-full h-[140px] sm:h-[180px] md:h-[200px] overflow-hidden bg-slate-100 shrink-0 rounded-t-2xl">
+        {/* Wadah Banner: Rasio proporsional 16:9 sesuai Card Biasa */}
+        <div className="relative w-full aspect-[16/9] overflow-hidden bg-slate-100 shrink-0 rounded-t-2xl">
           {image ? (
             <img
               src={image}
@@ -47,8 +47,8 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
           )}
         </div>
 
-        {/* Wadah Keterangan: Kompak di mobile (~140px), proporsional di desktop */}
-        <div className="min-h-[140px] sm:min-h-[180px] md:min-h-[200px] pt-3 sm:pt-4 px-4 sm:px-6 pb-3.5 sm:pb-6 flex flex-col justify-between flex-1">
+        {/* Wadah Keterangan: Rapi, seimbang, jarak judul dan dana terkumpul dekat, tidak mepet ke bawah */}
+        <div className="pt-3.5 sm:pt-4 px-4 sm:px-5 pb-5 sm:pb-6 flex flex-col flex-1">
           {/* Bagian Atas: Organizer + Verified Badge, lalu Judul Program */}
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-text-secondary truncate">
@@ -80,14 +80,14 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
 
             <h3
               title={title}
-              className="mt-1 text-sm sm:text-[15px] md:text-base font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-primary transition-colors"
+              className="mt-1 text-sm sm:text-[15px] font-bold text-slate-900 line-clamp-2 leading-snug group-hover:text-primary transition-colors"
             >
               {title || 'Program Kebaikan OpenDonasi'}
             </h3>
           </div>
 
-          {/* Bagian Bawah: Label -> Nominal (Biru) & Sisa Hari (Biru) -> Progress Bar dengan Dot */}
-          <div className="mt-1.5 sm:mt-2">
+          {/* Bagian Bawah: Jarak dekat dan seimbang dari judul (mt-3 sm:mt-3.5), tidak mepet ke bawah */}
+          <div className="mt-3 sm:mt-3.5">
             {/* Label Row */}
             <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-400">
               <span>Dana terkumpul</span>
@@ -100,7 +100,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
                 {formatRupiah(collectedAmount)}
               </span>
 
-              <div className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-primary shrink-0">
+              <div className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-slate-700 sm:text-primary shrink-0">
                 <img
                   src={timeIcon}
                   alt=""
@@ -111,9 +111,9 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
               </div>
             </div>
 
-            {/* Bilah Progres Bar dengan Titik Dot & Tooltip Persentase saat Hover */}
-            <div className="relative mt-2 sm:mt-2.5 pb-1 sm:pb-2">
-              <div className="w-full bg-slate-200 h-1 sm:h-1.5 rounded-full overflow-hidden">
+            {/* Bilah Progres Bar dengan Titik Dot & Tooltip Persentase saat Hover Kursor */}
+            <div className="relative mt-2 pb-6">
+              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                 <div
                   className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
                   style={{ width: `${calculatedPercentage}%` }}
@@ -122,13 +122,13 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
 
               {/* Titik Dot Indikator (Selalu terlihat di ujung progres bar) */}
               <div
-                className="absolute top-[2px] sm:top-[3px] -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
+                className="absolute top-[3px] -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
                 style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
               />
 
-              {/* Tooltip Persen saat Hover (Di Bawah Titik Dot Indikator) */}
+              {/* Tooltip Persen (Hanya tampil saat kursor diarahkan ke card seperti semula) */}
               <div
-                className="absolute top-full mt-0.5 -translate-x-1/2 z-30 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                className="absolute top-2 -translate-x-1/2 z-20 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
                 style={{ left: `${Math.min(92, Math.max(8, calculatedPercentage))}%` }}
               >
                 <div className="w-1.5 h-1.5 -mb-0.5 rotate-45 bg-[#EEF4FF] border-t border-l border-primary/20" />
@@ -147,7 +147,7 @@ function VerticalCard({ campaign, targetRoute, calculatedPercentage }) {
 /**
  * 2. Card Horizontal (Mobile):
  *    - Tata letak 50/50: 50% kiri wadah gambar (rounded-xl), 50% kanan keterangan.
- *    - Urutan: Judul Program (Besar & Tebal) -> Organizer + Verified -> Progress Bar + Titik Dot -> Nilai Nominal (Besar Biru) & Sisa Hari (Biru) -> Label Dana Terkumpul & Sisa Hari di bawahnya.
+ *    - Urutan: Judul Program (Besar & Tebal) -> Organizer + Verified -> Progress Bar & Badge Persen Jelas -> Nilai Nominal (Besar Biru) & Sisa Hari (Biru) -> Label Dana Terkumpul & Sisa Hari di bawahnya.
  */
 function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
   const navigate = useNavigate();
@@ -186,7 +186,7 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
           )}
         </div>
 
-        {/* 50% Kanan: Keterangan (Judul -> Organizer -> Progress Bar -> Angka Nominal & Sisa Hari -> Label di bawah) */}
+        {/* 50% Kanan: Keterangan (Judul -> Organizer -> Progress Bar + Badge Persen -> Angka Nominal & Sisa Hari -> Label di bawah) */}
         <div className="flex flex-col justify-between self-stretch min-w-0 py-0.5">
           {/* 1. Judul Program (Besar & Tebal) */}
           <div className="min-w-0">
@@ -226,9 +226,9 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
             </div>
           </div>
 
-          {/* 3. Bilah Progres Bar dengan Titik Dot di Tengah */}
-          <div className="mt-2 sm:mt-2.5 mb-1.5 sm:mb-2">
-            <div className="relative">
+          {/* 3. Bilah Progres Bar & Keterangan Persen Jelas */}
+          <div className="mt-2 mb-1.5 flex items-center gap-2">
+            <div className="relative flex-1">
               <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                 <div
                   className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
@@ -241,18 +241,12 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
                 style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
               />
-
-              {/* Tooltip Persen saat Hover (Di Bawah Titik Dot Indikator) */}
-              <div
-                className="absolute top-full mt-1.5 -translate-x-1/2 z-20 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
-                style={{ left: `${Math.min(90, Math.max(10, calculatedPercentage))}%` }}
-              >
-                <div className="w-1.5 h-1.5 -mb-0.5 rotate-45 bg-[#EEF4FF] border-t border-l border-primary/20" />
-                <div className="bg-[#EEF4FF] border border-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.2 rounded shadow-xs whitespace-nowrap">
-                  {calculatedPercentage}%
-                </div>
-              </div>
             </div>
+
+            {/* Badge Persentase Jelas (Selalu terlihat, tidak menutupi teks lain) */}
+            <span className="shrink-0 text-[10px] font-bold text-primary bg-[#EEF4FF] border border-primary/20 px-1.5 py-0.5 rounded shadow-2xs whitespace-nowrap">
+              {calculatedPercentage}%
+            </span>
           </div>
 
           {/* 4. Nilai Nominal Dana Terkumpul (Besar) & Sisa Hari Berdampingan */}
@@ -294,7 +288,7 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
  * - 'horizontal': Card Horizontal (Mobile)
  * - 'responsive': Card Horizontal pada mobile, Card Biasa pada desktop
  */
-export function CampaignCard({ campaign, variant = 'vertical', className = '' }) {
+export function CampaignCard({ campaign, variant = 'vertical', className = '', showTooltip = false }) {
   if (!campaign) return null;
 
   const { slug, collectedAmount = 0, targetAmount, progressPercentage } = campaign;
@@ -341,6 +335,7 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
             campaign={campaign}
             targetRoute={targetRoute}
             calculatedPercentage={calculatedPercentage}
+            showTooltip={showTooltip}
           />
         </div>
       </div>
@@ -353,6 +348,7 @@ export function CampaignCard({ campaign, variant = 'vertical', className = '' })
         campaign={campaign}
         targetRoute={targetRoute}
         calculatedPercentage={calculatedPercentage}
+        showTooltip={showTooltip}
       />
     </div>
   );
