@@ -13,16 +13,17 @@ export function RootLayout({ children }) {
     recordSourcePage(location);
   }, [location]);
 
-  // Sembunyikan navbar utama pada Detail Program, Form Donasi, Hasil Donasi, Profil Penggalang, dan Halaman Pencarian
-  // Catatan: Halaman Layanan (/zakat, /infaq, /sedekah, /wakaf) TETAP menampilkan navbar utama pada desktop & mobile sesuai arahan PO
+  // Sembunyikan navbar utama & footer pada Detail Program, Form Donasi, Hasil Donasi, Profil Penggalang, Halaman Pencarian, dan Halaman Auth (Login / Sign In)
   const isDetailPage = location.pathname.startsWith('/program/') && location.pathname !== '/program';
   const isDonationFlow = location.pathname.startsWith('/donasi/') || location.pathname === '/hasil-donasi';
   const isOrganizerPage = location.pathname.startsWith('/penggalang/') || location.pathname.startsWith('/yayasan/');
   const isSearchPage = location.pathname === '/search';
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signin' || location.pathname === '/daftar';
+  const isZakatCalculator = location.pathname === '/zakat/kalkulator';
 
-  const shouldHideHeader = isDetailPage || isDonationFlow || isOrganizerPage || isSearchPage;
-  // Hapus footer pada detail program dan sub-halamannya (tentang, berita, donatur) serta formulir donasi
-  const shouldHideFooter = isDetailPage || isDonationFlow;
+  const shouldHideHeader = isDetailPage || isDonationFlow || isOrganizerPage || isSearchPage || isAuthPage || isZakatCalculator;
+  // Hapus footer pada detail program, formulir donasi, dan halaman auth (login/signin berdiri sendiri)
+  const shouldHideFooter = isDetailPage || isDonationFlow || isAuthPage;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-text-primary font-sans antialiased">
@@ -30,7 +31,7 @@ export function RootLayout({ children }) {
       {!shouldHideHeader && <Header />}
 
       {/* Konten Halaman */}
-      <main className="flex-1 pb-20 md:pb-0">
+      <main className={`flex-1 ${isAuthPage ? '' : 'pb-20 md:pb-0'}`}>
         {children}
       </main>
 

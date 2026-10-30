@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import logoImg from '../../assets/logo/logo.png';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useDonation } from '../../hooks/useDonation';
 import { Container } from '../ui/Container';
 
 const SEARCH_SUGGESTIONS = [
@@ -25,6 +26,7 @@ export function Header() {
   const fullSearchInputRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLoggedIn, currentUser } = useDonation();
 
   const layananRef = useClickOutside(() => {
     if (openPopover === 'layanan') setOpenPopover(null);
@@ -369,25 +371,47 @@ export function Header() {
                   )}
                 </div>
 
-                {/* Tombol Sign In (Pill Lembut Biru Muda & Teks Biru) */}
-                <Link to="/profil" onClick={closePopovers}>
-                  <button
-                    type="button"
-                    className="h-10 px-5 text-sm font-semibold text-primary bg-[#E8F1FD] hover:bg-[#d8e8fc] rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 inline-flex items-center justify-center"
+                {/* Navigasi Auth: Sign In & Login jika belum login, Profil jika sudah login */}
+                {isLoggedIn ? (
+                  <Link
+                    to="/profil"
+                    onClick={closePopovers}
+                    className="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-full border border-slate-200 hover:border-primary/60 bg-white hover:bg-slate-50 transition-all text-sm font-semibold text-slate-800 shadow-2xs group cursor-pointer"
+                    aria-label="Buka profil akun"
                   >
-                    Sign In
-                  </button>
-                </Link>
+                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
+                      {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'D'}
+                    </div>
+                    <span className="truncate max-w-[120px] text-xs font-bold text-slate-800 group-hover:text-primary transition-colors">
+                      {currentUser?.name || 'Donatur Demo'}
+                    </span>
+                    <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                ) : (
+                  <>
+                    {/* Tombol Sign In (Pill Lembut Biru Muda & Teks Biru) */}
+                    <Link to="/signin" onClick={closePopovers}>
+                      <button
+                        type="button"
+                        className="h-10 px-5 text-sm font-semibold text-primary bg-[#E8F1FD] hover:bg-[#d8e8fc] rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 inline-flex items-center justify-center cursor-pointer"
+                      >
+                        Sign In
+                      </button>
+                    </Link>
 
-                {/* Tombol Login (Pill Biru Solid & Teks Putih) */}
-                <Link to="/profil" onClick={closePopovers}>
-                  <button
-                    type="button"
-                    className="h-10 px-6 text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 inline-flex items-center justify-center"
-                  >
-                    Login
-                  </button>
-                </Link>
+                    {/* Tombol Login (Pill Biru Solid & Teks Putih) */}
+                    <Link to="/login" onClick={closePopovers}>
+                      <button
+                        type="button"
+                        className="h-10 px-6 text-sm font-semibold text-white bg-primary hover:bg-primary-hover rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-95 inline-flex items-center justify-center cursor-pointer"
+                      >
+                        Login
+                      </button>
+                    </Link>
+                  </>
+                )}
               </div>
             </Container>
           </div>

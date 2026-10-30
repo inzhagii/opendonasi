@@ -23,3 +23,46 @@
     scrollbar-width: none;
   }
 }
+
+/* Animasi Marquee Bergerak Otomatis ke Arah Kiri secara Halus */
+@keyframes marqueeLeft {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marqueeLeft 55s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-left:hover {
+  animation-play-state: paused;
+}
+
+/* Animasi Marquee Bergerak Otomatis ke Arah Kanan secara Halus */
+@keyframes marqueeRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marqueeRight 50s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-right:hover {
+  animation-play-state: paused;
+}
+

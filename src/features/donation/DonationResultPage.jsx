@@ -138,28 +138,30 @@ export function DonationResultPage() {
 
   // State A: Data transaksi simulasi tersedia
   return (
-    <div className="w-full py-6 md:py-12">
+    <div className="w-full py-6 md:py-12 bg-background min-h-screen">
       <Container>
-        <div className="max-w-xl mx-auto space-y-6">
-          {/* Header Card Hasil Simulasi */}
-          <div className="bg-white rounded-2xl border border-border p-6 sm:p-8 shadow-xs text-center space-y-4">
-            {/* Indikator Status Simulasi Sukses */}
-            <div className="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
+        <div className="w-full max-w-3xl mx-auto">
+          {/* Card Tunggal Bukti Transaksi Simulasi Berhasil (Maksimal 1320px Container) */}
+          <div className="bg-white rounded-3xl border border-border p-6 sm:p-8 shadow-xs space-y-6">
+            {/* Indikator Status Simulasi Sukses (Center) */}
+            <div className="flex flex-col items-center text-center gap-3 pb-2">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
 
-            <div>
-              <Badge variant="success" size="sm" className="mb-2 font-medium">
-                {transaction.statusLabel || 'Simulasi Berhasil (Demo)'}
-              </Badge>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
-                Simulasi Donasi Berhasil
-              </h1>
-              <p className="text-xs sm:text-sm text-text-secondary mt-1">
-                Terima kasih atas partisipasi Anda dalam menguji coba alur donasi OpenDonasi.
-              </p>
+              <div className="flex flex-col items-center text-center">
+                <Badge variant="success" size="sm" className="mb-2 font-medium">
+                  {transaction.statusLabel || 'Simulasi Berhasil (Demo)'}
+                </Badge>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
+                  Simulasi Donasi Berhasil
+                </h1>
+                <p className="text-xs sm:text-sm text-text-secondary mt-1 max-w-md mx-auto">
+                  Terima kasih atas partisipasi Anda dalam menguji coba alur donasi OpenDonasi.
+                </p>
+              </div>
             </div>
 
             {/* Banner Penjelasan Eksplisit Non-Pembayaran Nyata */}
@@ -176,7 +178,7 @@ export function DonationResultPage() {
             </div>
 
             {/* Detail Rincian Record Simulasi */}
-            <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl text-xs sm:text-sm text-left overflow-hidden">
+            <div className="divide-y divide-slate-100 border border-slate-200 rounded-2xl text-xs sm:text-sm text-left overflow-hidden bg-white">
               {/* ID Transaksi Demo */}
               <div className="p-3.5 bg-slate-50/80 flex items-center justify-between">
                 <span className="text-text-secondary">ID Transaksi Demo</span>
@@ -185,7 +187,7 @@ export function DonationResultPage() {
                   <button
                     type="button"
                     onClick={handleCopyId}
-                    className="p-1 text-slate-400 hover:text-primary rounded transition-colors"
+                    className="p-1 text-slate-400 hover:text-primary rounded transition-colors cursor-pointer"
                     title="Salin ID Transaksi"
                     aria-label="Salin ID Transaksi"
                   >
@@ -222,6 +224,14 @@ export function DonationResultPage() {
                 <strong className="text-base font-bold text-primary">
                   {formatRupiah(transaction.amount)}
                 </strong>
+              </div>
+
+              {/* Metode Pembayaran */}
+              <div className="p-3.5 flex items-center justify-between">
+                <span className="text-text-secondary">Metode Pembayaran</span>
+                <span className="text-slate-800 font-medium">
+                  {transaction.paymentMethod || 'QRIS (Simulasi)'}
+                </span>
               </div>
 
               {/* Identitas Donatur */}
@@ -261,10 +271,10 @@ export function DonationResultPage() {
             </div>
 
             {/* Tindakan Lanjutan */}
-            <div className="pt-2 space-y-2.5">
+            <div className="pt-2 space-y-3">
               {transaction.campaignSlug && (
                 <Link to={`/program/${transaction.campaignSlug}`} className="block w-full">
-                  <Button variant="primary" size="lg" isFullWidth className="font-bold shadow-xs">
+                  <Button variant="primary" size="lg" isFullWidth className="font-bold shadow-xs py-3 text-xs sm:text-sm">
                     Kembali ke Halaman Program
                   </Button>
                 </Link>
@@ -272,18 +282,18 @@ export function DonationResultPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <Link to="/program" className="w-full">
-                  <Button variant="outline" size="md" isFullWidth>
+                  <Button variant="outline" size="md" isFullWidth className="text-xs">
                     Jelajahi Program Lain
                   </Button>
                 </Link>
                 <Link to="/donasi-saya" className="w-full">
-                  <Button variant="outline" size="md" isFullWidth>
+                  <Button variant="outline" size="md" isFullWidth className="text-xs">
                     Lihat Riwayat Donasi
                   </Button>
                 </Link>
               </div>
 
-              <div className="pt-1">
+              <div className="pt-2 text-center">
                 <Link to="/" className="text-xs text-text-secondary hover:text-primary transition-colors font-medium">
                   ← Kembali ke Beranda
                 </Link>

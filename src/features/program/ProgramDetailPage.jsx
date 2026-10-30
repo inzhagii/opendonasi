@@ -440,20 +440,10 @@ export function ProgramDetailPage() {
 
             {/* 3. BAGIAN C — TENTANG PROGRAM (Menghubungkan ke Halaman Tersendiri Sesuai Referensi Gambar 3) */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div>
                 <h2 className="text-base sm:text-lg font-bold text-slate-900">
                   Tentang Program
                 </h2>
-                <Link
-                  to={`/program/${slug}/tentang`}
-                  state={subpageState}
-                  className="text-xs sm:text-sm font-semibold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>Selengkapnya</span>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
               </div>
 
               <div className="relative space-y-2">
@@ -488,20 +478,10 @@ export function ProgramDetailPage() {
 
             {/* 4. BAGIAN D — BERITA TERBARU (Menghubungkan ke Halaman Berita Sesuai Referensi Gambar 4 & 5) */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div>
                 <h2 className="text-base sm:text-lg font-bold text-slate-900">
                   Berita Terbaru
                 </h2>
-                <Link
-                  to={`/program/${slug}/berita`}
-                  state={subpageState}
-                  className="text-xs sm:text-sm font-semibold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>Selengkapnya</span>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
               </div>
 
               {updates.length === 0 ? (
@@ -571,7 +551,7 @@ export function ProgramDetailPage() {
 
             {/* 5. BAGIAN E — DONATUR (Menghubungkan ke Halaman Donatur Lengkap) */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div>
                 <Link
                   to={`/program/${slug}/donatur`}
                   state={subpageState}
@@ -583,17 +563,6 @@ export function ProgramDetailPage() {
                   <span className="text-xs text-slate-400 font-normal">
                     ({formatNumber(donorCount || campaignDonors.length)})
                   </span>
-                </Link>
-
-                <Link
-                  to={`/program/${slug}/donatur`}
-                  state={subpageState}
-                  className="text-xs sm:text-sm font-semibold text-primary hover:underline inline-flex items-center gap-0.5 cursor-pointer"
-                >
-                  <span>Semua Donatur</span>
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
                 </Link>
               </div>
 

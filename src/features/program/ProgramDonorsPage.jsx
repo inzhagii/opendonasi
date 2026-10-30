@@ -1,12 +1,15 @@
 // Halaman daftar semua donatur program OpenDonasi (/program/:slug/donatur).
 // Menampilkan tab pemilahan 'Terbaru', 'Dengan do\'a', dan 'Terbesar' sesuai referensi visual.
+// Mendukung tata letak desktop max-width 1320px dengan sticky panel ringkasan program & CTA donasi.
 
 import { useState, useMemo, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { useDonation } from '../../hooks/useDonation';
 import { getMergedDonors } from '../../data/campaignDonors';
 import { formatRupiah, formatNumber } from '../../lib/formatters';
+import { Container } from '../../components/ui/Container';
+import { Button } from '../../components/ui/Button';
 
 // Inisial avatar donatur (contoh: "Hamba Allah" -> "HA")
 function getInitials(name) {
@@ -41,7 +44,7 @@ export function ProgramDonorsPage() {
   // Set document title untuk SEO & scroll ke atas
   useEffect(() => {
     if (campaign) {
-      document.title = `Donatur ${campaign.title} — OpenDonasi`;
+      document.title = `Donatur: ${campaign.title} — OpenDonasi`;
     } else {
       document.title = 'Daftar Donatur Program — OpenDonasi';
     }
@@ -83,25 +86,31 @@ export function ProgramDonorsPage() {
     }
   };
 
+  const getCtaText = (camp) => {
+    const sType = (camp?.serviceType || '').toLowerCase();
+    const cat = (camp?.category || '').toLowerCase();
+    const title = (camp?.title || '').toLowerCase();
+
+    if (sType === 'wakaf' || cat === 'wakaf' || title.includes('wakaf')) return 'Wakaf Sekarang';
+    if (sType === 'zakat' || cat === 'zakat' || title.includes('zakat')) return 'Zakat Sekarang';
+    if (sType === 'infaq' || cat === 'infaq' || title.includes('infaq')) return 'Infaq Sekarang';
+    if (sType === 'sedekah' || cat === 'sedekah' || title.includes('sedekah')) return 'Sedekah Sekarang';
+    return 'Donasi Sekarang';
+  };
+
   // Filter & Urutkan daftar donatur sesuai spesifikasi user:
-  // 1. Terbaru: Semua donasi terbaru (baik ada doa maupun tidak disatukan)
-  // 2. Dengan do'a: Hanya donasi yang memiliki doa
-  // 3. Terbesar: Donasi dengan nominal terbesar (descending)
   const filteredDonors = useMemo(() => {
     let list = [...rawDonors];
 
     if (activeTab === 'dengan_doa') {
       list = list.filter((item) => Boolean(item.doa && item.doa.trim()));
-      // Urutkan berdasarkan waktu terbaru
       return list.sort((a, b) => b.timestamp - a.timestamp);
     }
 
     if (activeTab === 'terbesar') {
-      // Urutkan dari nominal terbesar ke terkecil
       return list.sort((a, b) => b.amount - a.amount);
     }
 
-    // Default 'terbaru': semua donasi disatukan dan diurutkan terbaru
     return list.sort((a, b) => b.timestamp - a.timestamp);
   }, [rawDonors, activeTab]);
 
@@ -119,7 +128,7 @@ export function ProgramDonorsPage() {
           <button
             type="button"
             onClick={() => navigate('/program')}
-            className="mt-5 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-semibold"
+            className="mt-5 px-5 py-2.5 rounded-full bg-primary text-white text-xs font-semibold cursor-pointer"
           >
             Kembali ke Katalog Program
           </button>
@@ -128,172 +137,256 @@ export function ProgramDonorsPage() {
     );
   }
 
+  const {
+    title,
+    organizer,
+    collectedAmount = 0,
+    targetAmount = 0,
+    progressPercentage,
+    donorCount = 0,
+  } = campaign;
+
+  const calculatedPercentage =
+    typeof progressPercentage === 'number'
+      ? progressPercentage
+      : targetAmount
+      ? Math.min(100, Math.round((collectedAmount / targetAmount) * 100))
+      : 0;
+
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* 1. Header Khusus Halaman Donatur: Tombol Kembali (<) + Judul Donatur ({count}) */}
+      {/* 1. Header Khusus Halaman Donatur: Tombol Kembali + Judul Donatur Center (Max Width 1320px) */}
       <header className="sticky top-0 z-30 bg-white border-b border-slate-100 shadow-2xs">
-        <div className="max-w-2xl mx-auto px-4 h-14 sm:h-16 flex items-center gap-3">
+        <Container className="h-14 sm:h-16 relative flex items-center justify-between">
           <button
             type="button"
             onClick={handleBack}
-            className="p-2 -ml-2 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-full transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary shrink-0"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:text-primary transition-colors cursor-pointer py-1.5 pr-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg z-10"
             aria-label="Kembali ke halaman program"
           >
-            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
+            <span>Kembali</span>
           </button>
 
-          <h1 className="text-base sm:text-lg font-bold text-slate-900 truncate">
-            Donatur ({formatNumber(totalDonorsCount)})
-          </h1>
-        </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-20">
+            <h1 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 truncate">
+              Donatur ({formatNumber(totalDonorsCount)})
+            </h1>
+          </div>
+
+          <div className="w-16 sm:w-20" aria-hidden="true" />
+        </Container>
       </header>
 
-      {/* 2. Konten Utama Donatur */}
-      <main className="max-w-2xl mx-auto px-4 py-4 sm:py-6 pb-24">
-        {/* 3 Tab Filter Pill: Terbaru | Dengan do'a | Terbesar */}
-        <div className="flex items-center gap-2 sm:gap-2.5 pb-4 border-b border-slate-100">
-          {/* Tab 1: Terbaru */}
-          <button
-            type="button"
-            onClick={() => setActiveTab('terbaru')}
-            className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-              activeTab === 'terbaru'
-                ? 'bg-primary text-white border border-primary shadow-2xs'
-                : 'bg-white text-slate-600 border border-slate-200/90 hover:border-primary hover:text-primary'
-            }`}
-          >
-            Terbaru
-          </button>
+      {/* 2. Konten Utama Donatur (Layout Desktop Max Width 1320px) */}
+      <main className="py-4 sm:py-8 pb-24">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+            {/* Kolom Kiri: Tab Filter & Daftar Donatur (Kolom 1 s/d 8 di Desktop) */}
+            <div className="lg:col-span-8 space-y-4">
+              {/* 3 Tab Filter Pill: Terbaru | Dengan do'a | Terbesar */}
+              <div className="flex items-center gap-2 sm:gap-2.5 pb-4 border-b border-slate-100">
+                {/* Tab 1: Terbaru */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('terbaru')}
+                  className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === 'terbaru'
+                      ? 'bg-primary text-white border border-primary shadow-2xs'
+                      : 'bg-white text-slate-600 border border-slate-200/90 hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  Terbaru
+                </button>
 
-          {/* Tab 2: Dengan do'a */}
-          <button
-            type="button"
-            onClick={() => setActiveTab('dengan_doa')}
-            className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-              activeTab === 'dengan_doa'
-                ? 'bg-primary text-white border border-primary shadow-2xs'
-                : 'bg-white text-slate-600 border border-slate-200/90 hover:border-primary hover:text-primary'
-            }`}
-          >
-            Dengan do'a
-          </button>
+                {/* Tab 2: Dengan do'a */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('dengan_doa')}
+                  className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === 'dengan_doa'
+                      ? 'bg-primary text-white border border-primary shadow-2xs'
+                      : 'bg-white text-slate-600 border border-slate-200/90 hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  Dengan do'a
+                </button>
 
-          {/* Tab 3: Terbesar */}
-          <button
-            type="button"
-            onClick={() => setActiveTab('terbesar')}
-            className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-              activeTab === 'terbesar'
-                ? 'bg-primary text-white border border-primary shadow-2xs'
-                : 'bg-white text-slate-600 border border-slate-200/90 hover:border-primary hover:text-primary'
-            }`}
-          >
-            Terbesar
-          </button>
-        </div>
+                {/* Tab 3: Terbesar */}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('terbesar')}
+                  className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+                    activeTab === 'terbesar'
+                      ? 'bg-primary text-white border border-primary shadow-2xs'
+                      : 'bg-white text-slate-600 border border-slate-200/90 hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  Terbesar
+                </button>
+              </div>
 
-        {/* Daftar Donatur */}
-        {filteredDonors.length === 0 ? (
-          <div className="py-16 text-center text-slate-400 text-xs sm:text-sm">
-            Belum ada donatur pada filter ini.
-          </div>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {filteredDonors.map((donor) => {
-              const currentAmin = aminState[donor.id] || {
-                hasAmined: false,
-                count: donor.aminCount || 0,
-              };
+              {/* Daftar Donatur */}
+              {filteredDonors.length === 0 ? (
+                <div className="py-16 text-center text-slate-400 text-xs sm:text-sm">
+                  Belum ada donatur pada filter ini.
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-100">
+                  {filteredDonors.map((donor) => {
+                    const currentAmin = aminState[donor.id] || {
+                      hasAmined: false,
+                      count: donor.aminCount || 0,
+                    };
 
-              return (
-                <div key={donor.id} className="py-4 sm:py-4.5">
-                  {/* Baris Donatur: Avatar + Nama + Waktu di kiri, Nominal di kanan */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      {/* Avatar Bulat dengan Inisial */}
-                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">
-                        {getInitials(donor.donorName)}
-                      </div>
+                    return (
+                      <div key={donor.id} className="py-4 sm:py-4.5">
+                        {/* Baris Donatur: Avatar + Nama + Waktu di kiri, Nominal di kanan */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Avatar Bulat dengan Inisial */}
+                            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">
+                              {getInitials(donor.donorName)}
+                            </div>
 
-                      <div className="min-w-0">
-                        {/* Nama Donatur & Badge Pendukung jika ada */}
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
-                            {donor.donorName}
-                          </span>
-                          {donor.hasBadge && (
-                            <span
-                              className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white shadow-2xs"
-                              title="Donatur Terverifikasi / Pendukung Setia"
-                              aria-label="Donatur Terverifikasi"
-                            >
-                              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                              </svg>
-                            </span>
-                          )}
+                            <div className="min-w-0">
+                              {/* Nama Donatur & Badge Pendukung jika ada */}
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                                  {donor.donorName}
+                                </span>
+                                {donor.hasBadge && (
+                                  <span
+                                    className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white shadow-2xs"
+                                    title="Donatur Terverifikasi / Pendukung Setia"
+                                    aria-label="Donatur Terverifikasi"
+                                  >
+                                    <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Waktu Donasi */}
+                              <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                                {donor.timeAgo}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Nominal Donasi di Sisi Kanan */}
+                          <div className="text-xs sm:text-sm font-semibold text-slate-800 shrink-0 text-right">
+                            {formatRupiah(donor.amount)}
+                          </div>
                         </div>
 
-                        {/* Waktu Donasi */}
-                        <div className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-                          {donor.timeAgo}
-                        </div>
-                      </div>
-                    </div>
+                        {/* Kotak Doa (Jika donasi memiliki doa/pesan) */}
+                        {donor.doa && (
+                          <div className="mt-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 text-slate-700 shadow-2xs">
+                            {/* Teks Doa */}
+                            <p className="text-xs sm:text-sm leading-relaxed text-slate-600 whitespace-pre-line font-normal">
+                              {donor.doa}
+                            </p>
 
-                    {/* Nominal Donasi di Sisi Kanan */}
-                    <div className="text-xs sm:text-sm font-semibold text-slate-800 shrink-0 text-right">
-                      {formatRupiah(donor.amount)}
+                            {/* Baris Bawah Doa: Ajakan & Tombol Aamiin Interaktif */}
+                            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
+                              <span className="text-[11px] sm:text-xs text-slate-400 font-medium truncate">
+                                Yuk aminkan doa saudara kita
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() => handleToggleAmin(donor.id, donor.aminCount)}
+                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                                  currentAmin.hasAmined
+                                    ? 'bg-rose-50 text-rose-600 border-rose-200'
+                                    : 'bg-slate-50 text-slate-600 border-slate-200/80 hover:border-slate-300 hover:bg-slate-100'
+                                }`}
+                                aria-label={`Aminkan doa ${donor.donorName}`}
+                              >
+                                {currentAmin.hasAmined ? (
+                                  <svg className="w-3.5 h-3.5 fill-rose-500 text-rose-500" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                  </svg>
+                                )}
+                                <span>
+                                  {currentAmin.count > 0 ? `${currentAmin.count} Aamiin` : 'Aamiin'}
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Kolom Kanan: Panel Ringkasan Program Desktop Sticky (Kolom 9 s/d 12) */}
+            <aside className="hidden lg:block lg:col-span-4 sticky top-20 self-start">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs space-y-4">
+                <div className="space-y-1">
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+                    Mitra Penggalang
+                  </span>
+                  <div className="font-bold text-slate-900 text-sm truncate flex items-center gap-1.5">
+                    <span>{organizer?.name || 'Yayasan Mitra OpenDonasi'}</span>
+                    <svg className="w-3.5 h-3.5 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 space-y-2">
+                  <span className="text-xs text-slate-500 font-medium block">
+                    Dana Terkumpul
+                  </span>
+                  <div className="text-2xl font-extrabold text-primary font-sans">
+                    {formatRupiah(collectedAmount)}
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="relative py-1">
+                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                      <div
+                        className="bg-primary h-full rounded-full transition-all duration-300"
+                        style={{ width: `${calculatedPercentage}%` }}
+                      />
                     </div>
                   </div>
 
-                  {/* Kotak Doa (Jika donasi memiliki doa/pesan) */}
-                  {donor.doa && (
-                    <div className="mt-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 sm:p-4 text-slate-700 shadow-2xs">
-                      {/* Teks Doa */}
-                      <p className="text-xs sm:text-sm leading-relaxed text-slate-600 whitespace-pre-line font-normal">
-                        {donor.doa}
-                      </p>
-
-                      {/* Baris Bawah Doa: Ajakan & Tombol Aamiin Interaktif */}
-                      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
-                        <span className="text-[11px] sm:text-xs text-slate-400 font-medium truncate">
-                          Yuk aminkan doa saudara kita
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => handleToggleAmin(donor.id, donor.aminCount)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
-                            currentAmin.hasAmined
-                              ? 'bg-rose-50 text-rose-600 border-rose-200'
-                              : 'bg-slate-50 text-slate-600 border-slate-200/80 hover:border-slate-300 hover:bg-slate-100'
-                          }`}
-                          aria-label={`Aminkan doa ${donor.donorName}`}
-                        >
-                          {currentAmin.hasAmined ? (
-                            <svg className="w-3.5 h-3.5 fill-rose-500 text-rose-500" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                          )}
-                          <span>
-                            {currentAmin.count > 0 ? `${currentAmin.count} Aamiin` : 'Aamiin'}
-                          </span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
+                    <span>Target: <strong>{formatRupiah(targetAmount)}</strong></span>
+                    <span><strong>{formatNumber(donorCount)}</strong> Donatur</span>
+                  </div>
                 </div>
-              );
-            })}
+
+                <div className="pt-2">
+                  <Link to={`/donasi/${campaign.slug}`} className="block w-full">
+                    <Button variant="primary" size="lg" isFullWidth className="font-bold shadow-xs py-3 text-sm">
+                      {getCtaText(campaign)}
+                    </Button>
+                  </Link>
+                </div>
+
+                <p className="text-[10px] text-text-secondary text-center flex items-center justify-center gap-1 pt-1">
+                  <svg className="w-3 h-3 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Penyaluran resmi & amanah OpenDonasi</span>
+                </p>
+              </div>
+            </aside>
           </div>
-        )}
+        </Container>
       </main>
     </div>
   );

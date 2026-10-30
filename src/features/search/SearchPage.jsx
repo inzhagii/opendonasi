@@ -11,6 +11,8 @@ import { CAMPAIGNS } from '../../data/campaigns';
 import { filterCampaigns } from '../../lib/campaignFilters';
 import { isInternalProgramFlow } from '../../lib/navigation';
 
+import { Container } from '../../components/ui/Container';
+
 const POPULAR_SEARCH_TAGS = [
   'Beramal Quran',
   'Santri',
@@ -108,9 +110,9 @@ export function SearchPage() {
 
   return (
     <div className="w-full min-h-screen bg-background">
-      {/* 1. Header Khusus Pencarian dengan Tombol Kembali (< Arrow) */}
+      {/* 1. Header Khusus Pencarian (Max Width Desktop 1320px) dengan Tombol Kembali (< Arrow) */}
       <header className="sticky top-0 z-30 bg-white border-b border-slate-200/90 shadow-2xs">
-        <div className="max-w-3xl mx-auto px-4 h-14 sm:h-16 flex items-center gap-2 sm:gap-3">
+        <Container className="h-14 sm:h-16 flex items-center gap-2 sm:gap-3">
           {/* Tombol Kembali */}
           <button
             type="button"
@@ -156,11 +158,12 @@ export function SearchPage() {
               </button>
             )}
           </form>
-        </div>
+        </Container>
       </header>
 
-      {/* 2. Konten Utama Pencarian */}
-      <main className="max-w-3xl mx-auto px-4 py-5 sm:py-7">
+      {/* 2. Konten Utama Pencarian (Max Width Desktop 1320px) */}
+      <main className="py-5 sm:py-8 pb-20">
+        <Container>
         {!hasQuery ? (
           /* KONDISI A: Belum Ada Kata Kunci (Sesuai Screenshot Referensi) */
           <div className="space-y-6 sm:space-y-7">
@@ -252,8 +255,8 @@ export function SearchPage() {
 
 
 
-            {/* Grid Hasil Pencarian */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {/* Grid Hasil Pencarian (Desktop 4 Kolom di 1320px) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {searchResults.map((campaign) => (
                 <CampaignCard
                   key={campaign.id}
@@ -295,6 +298,7 @@ export function SearchPage() {
             </div>
           </div>
         )}
+        </Container>
       </main>
     </div>
   );

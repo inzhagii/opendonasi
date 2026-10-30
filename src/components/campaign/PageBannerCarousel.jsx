@@ -52,6 +52,9 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
   const containerRef = useRef(null);
   const trackRef = useRef(null);
   const dragStartXRef = useRef(null);
+  const touchStartYRef = useRef(null);
+  const touchAxisRef = useRef(null); // 'horizontal' | 'vertical' | null
+  const rafRef = useRef(null);
 
   // Responsif bannerWidth, bannerHeight, dan gap
   const [dimensions, setDimensions] = useState({
@@ -136,7 +139,8 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
 
   // Auto-slide geser otomatis selama 5 detik sekali ke arah kanan
   useEffect(() => {
-    if (isPaused || isDragging || isAnimating) return;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || isPaused || isDragging || isAnimating) return;
     const timer = setInterval(() => {
       handleNext();
     }, 5000);
@@ -144,45 +148,58 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
     return () => clearInterval(timer);
   }, [isPaused, isDragging, isAnimating, handleNext]);
 
-  // Mouse Drag Gestures
+  // Mouse Drag Gestures dengan window listener agar mulus dan tidak terputus
   const handleMouseDown = (e) => {
     if (isAnimating || e.button !== 0) return;
+    e.preventDefault();
     dragStartXRef.current = e.clientX;
     setIsDragging(true);
     setIsPaused(true);
     setDragDeltaX(0);
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDragging || dragStartXRef.current === null) return;
-    const delta = e.clientX - dragStartXRef.current;
-    setDragDeltaX(delta);
-  };
-
-  const handleMouseUp = () => {
+  useEffect(() => {
     if (!isDragging) return;
-    setIsDragging(false);
-    setIsPaused(false);
-    if (dragDeltaX < -40) {
-      handleNext();
-    } else if (dragDeltaX > 40) {
-      handlePrev();
-    } else {
-      setDragDeltaX(0);
-    }
-  };
 
-  const handleMouseLeave = () => {
-    if (isDragging) {
-      handleMouseUp();
-    }
-    setIsPaused(false);
-  };
+    const onMouseMove = (e) => {
+      if (dragStartXRef.current === null) return;
+      const delta = e.clientX - dragStartXRef.current;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        setDragDeltaX(delta);
+      });
+    };
 
-  // Touch Swipe Gestures (Mobile)
+    const onMouseUp = () => {
+      if (dragStartXRef.current === null) return;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      setIsDragging(false);
+      setIsPaused(false);
+      if (dragDeltaX < -45) {
+        handleNext();
+      } else if (dragDeltaX > 45) {
+        handlePrev();
+      } else {
+        setDragDeltaX(0);
+      }
+      dragStartXRef.current = null;
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+  }, [isDragging, dragDeltaX, handleNext, handlePrev]);
+
+  // Touch Swipe Gestures (Mobile) dengan deteksi sumbu
   const handleTouchStart = (e) => {
     if (isAnimating) return;
     dragStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
+    touchAxisRef.current = null;
     setIsDragging(true);
     setIsPaused(true);
     setDragDeltaX(0);
@@ -190,21 +207,47 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
 
   const handleTouchMove = (e) => {
     if (!isDragging || dragStartXRef.current === null) return;
-    const delta = e.touches[0].clientX - dragStartXRef.current;
-    setDragDeltaX(delta);
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const deltaX = currentX - dragStartXRef.current;
+    const deltaY = currentY - touchStartYRef.current;
+
+    if (touchAxisRef.current === null) {
+      if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 8) {
+        touchAxisRef.current = 'vertical';
+      } else if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+        touchAxisRef.current = 'horizontal';
+      }
+    }
+
+    if (touchAxisRef.current === 'vertical') {
+      return;
+    }
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      setDragDeltaX(deltaX);
+    });
   };
 
   const handleTouchEnd = () => {
     if (!isDragging) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     setIsDragging(false);
     setTimeout(() => setIsPaused(false), 2000);
-    if (dragDeltaX < -40) {
-      handleNext();
-    } else if (dragDeltaX > 40) {
-      handlePrev();
+    if (touchAxisRef.current !== 'vertical') {
+      if (dragDeltaX < -45) {
+        handleNext();
+      } else if (dragDeltaX > 45) {
+        handlePrev();
+      } else {
+        setDragDeltaX(0);
+      }
     } else {
       setDragDeltaX(0);
     }
+    dragStartXRef.current = null;
+    touchAxisRef.current = null;
   };
 
   const handleClickCapture = (e) => {
@@ -227,12 +270,12 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
   // 7 slot banner yang berputar secara infinite:
   // Offset: [-3, -2, -1 (Peek Kiri), 0 (Main Center), 1 (Peek Kanan), 2, 3]
   const offsets = [-3, -2, -1, 0, 1, 2, 3];
-  const visibleBanners = offsets.map((offset) => {
+  const visibleBanners = offsets.map((offset, slotIdx) => {
     const index = (currentIndex + offset + totalCount * 10) % totalCount;
     return {
       poster: items[index],
       offset,
-      key: `${items[index].id}-${offset}`,
+      slotKey: `slot-${slotIdx}`,
     };
   });
 
@@ -241,13 +284,11 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
       {/* Viewport Carousel: 1 Main Banner di Tengah, 2 Peek Banner di Kiri & Kanan */}
       <div
         ref={containerRef}
-        className="relative w-full overflow-hidden select-none"
+        className="relative w-full overflow-hidden select-none touch-pan-y"
         style={{ minHeight: `${dimensions.bannerHeight}px` }}
         onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={() => setIsPaused(false)}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -273,7 +314,7 @@ export function PageBannerCarousel({ banners = DEFAULT_BANNERS, className = '' }
 
             return (
               <div
-                key={item.key}
+                key={item.slotKey}
                 onClick={() => {
                   if (Math.abs(dragDeltaX) > 8) return;
                   if (isPeekLeft) handlePrev();

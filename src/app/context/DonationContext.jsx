@@ -19,6 +19,8 @@ function deduplicateTransactions(list) {
   });
 }
 
+const AUTH_STORAGE_KEY = 'opendonasi_is_logged_in';
+
 export function DonationProvider({ children }) {
   const [donations, setDonations] = useState(() => {
     if (typeof window === 'undefined') {
@@ -38,7 +40,17 @@ export function DonationProvider({ children }) {
     return deduplicateTransactions(INITIAL_USER_DONATIONS);
   });
 
-  const [currentUser] = useState(CURRENT_USER);
+  const [currentUser, setCurrentUser] = useState(CURRENT_USER);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try {
+      const saved = sessionStorage.getItem(AUTH_STORAGE_KEY);
+      return saved === 'true';
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     try {
@@ -47,6 +59,28 @@ export function DonationProvider({ children }) {
       // Abaikan jika kuota storage terlampaui
     }
   }, [donations]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(AUTH_STORAGE_KEY, String(isLoggedIn));
+    } catch {
+      // Abaikan jika storage gagal
+    }
+  }, [isLoggedIn]);
+
+  const login = (userData) => {
+    if (userData && typeof userData === 'object') {
+      setCurrentUser((prev) => ({
+        ...prev,
+        ...userData,
+      }));
+    }
+    setIsLoggedIn(true);
+  };
+
+  const logout = () => {
+    setIsLoggedIn(false);
+  };
 
   // Tambahkan transaksi baru dengan pencegahan duplikasi
   const addDonation = (newDonation) => {
@@ -81,6 +115,9 @@ export function DonationProvider({ children }) {
         clearDonations,
         resetToInitialDonations,
         currentUser,
+        isLoggedIn,
+        login,
+        logout,
       }}
     >
       {children}

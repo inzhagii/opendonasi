@@ -226,27 +226,31 @@ function HorizontalCard({ campaign, targetRoute, calculatedPercentage }) {
             </div>
           </div>
 
-          {/* 3. Bilah Progres Bar & Keterangan Persen Jelas */}
-          <div className="mt-2 mb-1.5 flex items-center gap-2">
-            <div className="relative flex-1">
-              <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${calculatedPercentage}%` }}
-                />
-              </div>
-
-              {/* Titik Dot Indikator */}
+          {/* 3. Bilah Progres Bar & Keterangan Persen saat Hover/Interaksi seperti Card Biasa */}
+          <div className="relative mt-2 mb-2 w-full">
+            <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
               <div
-                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
-                style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
+                className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${calculatedPercentage}%` }}
               />
             </div>
 
-            {/* Badge Persentase Jelas (Selalu terlihat, tidak menutupi teks lain) */}
-            <span className="shrink-0 text-[10px] font-bold text-primary bg-[#EEF4FF] border border-primary/20 px-1.5 py-0.5 rounded shadow-2xs whitespace-nowrap">
-              {calculatedPercentage}%
-            </span>
+            {/* Titik Dot Indikator */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-white border-2 border-primary rounded-full shadow-xs z-10 pointer-events-none"
+              style={{ left: `${Math.min(98, Math.max(2, calculatedPercentage))}%` }}
+            />
+
+            {/* Tooltip Persen (Hanya muncul saat kursor atau kegiatan mengarah ke card seperti pada card biasa) */}
+            <div
+              className="absolute -top-6 -translate-x-1/2 z-20 flex flex-col items-center opacity-0 group-hover:opacity-100 group-active:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 pointer-events-none"
+              style={{ left: `${Math.min(90, Math.max(10, calculatedPercentage))}%` }}
+            >
+              <div className="bg-[#EEF4FF] border border-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded shadow-2xs whitespace-nowrap">
+                {calculatedPercentage}%
+              </div>
+              <div className="w-1.5 h-1.5 -mt-0.5 rotate-45 bg-[#EEF4FF] border-b border-r border-primary/20" />
+            </div>
           </div>
 
           {/* 4. Nilai Nominal Dana Terkumpul (Besar) & Sisa Hari Berdampingan */}

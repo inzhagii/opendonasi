@@ -8,6 +8,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { CAMPAIGNS } from '../../data/campaigns';
 import { Button } from '../../components/ui/Button';
+import { Container } from '../../components/ui/Container';
 import { formatRupiah, formatNumber } from '../../lib/formatters';
 import { useDonation } from '../../hooks/useDonation';
 
@@ -239,29 +240,29 @@ function PaymentMethodIcon({ type, className = '' }) {
 }
 
 // Komponen Ringkas Banner & Judul Program di Bagian Atas Setiap Tahap
-// (Tanpa keterangan 'lihat detail lengkap program nya' sesuai instruksi user)
+// (Sesuai Referensi Gambar 2 PO: Rasio 16:9, nempel ke garis batas tanpa padding, diperbesar proporsional)
 function ProgramHeaderBanner({ campaign }) {
   if (!campaign) return null;
   return (
-    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 mb-5">
-      <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-200 shrink-0 border border-slate-200/60 aspect-[16/9]">
+    <div className="flex items-stretch bg-white rounded-2xl border border-slate-200 overflow-hidden mb-5 shadow-2xs">
+      <div className="w-28 sm:w-36 md:w-44 aspect-[16/9] shrink-0 bg-slate-100 overflow-hidden">
         {campaign.image ? (
           <img
             src={campaign.image}
-            alt=""
+            alt={campaign.title}
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-bold">
+          <div className="w-full h-full flex items-center justify-center text-xs text-slate-400 font-bold">
             OD
           </div>
         )}
       </div>
-      <div className="min-w-0 flex-1">
-        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+      <div className="min-w-0 flex-1 p-3 sm:p-4 flex flex-col justify-center">
+        <span className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider block">
           Program Kebaikan
         </span>
-        <h2 className="text-xs sm:text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+        <h2 className="text-xs sm:text-sm md:text-base font-bold text-slate-900 leading-snug line-clamp-2 mt-0.5">
           {campaign.title}
         </h2>
       </div>
@@ -309,10 +310,7 @@ export function DonationFormPage() {
     return PRESET_AMOUNTS.includes(initialAmount) ? initialAmount : 50000;
   });
   const [nominalInput, setNominalInput] = useState(String(initialAmount));
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(() => {
-    // Default terpilih: QRIS (paling populer & instan)
-    return PAYMENT_CATEGORIES[0].methods[5];
-  });
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
 
   const [donorName, setDonorName] = useState(currentUser?.name || '');
   const [donorPhone, setDonorPhone] = useState('');
@@ -458,8 +456,11 @@ export function DonationFormPage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-slate-50/50 py-4 sm:py-8">
-      <div className="max-w-xl mx-auto px-4">
+    <div className="w-full min-h-screen bg-slate-50/50 py-4 sm:py-10">
+      <Container>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+          {/* Kolom Kiri: Formulir Bertahap Donasi */}
+          <div className="lg:col-span-7 xl:col-span-8 w-full max-w-xl lg:max-w-none mx-auto">
         {/* ============================================================== */}
         {/* TAHAP 1: PILIH NOMINAL DONASI (Sesuai Referensi Gambar 1)      */}
         {/* ============================================================== */}
@@ -875,6 +876,73 @@ export function DonationFormPage() {
           </form>
         )}
       </div>
+
+          {/* Kolom Kanan: Panel Ringkasan Donasi Sticky Desktop (Max-Width 1320px) */}
+          <aside className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-20 self-start">
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-5">
+              <h2 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
+                Ringkasan Donasi
+              </h2>
+
+              {/* Banner Program dengan Rasio 16:9 Saja Tanpa Judul Sesuai Permintaan */}
+              <div className="w-full aspect-[16/9] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-2xs">
+                {campaign.image ? (
+                  <img
+                    src={campaign.image}
+                    alt={campaign.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs text-slate-400 font-bold">
+                    OD
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-3 text-xs sm:text-sm">
+                <div className="flex items-center justify-between text-slate-600">
+                  <span>Nominal Donasi</span>
+                  <strong className="text-slate-900 font-bold">
+                    {formatRupiah(parseInt(nominalInput, 10) || 50000)}
+                  </strong>
+                </div>
+
+                <div className="flex items-center justify-between text-slate-600">
+                  <span>Alokasi Operasional</span>
+                  <span className="text-slate-500 font-medium">Termasuk (0%)</span>
+                </div>
+
+                <div className="flex items-center justify-between text-slate-600">
+                  <span>Metode Pembayaran</span>
+                  <span className="font-semibold text-slate-800">
+                    {step === 'amount' || !selectedPaymentMethod ? '-' : selectedPaymentMethod.name}
+                  </span>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-slate-900">
+                  <span className="font-bold text-sm">Total Donasi</span>
+                  <strong className="text-base sm:text-lg font-extrabold text-primary font-sans">
+                    {formatRupiah(parseInt(nominalInput, 10) || 50000)}
+                  </strong>
+                </div>
+              </div>
+
+              {/* Garansi Keamanan & Amanah */}
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 space-y-2 text-xs text-slate-600">
+                <div className="flex items-center gap-2 font-bold text-slate-900">
+                  <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Penyaluran Resmi & Amanah</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-slate-500">
+                  Donasi Anda langsung tercatat dalam sistem transparansi yayasan mitra OpenDonasi.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </Container>
     </div>
   );
 }

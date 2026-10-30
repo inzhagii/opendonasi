@@ -21,12 +21,14 @@ export function MobileBottomNav() {
 
   const closeLayanan = () => setIsLayananOpen(false);
 
-  // Sesuai OPENDONASI_SPEC & Tahap 4: Bottom nav disembunyikan pada Detail Program, Form Donasi, dan Hasil Simulasi
+  // Sesuai OPENDONASI_SPEC & Tahap 4: Bottom nav disembunyikan pada Detail Program, Form Donasi, Hasil Simulasi, dan Halaman Auth
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signin' || location.pathname === '/daftar';
   const shouldHideBottomNav =
     (location.pathname.startsWith('/program/') && location.pathname !== '/program') ||
     (location.pathname.startsWith('/zakat/') && location.pathname !== '/zakat') ||
     location.pathname.startsWith('/donasi/') ||
-    location.pathname === '/hasil-donasi';
+    location.pathname === '/hasil-donasi' ||
+    isAuthPage;
 
   if (shouldHideBottomNav) return null;
 

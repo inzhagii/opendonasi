@@ -22,6 +22,8 @@ import { FaqPage } from '../features/info/FaqPage';
 import { ContactPage } from '../features/info/ContactPage';
 import { NotFoundPage } from '../features/info/NotFoundPage';
 import { OrganizerProfilePage } from '../features/organizer/OrganizerProfilePage';
+import { LoginPage } from '../features/auth/LoginPage';
+import { SignInPage } from '../features/auth/SignInPage';
 
 export function AppRoutes() {
   return (
@@ -48,6 +50,9 @@ export function AppRoutes() {
       <Route path="/kontak" element={<ContactPage />} />
       <Route path="/donasi-saya" element={<DonationHistoryPage />} />
       <Route path="/profil" element={<ProfilePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signin" element={<SignInPage />} />
+      <Route path="/daftar" element={<SignInPage />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="/penggalang/:organizerId" element={<OrganizerProfilePage />} />
       <Route path="/yayasan/:organizerId" element={<OrganizerProfilePage />} />
