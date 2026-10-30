@@ -7,13 +7,11 @@ import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { useDonation } from '../../hooks/useDonation';
-import { formatRupiah } from '../../lib/formatters';
 
 export function ProfilePage() {
   const navigate = useNavigate();
   const {
     currentUser,
-    donations,
     clearDonations,
     resetToInitialDonations,
     isLoggedIn,
@@ -22,21 +20,6 @@ export function ProfilePage() {
   } = useDonation();
 
   const [feedbackMsg, setFeedbackMsg] = useState(null);
-
-  // Filter transaksi yang valid
-  const validDonations = Array.isArray(donations)
-    ? donations.filter((d) => d && typeof d === 'object' && d.transactionId)
-    : [];
-
-  // Hitung total akumulasi donasi simulasi
-  const totalAmount = validDonations.reduce((sum, d) => {
-    return sum + (typeof d.amount === 'number' && !isNaN(d.amount) ? d.amount : 0);
-  }, 0);
-
-  // Hitung donasi berstatus berhasil
-  const successDonationsCount = validDonations.filter(
-    (d) => d.status === 'success'
-  ).length;
 
   const showFeedback = (msg) => {
     setFeedbackMsg(msg);
@@ -228,70 +211,29 @@ export function ProfilePage() {
                   </div>
                 </div>
 
-                {/* 2. Ringkasan Aktivitas Donasi Simulasi */}
-                <div className="bg-white rounded-2xl border border-border p-5 sm:p-7 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900">
-                      Ringkasan Aktivitas Donasi
-                    </h2>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-                      Simulasi Lokal
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4">
-                    {/* Metrik 1: Total Transaksi */}
-                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                      <span className="text-xs text-text-secondary block mb-1">
-                        Total Transaksi
-                      </span>
-                      <div className="text-xl sm:text-2xl font-bold text-slate-900">
-                        {validDonations.length}
-                        <span className="text-xs font-normal text-text-secondary ml-1">transaksi</span>
-                      </div>
-                      <span className="text-[10px] text-text-secondary mt-1 block">
-                        {successDonationsCount} berhasil (simulasi)
-                      </span>
-                    </div>
-
-                    {/* Metrik 2: Total Donasi Tersalurkan */}
-                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 sm:col-span-2">
-                      <span className="text-xs text-text-secondary block mb-1">
-                        Total Donasi Simulasi
-                      </span>
-                      <div className="text-xl sm:text-2xl font-extrabold text-primary">
-                        {formatRupiah(totalAmount)}
-                      </div>
-                      <span className="text-[10px] text-text-secondary mt-1 block">
-                        *Akumulasi nilai simulasi demonstrasi (bukan penarikan dana nyata)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 3. Akses Utama ke Donasi Saya (/donasi-saya) */}
+                {/* 2. Akses Utama: Portal Dashboard Kebaikan */}
                 <Link
-                  to="/donasi-saya"
-                  className="block group bg-white rounded-2xl border border-border hover:border-primary/50 p-5 sm:p-6 shadow-xs hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer"
+                  to="/dashboard"
+                  className="block group bg-white rounded-2xl border-2 border-primary/25 hover:border-primary p-5 sm:p-6 shadow-xs hover:shadow-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer relative overflow-hidden"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3.5 sm:gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-primary transition-colors">
-                            Donasi Saya
+                            Dashboard Kebaikan
                           </h3>
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-primary-soft text-primary">
-                            {validDonations.length} Transaksi
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-primary">
+                            Portal Donatur
                           </span>
                         </div>
                         <p className="text-xs sm:text-sm text-text-secondary mt-0.5">
-                          Lihat daftar riwayat lengkap transaksi simulasi, rincian doa, dan status.
+                          Metrik donasi, riwayat transaksi, kalkulator zakat, dan ringkasan kendali Anda.
                         </p>
                       </div>
                     </div>

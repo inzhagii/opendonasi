@@ -13,17 +13,19 @@ export function RootLayout({ children }) {
     recordSourcePage(location);
   }, [location]);
 
-  // Sembunyikan navbar utama & footer pada Detail Program, Form Donasi, Hasil Donasi, Profil Penggalang, Halaman Pencarian, dan Halaman Auth (Login / Sign In)
+  // Sembunyikan navbar utama & footer pada Detail Program, Form Donasi, Instruksi Pembayaran, Dashboard, Hasil Donasi, Profil Penggalang, Halaman Pencarian, dan Halaman Auth
   const isDetailPage = location.pathname.startsWith('/program/') && location.pathname !== '/program';
-  const isDonationFlow = location.pathname.startsWith('/donasi/') || location.pathname === '/hasil-donasi';
+  const isPaymentInstruction = location.pathname === '/instruksi-pembayaran';
+  const isDashboard = location.pathname === '/dashboard';
+  const isDonationFlow = location.pathname.startsWith('/donasi/') || location.pathname === '/hasil-donasi' || isPaymentInstruction;
   const isOrganizerPage = location.pathname.startsWith('/penggalang/') || location.pathname.startsWith('/yayasan/');
   const isSearchPage = location.pathname === '/search';
   const isAuthPage = location.pathname === '/login' || location.pathname === '/signin' || location.pathname === '/daftar';
   const isZakatCalculator = location.pathname === '/zakat/kalkulator';
 
-  const shouldHideHeader = isDetailPage || isDonationFlow || isOrganizerPage || isSearchPage || isAuthPage || isZakatCalculator;
-  // Hapus footer pada detail program, formulir donasi, dan halaman auth (login/signin berdiri sendiri)
-  const shouldHideFooter = isDetailPage || isDonationFlow || isAuthPage;
+  const shouldHideHeader = isDetailPage || isDonationFlow || isOrganizerPage || isSearchPage || isAuthPage || isZakatCalculator || isDashboard;
+  // Hapus footer pada detail program, formulir donasi, instruksi pembayaran, dashboard, dan halaman auth (berdiri sendiri)
+  const shouldHideFooter = isDetailPage || isDonationFlow || isAuthPage || isDashboard;
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-text-primary font-sans antialiased">
@@ -31,7 +33,7 @@ export function RootLayout({ children }) {
       {!shouldHideHeader && <Header />}
 
       {/* Konten Halaman */}
-      <main className={`flex-1 ${isAuthPage ? '' : 'pb-20 md:pb-0'}`}>
+      <main className={`flex-1 ${isAuthPage || isPaymentInstruction || isDashboard ? '' : 'pb-20 md:pb-0'}`}>
         {children}
       </main>
 

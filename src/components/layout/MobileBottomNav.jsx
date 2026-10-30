@@ -28,6 +28,8 @@ export function MobileBottomNav() {
     (location.pathname.startsWith('/zakat/') && location.pathname !== '/zakat') ||
     location.pathname.startsWith('/donasi/') ||
     location.pathname === '/hasil-donasi' ||
+    location.pathname === '/instruksi-pembayaran' ||
+    location.pathname === '/dashboard' ||
     isAuthPage;
 
   if (shouldHideBottomNav) return null;

@@ -245,7 +245,7 @@ function ProgramHeaderBanner({ campaign }) {
   if (!campaign) return null;
   return (
     <div className="flex items-stretch bg-white rounded-2xl border border-slate-200 overflow-hidden mb-5 shadow-2xs">
-      <div className="w-28 sm:w-36 md:w-44 aspect-[16/9] shrink-0 bg-slate-100 overflow-hidden">
+      <div className="w-36 sm:w-40 md:w-44 aspect-[16/9] shrink-0 bg-slate-100 overflow-hidden">
         {campaign.image ? (
           <img
             src={campaign.image}
@@ -310,7 +310,8 @@ export function DonationFormPage() {
     return PRESET_AMOUNTS.includes(initialAmount) ? initialAmount : 50000;
   });
   const [nominalInput, setNominalInput] = useState(String(initialAmount));
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null); // Default kosong/strip (-) sesuai permintaan PO
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const [donorName, setDonorName] = useState(currentUser?.name || '');
   const [donorPhone, setDonorPhone] = useState('');
@@ -356,26 +357,19 @@ export function DonationFormPage() {
     }
   };
 
-  // Validasi nominal pada Step 1
-  const handleProceedToPayment = () => {
+  // Validasi nominal pada Step 1 -> Langsung menuju Formulir Donasi (Sesuai Permintaan PO)
+  const handleProceedToForm = () => {
     const amount = parseInt(nominalInput, 10);
     if (!nominalInput || isNaN(amount) || amount < MIN_AMOUNT) {
       setErrors({ nominal: `Nominal donasi minimal ${formatRupiah(MIN_AMOUNT)}` });
       return;
     }
     setErrors({});
-    setStep('payment');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Handler pemilihan metode pembayaran pada Step 2 -> langsung menuju Step 3
-  const handleSelectPaymentMethod = (method) => {
-    setSelectedPaymentMethod(method);
     setStep('form');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Validasi data donatur pada Step 3 & Submit Simulasi Donasi
+  // Validasi data donatur & Lanjutkan ke Instruksi Pembayaran (Sesuai Referensi Amalsholeh)
   const handleSubmitDonation = (e) => {
     e.preventDefault();
     if (isSubmitting || !campaign) return;
@@ -387,12 +381,12 @@ export function DonationFormPage() {
       errs.nominal = `Nominal donasi minimal ${formatRupiah(MIN_AMOUNT)}`;
     }
 
-    if (!donorName.trim()) {
-      errs.name = 'Nama lengkap wajib diisi';
-    }
-
-    if (!donorPhone.trim()) {
-      errs.phone = 'Nomor telepon wajib diisi';
+    // Jika metode pembayaran belum dipilih, jangan lanjut, dan langsung buka modal pop-up metode pembayaran!
+    if (!selectedPaymentMethod) {
+      errs.payment = 'Silakan pilih metode pembayaran terlebih dahulu';
+      setErrors(errs);
+      setIsPaymentModalOpen(true);
+      return;
     }
 
     if (Object.keys(errs).length > 0) {
@@ -402,37 +396,47 @@ export function DonationFormPage() {
 
     setIsSubmitting(true);
 
+    const safeDonorName = donorName.trim() || (isAnonymous ? 'Hamba Allah' : 'Donatur Baik');
+    const safeDonorPhone = donorPhone.trim() || '081234567890';
+    const isVaOrTransfer = selectedPaymentMethod?.category === 'va' || selectedPaymentMethod?.category === 'transfer';
+    const uniqueCode = isVaOrTransfer ? Math.floor(100 + Math.random() * 899) : 0;
+    const invoiceNumber = `INV-${Date.now().toString().slice(-9)}${Math.floor(100 + Math.random() * 899)}`;
+
     const transaction = {
       transactionId: `OD-${Math.floor(100000 + Math.random() * 900000)}`,
+      invoiceNumber,
       campaignId: campaign.id,
       campaignTitle: campaign.title,
       campaignSlug: campaign.slug,
       campaignImage: campaign.image,
       serviceType: campaign.serviceType || 'donasi',
       amount,
+      uniqueCode,
+      totalAmount: amount + uniqueCode,
       date: new Date().toISOString().split('T')[0],
       createdAt: new Date().toISOString(),
-      status: 'success',
-      statusLabel: 'Simulasi Berhasil (Demo)',
+      status: 'pending',
+      statusLabel: 'Pembayaran belum diterima',
       isAnonymous,
-      donorName: isAnonymous ? 'Hamba Allah' : donorName.trim(),
-      actualName: donorName.trim(),
-      donorPhone: donorPhone.trim(),
+      donorName: isAnonymous ? 'Hamba Allah' : safeDonorName,
+      actualName: safeDonorName,
+      donorPhone: safeDonorPhone,
       donorEmail: donorEmail.trim(),
       doa: donorPrayer.trim(),
-      paymentMethod: selectedPaymentMethod?.name || 'QRIS',
-      paymentCategory: selectedPaymentMethod?.category || 'instant',
+      paymentMethod: selectedPaymentMethod.name,
+      paymentCategory: selectedPaymentMethod.category,
+      paymentId: selectedPaymentMethod.id,
+      vaNumber: selectedPaymentMethod.id === 'bca_va' ? '0083879294' : '8808' + Math.floor(10000000 + Math.random() * 90000000),
     };
 
     try {
-      addDonation(transaction);
       sessionStorage.setItem('opendonasi_latest_transaction', JSON.stringify(transaction));
     } catch {
       // Fallback aman jika storage lokal terkendala
     }
 
-    // Arahkan ke halaman hasil simulasi transaksi
-    navigate('/hasil-donasi', { replace: true });
+    // Arahkan ke halaman Instruksi Pembayaran lebih dahulu sesuai alur yang diminta
+    navigate('/instruksi-pembayaran', { state: { transaction } });
   };
 
   if (!campaign) {
@@ -560,8 +564,8 @@ export function DonationFormPage() {
                 variant="primary"
                 size="lg"
                 isFullWidth
-                onClick={handleProceedToPayment}
-                className="font-bold shadow-xs py-3 text-xs sm:text-sm"
+                onClick={handleProceedToForm}
+                className="font-bold shadow-xs py-3 text-xs sm:text-sm whitespace-nowrap"
               >
                 Lanjutkan Pembayaran
               </Button>
@@ -570,87 +574,7 @@ export function DonationFormPage() {
         )}
 
         {/* ============================================================== */}
-        {/* TAHAP 2: PILIH METODE PEMBAYARAN (Sesuai Referensi Gambar 2)   */}
-        {/* ============================================================== */}
-        {step === 'payment' && (
-          <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs space-y-5">
-            {/* Navigasi Atas: Tombol Back (<) & Judul */}
-            <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
-              <button
-                type="button"
-                onClick={() => setStep('amount')}
-                className="p-1 -ml-1 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
-                aria-label="Kembali ke pilih nominal"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <h1 className="text-sm sm:text-base font-bold text-slate-900">
-                Pilih metode pembayaran
-              </h1>
-            </div>
-
-            {/* Banner & Judul Program Ringkas */}
-            <ProgramHeaderBanner campaign={campaign} />
-
-            {/* Daftar Kategori & Metode Pembayaran */}
-            <div className="space-y-6">
-              {PAYMENT_CATEGORIES.map((category) => (
-                <div key={category.id} className="space-y-2.5">
-                  <h2 className="text-xs sm:text-sm font-bold text-slate-900">
-                    {category.title}
-                  </h2>
-
-                  <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 overflow-hidden bg-white">
-                    {category.methods.map((method) => {
-                      const isSelected = selectedPaymentMethod?.id === method.id;
-                      return (
-                        <button
-                          key={method.id}
-                          type="button"
-                          onClick={() => handleSelectPaymentMethod(method)}
-                          className={`w-full p-3.5 flex items-center justify-between gap-3 text-left transition-colors cursor-pointer hover:bg-slate-50/80 ${
-                            isSelected ? 'bg-blue-50/40' : ''
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <PaymentMethodIcon type={method.iconType} />
-                            <div className="min-w-0">
-                              <span className="text-xs sm:text-sm font-semibold text-slate-800 block truncate">
-                                {method.name}
-                              </span>
-                              {method.subtitle && (
-                                <span className="text-[10px] sm:text-[11px] text-amber-600 block mt-0.5">
-                                  {method.subtitle}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="shrink-0 text-slate-400">
-                            {isSelected ? (
-                              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            ) : (
-                              <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                              </svg>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ============================================================== */}
-        {/* TAHAP 3: ISI FORMULIR DONATUR (Sesuai Referensi Gambar 3)       */}
+        {/* TAHAP FORMULIR DONATUR DENGAN PILIH METODE VIA POP-UP MODAL    */}
         {/* ============================================================== */}
         {step === 'form' && (
           <form
@@ -661,9 +585,9 @@ export function DonationFormPage() {
             <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
               <button
                 type="button"
-                onClick={() => setStep('payment')}
+                onClick={() => setStep('amount')}
                 className="p-1 -ml-1 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
-                aria-label="Kembali ke pilih metode pembayaran"
+                aria-label="Kembali ke pilih nominal"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -699,26 +623,73 @@ export function DonationFormPage() {
                 </div>
               </div>
 
-              {/* Metode Pembayaran Terpilih */}
+              {/* Metode Pembayaran Terpilih (Membuka Pop-up Sesuai Permintaan PO) */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
                   <span>Pilih metode pembayaran</span>
+                  {selectedPaymentMethod && (
+                    <button
+                      type="button"
+                      onClick={() => setIsPaymentModalOpen(true)}
+                      className="text-primary hover:underline font-semibold cursor-pointer"
+                    >
+                      Ubah
+                    </button>
+                  )}
                 </div>
-                <div className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <PaymentMethodIcon type={selectedPaymentMethod?.iconType} />
-                    <span className="text-xs sm:text-sm font-bold text-slate-800 truncate">
-                      {selectedPaymentMethod?.name || 'QRIS'}
-                    </span>
-                  </div>
+
+                <div
+                  onClick={() => setIsPaymentModalOpen(true)}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer group flex items-center justify-between gap-3 ${
+                    errors.payment
+                      ? 'border-red-400 bg-red-50/20 ring-2 ring-red-400/20'
+                      : selectedPaymentMethod
+                      ? 'border-slate-200 hover:border-primary/60 bg-white'
+                      : 'border-dashed border-slate-300 hover:border-primary/60 bg-slate-50/60 hover:bg-white'
+                  }`}
+                >
+                  {selectedPaymentMethod ? (
+                    <div className="flex items-center gap-3 min-w-0">
+                      <PaymentMethodIcon type={selectedPaymentMethod.iconType} />
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-bold text-slate-800 truncate block group-hover:text-primary transition-colors">
+                          {selectedPaymentMethod.name}
+                        </span>
+                        <span className="text-[11px] text-slate-400 block">
+                          {selectedPaymentMethod.category === 'instant' ? 'Pembayaran Instan' : 'Virtual Account'}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-[54px] aspect-[16/9] rounded-md shrink-0 flex items-center justify-center border border-dashed border-slate-300 bg-white text-slate-400 font-bold text-sm">
+                        —
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-semibold text-slate-500 block truncate group-hover:text-primary transition-colors">
+                          Belum memilih metode pembayaran
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
                   <button
                     type="button"
-                    onClick={() => setStep('payment')}
-                    className="text-xs font-semibold text-primary hover:underline cursor-pointer shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsPaymentModalOpen(true);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold cursor-pointer shrink-0 transition-colors"
                   >
-                    Pilih
+                    {selectedPaymentMethod ? 'Ubah' : 'Pilih'}
                   </button>
                 </div>
+
+                {errors.payment && (
+                  <p className="text-[11px] text-red-500 font-medium pt-0.5">
+                    {errors.payment}
+                  </p>
+                )}
               </div>
 
               {/* Catatan Transparansi Alokasi Layanan */}
@@ -914,9 +885,26 @@ export function DonationFormPage() {
 
                 <div className="flex items-center justify-between text-slate-600">
                   <span>Metode Pembayaran</span>
-                  <span className="font-semibold text-slate-800">
-                    {step === 'amount' || !selectedPaymentMethod ? '-' : selectedPaymentMethod.name}
-                  </span>
+                  {selectedPaymentMethod ? (
+                    <button
+                      type="button"
+                      onClick={() => setIsPaymentModalOpen(true)}
+                      className="font-semibold text-primary hover:underline flex items-center gap-1 cursor-pointer text-left text-xs sm:text-sm"
+                      title="Ubah metode pembayaran"
+                    >
+                      <span>{selectedPaymentMethod.name}</span>
+                      <span className="text-[11px]">✎</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsPaymentModalOpen(true)}
+                      className="font-semibold text-slate-400 hover:text-primary transition-colors cursor-pointer text-left text-xs sm:text-sm"
+                      title="Pilih metode pembayaran"
+                    >
+                      <span>—</span>
+                    </button>
+                  )}
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-slate-900">
@@ -942,6 +930,105 @@ export function DonationFormPage() {
             </div>
           </aside>
         </div>
+
+        {/* ============================================================== */}
+        {/* POP-UP / MODAL PILIH METODE PEMBAYARAN                         */}
+        {/* ============================================================== */}
+        {isPaymentModalOpen && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="payment-modal-title"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
+            onClick={() => setIsPaymentModalOpen(false)}
+          >
+            <div
+              className="relative w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl p-5 sm:p-6 space-y-4 animate-in zoom-in-95 duration-200 max-h-[85vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header Modal: Judul & Tombol Close (X) */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
+                <div>
+                  <h2 id="payment-modal-title" className="text-sm sm:text-base font-bold text-slate-900">
+                    Pilih Metode Pembayaran
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Pilih metode yang paling nyaman bagi Anda
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsPaymentModalOpen(false)}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                  aria-label="Tutup pilihan metode"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* List Kategori Pembayaran (Scrollable Vertikal) */}
+              <div className="overflow-y-auto pr-1 space-y-5 flex-1 no-scrollbar">
+                {PAYMENT_CATEGORIES.map((category) => (
+                  <div key={category.id} className="space-y-2.5">
+                    <h3 className="text-xs sm:text-sm font-bold text-slate-900">
+                      {category.title}
+                    </h3>
+
+                    <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 overflow-hidden bg-white">
+                      {category.methods.map((method) => {
+                        const isSelected = selectedPaymentMethod?.id === method.id;
+                        return (
+                          <button
+                            key={method.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedPaymentMethod(method);
+                              setErrors((prev) => ({ ...prev, payment: null }));
+                              setIsPaymentModalOpen(false);
+                            }}
+                            className={`w-full p-3.5 flex items-center justify-between gap-3 text-left transition-colors cursor-pointer hover:bg-slate-50 ${
+                              isSelected ? 'bg-blue-50/50' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <PaymentMethodIcon type={method.iconType} />
+                              <div className="min-w-0">
+                                <span className={`text-xs sm:text-sm font-semibold block truncate ${
+                                  isSelected ? 'text-primary font-bold' : 'text-slate-800'
+                                }`}>
+                                  {method.name}
+                                </span>
+                                {method.subtitle && (
+                                  <span className="text-[10px] sm:text-[11px] text-amber-600 block mt-0.5">
+                                    {method.subtitle}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="shrink-0 text-slate-400">
+                              {isSelected ? (
+                                <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                              ) : (
+                                <svg className="w-4 h-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </Container>
     </div>
   );

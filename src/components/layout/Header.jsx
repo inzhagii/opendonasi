@@ -373,22 +373,24 @@ export function Header() {
 
                 {/* Navigasi Auth: Sign In & Login jika belum login, Profil jika sudah login */}
                 {isLoggedIn ? (
-                  <Link
-                    to="/profil"
-                    onClick={closePopovers}
-                    className="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-full border border-slate-200 hover:border-primary/60 bg-white hover:bg-slate-50 transition-all text-sm font-semibold text-slate-800 shadow-2xs group cursor-pointer"
-                    aria-label="Buka profil akun"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
-                      {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'D'}
-                    </div>
-                    <span className="truncate max-w-[120px] text-xs font-bold text-slate-800 group-hover:text-primary transition-colors">
-                      {currentUser?.name || 'Donatur Demo'}
-                    </span>
-                    <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/profil"
+                      onClick={closePopovers}
+                      className="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-full border border-slate-200 hover:border-primary/60 bg-white hover:bg-slate-50 transition-all text-sm font-semibold text-slate-800 shadow-2xs group cursor-pointer"
+                      aria-label="Buka profil akun"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
+                        {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'D'}
+                      </div>
+                      <span className="truncate max-w-[120px] text-xs font-bold text-slate-800 group-hover:text-primary transition-colors">
+                        {currentUser?.name || 'Donatur Demo'}
+                      </span>
+                      <svg className="w-3.5 h-3.5 text-slate-400 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
                 ) : (
                   <>
                     {/* Tombol Sign In (Pill Lembut Biru Muda & Teks Biru) */}
